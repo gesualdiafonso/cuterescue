@@ -1,0 +1,14 @@
+[
+  {
+    "id": "faa530534b767b9e",
+    "nombre": "Carlos Gómez",
+    "email": "carlosg@example.com",
+    "telefono": "+54 9 11 5555-1234",
+    "ubicacion": "Buenos Aires, Argentina",
+    "activo": true,
+    "password": "$2b$10$uikTqWMCPDDKMStk0/SGbO4b2cy5t803QrtHiYlisg2./C5YQR2tq",
+    "pets": [
+      "61a35ddb0c2e1906"
+    ]
+  }
+]

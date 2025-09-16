@@ -1,0 +1,14 @@
+main{
+    max-width: 1040px;
+    min-width: 350px;
+    margin: 0 auto;
+    padding: 0 1.2rem;
+}
+
+.cs-background-img{
+    background-image: url('./public/image/background.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+}
