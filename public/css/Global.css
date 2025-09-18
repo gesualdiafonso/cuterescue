@@ -1,14 +1,206 @@
-main{
-    max-width: 1040px;
-    min-width: 350px;
-    margin: 0 auto;
-    padding: 0 1.2rem;
+/* ====== BASE DA MARCA CUTE RESCUE ====== */
+:root {
+  --cr-primary: #007dc4;
+  --cr-secondary: #f49a47;
+  --cr-dark: #22677a;
+  --cr-accent: #728b5a;
+  --cr-light: #f8f9fa;
 }
 
-.cs-background-img{
-    background-image: url('./public/image/background.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    background-attachment: fixed;
+/* Tipografia general */
+body {
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--cr-dark);
+  background-color: var(--cr-light);
+  line-height: 1.6;
 }
+
+main {
+  max-width: 1040px;
+  min-width: 350px;
+  margin: 0 auto;
+  padding: 0 1.2rem;
+}
+
+/* Títulos com destaque */
+h1{
+    font-weight: 700;
+    color: var(--cr-light);
+}
+
+h2,
+h3 {
+  font-weight: 700;
+  color: var(--cr-secondary);
+}
+
+h1 {
+  font-size: 2.8rem;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: 1.4rem;
+}
+
+.cs-container {
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Links */
+a {
+    color: var(--cr-primary);
+    text-decoration: none;
+  }
+  
+  a:hover {
+    color: var(--cr-secondary);
+    text-decoration: underline;
+  }
+
+.cs-background-img {
+  background-image: url("/image/pattern.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* Seção principal */
+.cs-hero {
+    position: relative;
+    color: #fff;
+    padding: 6rem 2rem;
+    border-radius: 20px;
+    text-align: center;
+    overflow: hidden;
+    box-shadow: 0px 8px 24px rgba(0,0,0,0.2);
+  }
+  
+  .cs-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--cr-primary), var(--cr-dark));
+    opacity: 0.9; /* controla a transparência só do fundo */
+    z-index: 0;
+  }
+  
+  .cs-hero * {
+    position: relative;
+    z-index: 1; /* mantém o texto acima da camada opaca */
+  }
+
+
+  /* Blocos de conteúdo */
+.cr-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cr-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  
+  /* Accordion custom */
+  .accordion-button {
+    font-weight: 600;
+    color: var(--cr-dark);
+    background-color: var(--cr-light);
+  }
+  
+  .accordion-button:not(.collapsed) {
+    background-color: var(--cr-secondary);
+    color: #fff;
+  }
+  
+  .accordion-body {
+    background: #fff;
+    border-left: 4px solid var(--cr-primary);
+  }
+  
+  /* ====== RESPONSIVIDADE ====== */
+
+/* Telas menores que tablets */
+@media (max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+  
+    h2 {
+      font-size: 1.6rem;
+    }
+  
+    h3, h4 {
+      font-size: 1.2rem;
+    }
+  
+    .cs-container {
+      height: auto; /* remove 100vh em mobile */
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+  
+    .cs-background-img {
+      background-attachment: scroll; /* melhora performance em mobile */
+      padding: 2rem 1rem;
+    }
+  
+    .cs-hero {
+      padding: 3rem 1.5rem;
+      border-radius: 12px;
+    }
+  
+    .accordion-button {
+      font-size: 0.95rem;
+      padding: 0.8rem 1rem;
+    }
+  
+    .accordion-body {
+      font-size: 0.9rem;
+      padding: 1rem;
+    }
+  
+    footer p {
+      font-size: 0.9rem;
+    }
+  }
+  
+  /* Telas muito pequenas (<=480px) */
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.6rem;
+    }
+  
+    h2 {
+      font-size: 1.3rem;
+    }
+  
+    p, li {
+      font-size: 0.9rem;
+    }
+  
+    .cr-card {
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+    }
+  
+    .accordion-button {
+      font-size: 0.85rem;
+    }
+  
+    .accordion-body {
+      font-size: 0.85rem;
+    }
+  }

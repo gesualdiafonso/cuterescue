@@ -1,29 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cute Rescue API</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
     <link rel="stylesheet" href="css/Global.css">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
+
 <body>
     <main>
-        <section class="flex flex-col lg:flex-row justify-center items-center">
-            <div class="cs-background-img w-full h-screen bg-green-900 flex flex-col items-center justify-center p-10">
-                <div>
-                    <h1 class="text-3xl font-semibold italic">
-                        API Geolocalización de Pets
-                    </h1>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum asperiores dolore vero minima illum veritatis odio voluptas id, repellendus ipsam quo mollitia aliquid architecto quaerat laudantium. Optio earum illo nihil.</p>
+
+        <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+            <div class="cs-background-img w-100 h-100 p-5">
+                <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
+                    <div class="cs-hero">
+                        <h1>
+                            API Geolocalización de Pets
+                        </h1>
+                        <p>Gestión de Pets, Dueños y Localización en tiempo real</p>
+                    </div>
                 </div>
             </div>
-            <div class="w-full h-screen flex flex-col items-center justify-center">
-                <div>
-                    <p>Una <strong>API de geolocalización para Pets</strong> por medio de identificador del dueño y <strong>CHIP</strong> de los Pets.</p>
+            <div class="w-100 p-5 animate-on-scroll">
+                <div class="w-100 h-100 p-5">
+                    <p class="lead text-center">
+                        La <strong>Cute Rescue API</strong> permite gestionar la información de mascotas y dueños, así
+                        como la geolocalización de los animales en tiempo real.
+                        Toda la información está almacenada en <strong>MongoDB Atlas</strong> y los endpoints cuentan
+                        con validaciones de datos.
+                    </p>
                 </div>
             </div>
         </section>
+
+        <!-- Sobre la API -->
+        <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+            <div class="cs-background-img w-100 h-100 p-5">
+                <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
+                    <h2 class="text-start">¿Qué hace esta API?</h2>
+                </div>
+            </div>
+            <div class="w-100 p-5 animate-on-scroll">
+                <div class="w-100 h-100 p-5">
+                    <p>
+                        Esta API REST provee operaciones CRUD para:
+                    </p>
+                    <ul>
+                        <li><strong>Pets:</strong> Registro, actualización, búsqueda y eliminación de mascotas, con
+                            identificación por <code>chip_id</code>.</li>
+                        <li><strong>Dueños:</strong> Creación de usuario (email y contraseña) + detalles adicionales
+                            (nombre, teléfono, ubicación).</li>
+                        <li><strong>Localización:</strong> Creación automática en la posición inicial (0), registro de
+                            nuevas coordenadas y consulta de histórico.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sobree los ENDPOITS -->
+        <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+            <div class="cs-background-img w-100 h-100 p-5">
+                <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
+                    <h3>Endpoints de la API</h3>
+                </div>
+            </div>
+            <div class="w-100 p-5 animate-on-scroll">
+                <div class="w-100 h-100 p-5">
+                    <p>
+                        Los <strong>endpoints</strong> son las rutas que permiten interactuar con la API. 
+                        A través de ellos se pueden realizar operaciones <code>GET</code>, <code>POST</code>, 
+                        <code>PUT</code> y <code>DELETE</code> sobre los recursos de <strong>Pets</strong>, 
+                        <strong>Dueños</strong> y <strong>Localización</strong>.
+                    </p>
+
+                    <ul>
+                        <li><strong>Pets:</strong> Permite registrar, consultar, actualizar y eliminar mascotas usando su <code>chip_id</code>.</li>
+                        <li><strong>Dueños:</strong> Permite la creación de usuarios y la gestión de sus datos (nombre, email, teléfono, ubicación, etc.).</li>
+                        <li><strong>Localización:</strong> Permite registrar coordenadas y consultar el historial de movimientos de cada mascota.</li>
+                      </ul>
+                    
+                </div>
+        </section>
+
+
+        <!-- Como acceder a los Endpoits -->
+        <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+            <div class="cs-background-img w-100 h-100 p-5 ">
+                <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
+                    <h3 class="text-center mb-4">Cómo acceder a los Endpoints</h3>
+                </div>
+            </div>
+            <div class="w-100 p-5 animate-on-scroll">
+                <div class="w-100 h-100 p-5">
+                    <p class="text-center">
+                        Cada <strong>endpoint</strong> es una ruta específica para interactuar con un recurso.
+                        Los métodos soportados son <code>GET</code>, <code>POST</code>, <code>PUT</code> y
+                        <code>DELETE</code>.
+                      </p>
+                </div>
+
+                <div class="accordion" id="endpointsAccordion">
+
+                    <!-- Pets -->
+                    <div class="accordion-item">
+                      <h4 class="accordion-header" id="headingPets">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePets">
+                          🐾 Pets
+                        </button>
+                      </h4>
+                      <div id="collapsePets" class="accordion-collapse collapse show" data-bs-parent="#endpointsAccordion">
+                        <div class="accordion-body">
+                          <ul>
+                            <li><code>GET /api/pets</code> → Listar todas las mascotas</li>
+                            <li><code>GET /api/pets/:id</code> → Obtener mascota por ID</li>
+                            <li><code>POST /api/pets</code> → Crear nueva mascota</li>
+                            <li><code>PUT /api/pets/:id</code> → Actualizar datos de mascota</li>
+                            <li><code>DELETE /api/pets/:id</code> → Eliminar mascota</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <!-- Dueños -->
+                    <div class="accordion-item">
+                      <h4 class="accordion-header" id="headingOwners">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOwners">
+                          👤 Dueños
+                        </button>
+                      </h4>
+                      <div id="collapseOwners" class="accordion-collapse collapse" data-bs-parent="#endpointsAccordion">
+                        <div class="accordion-body">
+                          <ul>
+                            <li><code>GET /api/users</code> → Listar todos los dueños</li>
+                            <li><code>GET /api/users/:id</code> → Consultar dueño por ID</li>
+                            <li><code>POST /api/users</code> → Crear usuario (email y contraseña)</li>
+                            <li><code>POST /api/users/details</code> → Agregar detalles del dueño</li>
+                            <li><code>PUT /api/users/:id</code> → Actualizar datos del dueño</li>
+                            <li><code>DELETE /api/users/:id</code> → Eliminar dueño</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <!-- Localización -->
+                    <div class="accordion-item">
+                      <h4 class="accordion-header" id="headingLocation">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocation">
+                          📍 Localización
+                        </button>
+                      </h4>
+                      <div id="collapseLocation" class="accordion-collapse collapse" data-bs-parent="#endpointsAccordion">
+                        <div class="accordion-body">
+                          <ul>
+                            <li><code>POST /api/locations</code> → Registrar nueva localización</li>
+                            <li><code>GET /api/locations/:chip_id</code> → Consultar histórico por chip_id</li>
+                          </ul>
+                          <p>
+                            ⚡ Al crear un <strong>Pet</strong>, se genera automáticamente una localización inicial 
+                            en la posición <code>0</code>.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Presentación para el fin del Proyecto -->
+        <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+            <div class="cs-background-img w-100 h-100 p-5 ">
+                <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
+                    <h2 class="text-center mb-4">Presentación del Proyecto Final</h2>
+                </div>
+            </div>
+            <div class="w-100 p-5 animate-on-scroll">
+                <div class="w-100 h-100 p-5">
+                    <p>
+                        El proyecto <strong>Cute Rescue</strong> se plantea como una solución integral para la 
+                        geolocalización y seguridad de mascotas. La propuesta final combina:
+                      </p>
+                      <ul>
+                        <li><strong>Aplicación Nativa:</strong> Construida con frameworks híbridos para permitir
+                            el acceso multiplataforma (Android/iOS).</li>
+                        <li><strong>ESP32:</strong> Microcontrolador que captura la ubicación GPS del pet y envía 
+                            la información hacia la API.</li>
+                        <li><strong>API REST:</strong> Punto centralizado de comunicación, validado y conectado 
+                            con <strong>MongoDB Atlas</strong> para almacenar mascotas, dueños y localizaciones.</li>
+                      </ul>
+                      <p>
+                        El ecosistema completo demuestra cómo integrar hardware, software y servicios digitales
+                        para dar soporte a un escenario real de cuidado animal.
+                      </p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <!-- Sobre la API -->
+            <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+                <div class="cs-background-img w-100 h-100 p-5 ">
+                    <div class="w-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
+                        <div class="cs-hero">
+                            <h2>
+                                Trabajo Practico de Aplicaciones Hibridas
+                            </h2>
+                            <span>Escuela Da Vinci</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-100 p-5 animate-on-scroll">
+                    <div class="w-100 h-100 p-5">
+                        <p><strong>Nombre y Apellido:</strong> Afonso Arruda Gesualdi</p>
+                        <p><strong>Docente:</strong> Jonathan Emanuel Cruz</p>
+                        <p><strong>Comisión:</strong> 2 AV Noche</p>
+                    </div>
+                </div>
+            </section>
+        </footer>
     </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+        integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+        crossorigin="anonymous"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const elements = document.querySelectorAll(".animate-on-scroll");
+          
+              const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                  if (entry.isIntersecting) {
+                    // Pega se é bloco da esquerda ou direita pela ordem dentro da section
+                    const isLeft = Array.from(entry.target.parentNode.children).indexOf(entry.target) === 0;
+                    const anim = isLeft ? "animate__slideInLeft" : "animate__slideInRight";
+                    
+                    entry.target.classList.add("animate__animated", anim);
+                    observer.unobserve(entry.target); // anima só uma vez
+                  }
+                });
+              }, { threshold: 0.2 });
+          
+              elements.forEach(el => observer.observe(el));
+            });
+          </script>
 </body>
+
 </html>
