@@ -5,11 +5,7 @@ import clientPromise from '../services/useConnection.js';
 
 class Users {
     users = []
-    //path = './data/users.json'
 
-    // constructor( users=[] ){
-    //     this.user = users
-    // }
     constructor (){
         this.collectionName = "users";
     }
@@ -20,76 +16,65 @@ class Users {
         return db.collection(this.collectionName);
     }
 
-    // async saveJSON(){
-    //     const data = JSON.stringify(this.user, null, 2);
-    //     try{
-    //         await fs.writeFile(this.path, data);
-    //         console.log('Dados del pet agregado con suceso');
-    //     } catch(error){
-    //         console.log('Error al guardar el pet', error);
-    //     }
-    // }
-
-    // async readJSON(){
-    //     try{
-    //         const data = await fs.readFile(this.path);
-    //         return JSON.parse(data);
-    //     }catch(error){
-    //         console.log('Error al leer el archivo', error);
-    //     }
-    // }
-
     // Listar usuarios
-    
     /**
      * Pega todo los usuarios y me devuelve en un array
      * @returns {Promise<Array>} Array de usuarios
      */
     async getAll(){
-        // const user = await this.readJSON();
-        // return user || this.users;
+
         const collection = await this.getCollection();
         return await collection.find({}).toArray();
     }
 
-    /**
+    // Agregar nuevo usuario
+    async create({ email, password, activo = true, active }) {
+        const collection = await this.getCollection();
+
+        const existingUser = await collection.findOne({ email });
+        if(existingUser) throw new Error('Email de usuario ya existe');
+
+        const userId = crypto.randomBytes(8).toString('hex');
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const status = active ?? activo;
+
+        const newUser = {
+            id: userId,
+            email, 
+            password: hashedPassword,
+            activo: status
+        };
+
+        await collection.insertOne(newUser);
+        return newUser;
+    }
+
+        /**
      * Pega un usuario por id
      * @param {*} id 
      * @returns 
      */
-    async getById(id){
-        // const users = await this.readJSON();
-        // return users.find( u => u.id === id);
+        async getById(id){
+            const collection = await this.getCollection();
+            return await collection.findOne({ id: id });
+        }
+
+    async getByEmail(email){
         const collection = await this.getCollection();
-        return await collection.findOne({ id: id });
+        return await collection.findOne( { email } );
     }
 
-    // Agregar nuevo usuario
-    async addUser(user) {
-        // this.user = await this.readJSON() || [];
+    async validatePassword(email, password){
+        const user = await this.getByEmail(email);
+        if(!user) return false;
+
+        return await bcrypt.compare(password, user.password);
+    }
+
+    async desactivate(id){
         const collection = await this.getCollection();
-    
-        const uniqueId = crypto.randomBytes(8).toString('hex');
-
-        // Hash da senha
-        const hashedPassword = await bcrypt.hash(user.password, 10);
-    
-
-        const newUser = {
-            id: uniqueId,
-            nombre: user.nombre,
-            email: user.email,
-            telefono: user.telefono,
-            ubicacion: user.ubicacion,
-            activo: user.activo ?? true,
-            password: hashedPassword, // salva o hash
-            pets: user.pets || []
-        };
-    
-        // this.user.push(newUser);
-        // await this.saveJSON();
-        await collection.insertOne(newUser);
-        return newUser;
+        await collection.updateOne( { id }, { $set: { activo: false } } );
     }
 
     /**
@@ -98,7 +83,7 @@ class Users {
      * @param {*} updatedUser 
      * @returns 
      */
-    async updateUser( id, updatedUser ){
+    async update( id, updatedUser ){
         // const users = await this.readJSON();
         const collection = await this.getCollection();
 
@@ -107,35 +92,12 @@ class Users {
         }
 
         const result = await collection.findOneAndUpdate(
-            { id: id},
+            { id },
             { $set: updatedUser },
-            { returnDocument: 'after' } // para retornar el documento actualizado
+            { returnDocument: 'after' }
         );
 
         return result.value;
-
-        //const index = users.findIndex( u => u.id === id);
-
-        // if (index !== -1 ){
-            
-        //     // Se tiver password nuevo, encriptar nuevamente.
-
-        //     if (updatedUser.password) {
-        //         updatedUser.password = await bcrypt.hash(updatedUser.password, 10);
-        //     }
-
-        //     users[index] = {
-        //         ...users[index], 
-        //         ...updatedUser
-        //     };
-        //     this.users = users;
-
-        //     await this.saveJSON();
-
-        //     return users[index];
-        // }
-
-        // return null;
     }
 
 
@@ -144,21 +106,11 @@ class Users {
      * @param {*} id 
      * @returns 
      */
-    async deleteUser(id) {
+    async delete(id) {
         const collection = await this.getCollection();
         const result = await collection.deleteOne({ id });
-        return result.deleteCount > 0;
-        
-        // const users = await this.readJSON();
-        // const index = users.findIndex(u => u.id === id);
+        return result.deletedCount > 0;
 
-        // if (index !== -1) {
-        //     users.splice(index, 1);
-        //     this.users = users;
-        //     await this.saveJSON();
-        //     return true;
-        // }
-        // return false;
     }
 }
 

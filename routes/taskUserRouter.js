@@ -2,94 +2,112 @@ import express from 'express';
 import Users from '../model/Users.js';
 
 const router = express.Router();
+const userModel = new Users();
 
-const model = new Users();
+// Listar todos los usuários
 
-// **************** API DE USERS ********************** //
-
-// Listar todos os usuários
-router.get('/api/users', async (req, res) => {
+router.get('/api/user', async (req, res) => {
     try {
-        const users = await model.getAll();
-        res.json(users);
+
+        const user = await userModel.getAll();
+        res.json(user);
+
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao carregar usuários' });
+        
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Criar novo usuário
-router.post('/api/users', async (req, res) => {
-    const { nombre, email, telefono, ubicacion, activo, password, pets } = req.body;
-
-    // validação básica
-    if (!nombre || !email || !telefono || !ubicacion || !password) {
-        return res.status(400).json({ 
-            error: "Faltam campos obrigatórios: nombre, email, telefono, ubicacion, password",
-            data: req.body
-        });
-    }
-
-    try {
-        const newUser = await model.addUser({ 
-            nombre, 
-            email, 
-            telefono, 
-            ubicacion, 
-            activo, 
-            password, 
-            pets 
-        });
-        res.status(201).json(newUser);
-    } catch (err) {
-        res.status(500).json({ error: `Erro ao criar usuário: ${err.message}` });
-    }
-});
-
-// Buscar usuário por ID
-router.get('/api/users/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const users = await model.getAll();
-        const user = users.find(u => u.id === id);
-
-        if (!user) {
-            return res.status(404).json({ error: "Usuário não encontrado" });
+// Criar usuario
+router.post('/api/user', async (req, res) => {
+    try{
+        const { email, password, activo = true } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email y contraseña son obligatorios' });
+        } else if(password.length < 6){
+            return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+        } else if(!/\S+@\S+\.\S+/.test(email)){
+            return res.status(400).json({ error: 'Email no es valido' });
+        } else if(!email || !password){
+            return res.status(400).json({ error: 'Email y contraseña son obligatorios' });
         }
+        const newUser = await userModel.create({ email, password, activo });
 
+        res.status(201).json(newUser);
+    } catch(error){
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Pegar usuario por ID
+router.get('/api/user/:id', async (req, res) => {
+    try {
+        const user = await userModel.getById(req.params.id);
+        if(!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
         res.json(user);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar usuário' });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Atualizar usuário
-router.put('/api/users/:id', async (req, res) => {
+// Buscar usuario por email
+router.get('/api/user/email/:email', async (req, res) => {
+    try {
+        const user = await userModel.getByEmail(req.params.email);
+        if(!update) return res.status(404).json({ error: 'Usuario no encontrado' });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
+// Actualizar usuario
+router.put('/api/user/:id', async (req, res) => {
     const { id } = req.params;
-    const updates = req.body;
+    const { email, password, ...rest } = req.body;
 
     try {
-        const updatedUser = await model.updateUser(id, updates);
-        if (!updatedUser) {
-            return res.status(404).json({ error: "Usuário não encontrado" });
+        // 1. Buscar user antes de atualizar
+        const existingUser = await userModel.getById(id);
+
+        if (!existingUser) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
         }
-        res.json(updatedUser);
-    } catch (err) {
-        res.status(500).json({ error: `Erro ao atualizar usuário: ${err.message}` });
+
+        // 2. Validaciones
+        if (password && password.length < 6) {
+            return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+        }
+        if (email && !/\S+@\S+\.\S+/.test(email)) {
+            return res.status(400).json({ error: 'Email no es valido' });
+        }
+        if (email === '' || password === '') {
+            return res.status(400).json({ error: 'Email y contraseña no pueden estar vacios' });
+        }
+
+        // 3. Atualizar usuário
+        const updatedUser = await userModel.update(id, { email, password, ...rest });
+
+        // 4. Retornar mensagem clara
+        res.status(200).json({
+            message: 'Usuario actualizado con éxito',
+            user: updatedUser
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Deletar usuário
-router.delete('/api/users/:id', async (req, res) => {
-    const { id } = req.params;
-
+// Desactivar usuario
+router.patch('/api/user/:id/dasactivate', async (req, res) => {
     try {
-        const deleted = await model.deleteUser(id);
-        if (!deleted) {
-            return res.status(404).json({ error: "Usuário não encontrado" });
-        }
-        res.json({ message: 'Usuário deletado com sucesso' });
-    } catch (err) {
-        res.status(500).json({ error: `Erro ao deletar usuário: ${err.message}` });
+        await userModel.desactivate(req.params.id);
+        res.json({ message: 'Usuario desactivado' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 
