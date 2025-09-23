@@ -1,4 +1,3 @@
-import { ReturnDocument } from 'mongodb';
 import clientPromise from '../services/useConnection.js'
 
 class Pet {
@@ -9,7 +8,7 @@ class Pet {
 
     async getCollection() {
         const client = await clientPromise;
-        const db = client.db('cuteresucue');
+        const db = client.db('cuterescue');
         return db.collection(this.collectionName);
     }
 
@@ -21,7 +20,7 @@ class Pet {
     async add(pet){
         const collection = await this.getCollection();
         const result = await collection.insertOne(pet);
-        return result.ops[0];
+        return { _id: result.insertedId, ...pet };
     }
 
     async getById(id){
@@ -29,12 +28,17 @@ class Pet {
         return await collection.findOne({ id });
     }
 
+    async getByChipId(chip_id){
+        const collection = await this.getCollection();
+        return await collection.findOne({ chip_id }) || null;
+    }
+
     async update(id, updateFields){
         const collection = await this.getCollection();
         const result = await collection.findOneAndUpdate(
             { id },
             { $set: updateFields },
-            { ReturnDocument: 'after' }
+            { returnDocument: 'after' }
         );
 
         return result.value;

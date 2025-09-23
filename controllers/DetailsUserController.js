@@ -1,9 +1,11 @@
-import DetailsUserService from "../services/useDetailsUser";
+import DetailsUserService from "../services/useDetailsUser.js";
+
+const detrailsService = new DetailsUserService();
 
 class DetailsUserController{
     async getAll(req, res){
         try {
-            const details = await DetailsUserService.getAll();
+            const details = await detrailsService.getAll();
             res.status(200).json(details);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -13,7 +15,7 @@ class DetailsUserController{
     async getByUserId(req, res){
         const { userId } = req.params;
         try {
-            const details = await DetailsUserService.getByUserId(userId);
+            const details = await detrailsService.getByUserId(userId);
             if(!details){
                 return res.status(404).json({ error: 'Detalles del usuario no encontrados' });
             }
@@ -25,9 +27,8 @@ class DetailsUserController{
 
     async create(req, res){
         const { userId } = req.params;
-        const fields = req.body;
+        const { nombre, telefono, ubicacion, pets=[]} = req.body;
         try {
-            const { userId, nombre, telefono, ubicacion, pets = []} = fields;
             if (!userId || !nombre || !telefono || !ubicacion) {
                 return res.status(400).json({ 
                     error: "Campos obrigatórios faltando", 
@@ -36,12 +37,12 @@ class DetailsUserController{
             }
 
             // validar si existe el user
-            const user = await DetailsUserService.getByUserId(userId);
+            const user = await detrailsService.getByUserId(userId);
             if(user){
                 return res.status(400).json({ error: 'Los detalles del usuario ya existen' });
             }
             
-            const newDetails = await DetailsUserService.create(userId, { nombre, telefono, ubicacion, pets });
+            const newDetails = await detrailsService.create(userId, { nombre, telefono, ubicacion, pets });
             res.status(201).json(newDetails);
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -52,8 +53,8 @@ class DetailsUserController{
         const { userId } = req.params;
         const updateFields = req.body;
         try {
-            const updatedDetails = await DetailsUserService.update(userId, updateFields);
-            res.status(200).json(updatedDetails);
+            const updatedDetails = await detrailsService.update(userId, updateFields);
+            res.status(200).json({ message: 'Detalles del usuario actualizados exitosamente', data: updatedDetails });
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
@@ -62,7 +63,7 @@ class DetailsUserController{
     async delete(req, res){
         const { userId } = req.params;
         try {
-            const success = await DetailsUserService.delete(userId);
+            const success = await detrailsService.delete(userId);
             if(!success){
                 return res.status(404).json({ error: 'Detalles del usuario no encontrados para eliminar' });
             }

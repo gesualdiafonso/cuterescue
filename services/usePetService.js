@@ -1,17 +1,20 @@
 import crypto from 'crypto'
-import Pet from '../models/Pet.js'
-import Locations from '../models/Locations.js'
-import DetailsUser from '../models/DetailsUser.js'
+import Pet from '../model/Pet.js'
+import DetailsUserService from './useDetailsUser.js';
 
-const petModel = new Pet()
-const locationModel = new Locations()
-const detailsUserModel = new DetailsUser()
+
+const petModel = new Pet();
+const detailsUserService = new DetailsUserService();
 
 class PetService {
     constructor() {
-        this.pets = petModel
-        this.locations = locationModel
-        this.detailsUser = detailsUserModel
+        this.pets = petModel;
+        this.locationService = null;
+        this.detailsUser = detailsUserService;
+    }
+
+    setLocationService(locationServiceInstace){
+        this.locationService = locationServiceInstace;
     }
 
     async getAllPets() {
@@ -20,6 +23,10 @@ class PetService {
 
     async getPetById(id) {
         return await this.pets.getById(id)
+    }
+
+    async getPetByChipId(chip_id) {
+        return await this.pets.getByChipId(chip_id)
     }
 
     async createPet(petData){
@@ -33,7 +40,7 @@ class PetService {
             ultima_localizacion: null,
         }
 
-        await this.petModel.add(newPet);
+        await this.pets.add(newPet);
 
         //Localización inicial
         const initialLocation = {
@@ -41,9 +48,9 @@ class PetService {
             lng: 0,
             Timestamp: new Date().toISOString(),
         };
-        const savedLocation = await this.locations.addLocation(chipId, initialLocation);
+        const savedLocation = await this.locationService.createLocation(chipId, initialLocation);
 
-        await this.petModel.update(uniqueId, { ultima_localizacion: savedLocation });
+        await this.pets.update(uniqueId, { ultima_localizacion: savedLocation });
         newPet.ultima_localizacion = savedLocation;
 
         // Actualizar el dueño del pet
@@ -61,7 +68,7 @@ class PetService {
 
     async updatePet(id, updatedFields) {
         if (updatedFields.ultima_localizacion){
-            const pet = await this.petModel.getById(id);
+            const pet = await this.pets.getById(id);
             if (pet) {
                 await this.locationService.updateLocation(pet.chip_id, updatedFields.ultima_localizacion);
             }
@@ -69,23 +76,34 @@ class PetService {
         return await this.pets.update(id, updatedFields);
     }
 
+    async updatePetByChipId(chip_id, updatedFields) {
+        const pet = await this.getPetByChipId(chip_id);
+        if (!pet) return null;
+
+        if (updatedFields.ultima_localizacion){
+            await this.locationService.updateLocation(chip_id, updatedFields.ultima_localizacion);
+        }
+
+        return await this.pets.update(pet.id, updatedFields);
+    }
+
     async deletePet(id){
-        const pet = await this.petModel.getById(id);
+        const pet = await this.pets.getById(id);
         if(!pet) return false;
 
         // Remove el pet del dueño
         if (pet.dueno_id){
-            const owner = await this.detailsUserService.getByUserId(pet.dueno_id);
+            const owner = await this.detailsUser.getByUserId(pet.dueno_id);
             if(owner){
                 owner.pets = (owner.pets || []).filter(p => p !== pet.id);
-                await this.detailsUserService.update(pet.dueno_id, { pets: owner.pets });
+                await this.detailsUser.update(pet.dueno_id, { pets: owner.pets });
             }
         }
 
         await this.locationService.deleteLocation(pet.chip_id);
-        const result = await this.petModel.delete(id);
+        const result = await this.pets.delete(id);
 
-        return result.deleteCount > 0;
+        return result.deletedCount > 0;
     }
 }
 

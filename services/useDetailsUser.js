@@ -1,11 +1,14 @@
-import DetailsUser from "../model/DetailsUser";
-import UserService from "./useUserService.js";
+import DetailsUser from "../model/DetailsUser.js";
+import UserService from "./UserService.js";
+
+const detailsUserModel = new DetailsUser;
+const userService = new UserService;
 
 class DetailsUserService
 {
     constructor(){
-        this.detailsUserModel = new DetailsUser();
-        this.userService = new UserService();
+        this.detailsUserModel = detailsUserModel;
+        this.userService = userService;
     }
 
     async getAll(){
@@ -62,4 +65,4 @@ class DetailsUserService
 
 }
 
-export default new DetailsUserService;
+export default DetailsUserService;

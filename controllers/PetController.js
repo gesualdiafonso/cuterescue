@@ -1,9 +1,9 @@
-import PetService from "../services/usePetService.js";
+import { petService } from '../services/index.js' 
 
 class PetController{
     async getAll(req, res){
         try{
-            const pets = await PetService.getAllPets();
+            const pets = await petService.getAllPets();
             res.json(pets);
         } catch(err){
             res.status(500).json({ error: 'Erro al cargar los pets' });
@@ -38,7 +38,7 @@ class PetController{
         }
         try {
 
-            const newPet = await PetService.createPet({
+            const newPet = await petService.createPet({
                 nombre, 
                 especie, 
                 raza, 
@@ -58,13 +58,14 @@ class PetController{
 
             res.status(201).json(newPet);
         } catch (error) {
+            console.error("Error creating pet:", error);
             res.status(500).json({ error: 'Erro al crear el pet' });
         }
     }
 
     async getById(req, res){
         try{
-            const pet = await PetService.getPetById(req.params.id);
+            const pet = await petService.getPetById(req.params.id);
             if (!pet) {
                 return res.status(404).json({ error: 'Pet no encontrado' });
             }
@@ -74,17 +75,30 @@ class PetController{
         }
     }
 
-    async update(req, res){
+    async getByChipId(req, res){
+        const { chip_id } = req.params;
         try{
-            const updatedPet = await PetService.updatePet(req.params.id, req.body);
-
-            if (!updatedPet) {
-                // tenta pegar o registro agora — se existir, devolve ele (segurança)
-                const petNow = await model.getById(req.params.id);
-                if (petNow) return res.status(200).json(petNow);
-                return res.status(404).json({ error: 'Pet não encontrado' });
+            const pet = await petService.getPetByChipId(chip_id);
+            if(!pet){
+                return res.status(404).json({ error: 'Per no fue encontrada' });
             }
-            res.json(updatedPet);
+            res.json(pet);
+        } catch(err){
+            res.status(500).json({ error: 'Erro al cargar el Pet' });
+        }
+    }
+
+    async update(req, res){
+        const { id } = req.params;
+        const updateFields = req.body;
+        try{
+            const updatedPet = await petService.updatePet(id, updateFields);
+            res.status(200).json({ message: 'Pet actualizado con éxito', data: updatedPet });
+            // if (updatedPet) {
+            //     return res.status(200).json({message: 'Pet actualizado con éxito', data: updatedPet });
+            // } else{
+            //     return res.status(404).json({ error: 'Pet no encontrado' });
+            // }
         } catch(err){
             res.status(500).json({ error: 'Erro al actualizar el pet' });
         }
@@ -92,8 +106,8 @@ class PetController{
 
     async delete(req, res){
         try {
-            const deleted = await PetService.deletedPet(req.params.id);
-            if (deleted.deletedCount === 0) {
+            const deleted = await petService.deletePet(req.params.id);
+            if (!deleted) {
                 return res.status(404).json({ error: 'Pet no encontrado' });
             }
             res.json({ message: 'Pet eliminado con éxito' });
@@ -102,3 +116,5 @@ class PetController{
         }
     }
 }
+
+export default new PetController();

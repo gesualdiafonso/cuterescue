@@ -1,12 +1,12 @@
 import express from 'express';
-import LocationsController from '../controllers/LocationsController.js';
+import LocationController from '../controllers/LocationController.js';
 
 const router = express.Router();
 
-router.get('/api/locations', LocationsController.getAll);
-router.post('/api/locations/:chip_id', LocationsController.addLocation);
-router.get('/api/locations/:chip_id', LocationsController.getByChipId);
-router.put('/api/locations/:chip_id', LocationsController.updateLocation);
-router.delete('/api/locations/:chip_id', LocationsController.deleteLocation);
+router.get('/api/locations', LocationController.getAll);
+router.post('/api/locations/:chip_id', LocationController.addLocation);
+router.get('/api/locations/:chip_id', LocationController.getByChipId);
+router.put('/api/locations/:chip_id', LocationController.updateLocation);
+router.delete('/api/locations/:chip_id', LocationController.deleteLocation);
 
 export default router;

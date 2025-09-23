@@ -30,7 +30,7 @@ class Users {
 
     async getByEmail(email){
         const collection = await this.getCollection();
-        return await collection.findOne({ email }) || null;
+        return await collection.findOne({ email });
     }
 
     async update(id, updateFields){

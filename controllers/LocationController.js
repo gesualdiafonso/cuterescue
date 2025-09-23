@@ -1,16 +1,16 @@
-import LocationService from "../services/useLocationService";
+import { locationService } from '../services/index.js';
 
 class LocationController{
     async getAll(req, res){
         try{
-            const locations = await LocationService.getAllLocations();
+            const locations = await locationService.getAllLocations();
             res.json(locations);
         } catch(err){
             res.status(500).json({ error: 'Erro al cargar las localizaciones' });
         }
     }
 
-    async create(req, res){
+    async addLocation(req, res){
         const { chip_id, latitude, longitude, timestamp } = req.body;
         // Validación básica
         if (!chip_id || latitude === undefined || longitude === undefined || !timestamp) {
@@ -20,7 +20,7 @@ class LocationController{
             });
         }
         try {
-            const newLocation = await LocationService.createLocation({
+            const newLocation = await locationService.createLocation({
                 chip_id, 
                 latitude, 
                 longitude, 
@@ -36,7 +36,7 @@ class LocationController{
     async getByChipId(req, res){
         const { chip_id } = req.params;
         try{
-            const location = await LocationService.getLocationsByChipId(chip_id);
+            const location = await locationService.getLocationsByChipId(chip_id);
             if(!location){
                 return res.status(404).json({ error: 'Localización no fue encontrada' });
             }
@@ -46,9 +46,9 @@ class LocationController{
         }
     }
 
-    async update(req, res){
+    async updateLocation(req, res){
         try {
-            const updatedLocation = await LocationService.updateLocation(req.params.chip_id, req.body);
+            const updatedLocation = await locationService.updateLocation(req.params.chip_id, req.body);
             if(!updatedLocation){
                 return res.status(404).json({ error: 'Localización no fue encontrada para actualizar' });
             }
@@ -58,9 +58,9 @@ class LocationController{
         }
     }
 
-    async delete(req, res){
+    async deleteLocation(req, res){
         try {
-            const deleted = await LocationService.deleteLocation(req.params.chip_id);
+            const deleted = await locationService.deleteLocation(req.params.chip_id);
             if(!deleted){
                 return res.status(404).json({ error: 'Localización no fue encontrada para eliminar' });
             }

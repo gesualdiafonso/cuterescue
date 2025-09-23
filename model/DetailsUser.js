@@ -1,6 +1,5 @@
 import clientPromise from '../services/useConnection.js';
 
-
 class DetailsUser
 {
    

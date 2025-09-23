@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import User from '../models/User.js';
+import User from '../model/Users.js';
 
 class UserService
 {
@@ -20,15 +20,15 @@ class UserService
         return await bcrypt.compare(password, user.password);
     }
 
-    async create({ email, password, activo = true }){
+    async createUser({ email, password, activo = true }){
 
-        const existingUser = await this.userModel.getByEmail(fields.email);
+        const existingUser = await this.userModel.getByEmail(email);
         if(existingUser){
             throw new Error('Email esta en uso');
         }
 
         const uniqueId = crypto.randomBytes(8).toString('hex');
-        const hashedPassword = await bcrypt.hash(fields.password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const satus = activo ? 'active' : 'inactive';
 
@@ -51,7 +51,7 @@ class UserService
         return await this.userModel.getByEmail(email);
     }
 
-    async updated( id, updateFields){
+    async updateUser( id, updateFields){
         if (updateFields.password){
             updateFields.password = await bcrypt.hash(updateFields.password, 10);
         }
@@ -68,4 +68,4 @@ class UserService
 
 }
 
-export default new UserService;
+export default UserService;

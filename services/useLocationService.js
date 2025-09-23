@@ -1,9 +1,13 @@
 import Location from '../model/Location.js';
-import PetService from './usePetService.js';
 
 class LocationService {
     constructor(){
         this.locationModel = new Location();
+        this.petService = null;
+    }
+
+    setPetService(petServiceInstance){
+        this.petService = petServiceInstance;
     }
 
     async getAllLocations(){
@@ -22,10 +26,10 @@ class LocationService {
             timestamp: new Date().toISOString(),
         };
 
-        await this.locationModel.addLocation(newLocation);
+        await this.locationModel.add(newLocation);
 
         //Actualiza el ultima_localizacion en el pet
-        await PetService.updatePetByChipId(chip_id, {
+        await this.petService.updatePetByChipId(chip_id, {
             ultima_localizacion: newLocation
         });
 
@@ -33,13 +37,13 @@ class LocationService {
     }
 
     async updateLocation(chip_id, updates){
-        const updatedLocation = await this.locationModel.updateLocation(chip_id, {
+        const updatedLocation = await this.locationModel.update(chip_id, {
             ...updates,
             timestamp: new Date().toISOString(),
         });
 
         if(updatedLocation){
-            await PetService.updatePetByChipId(chip_id, {
+            await this.petService.updatePetByChipId(chip_id, {
                 ultima_localizacion: updatedLocation
             });
         }
@@ -48,9 +52,9 @@ class LocationService {
     }
 
     async deleteLocation(chip_id){
-        const deleted = await this.locationModel.deleteLocation(chip_id);
+        const deleted = await this.locationModel.delete(chip_id);
         return deleted;
     }
 }
 
-export default new LocationService();
+export default LocationService;
