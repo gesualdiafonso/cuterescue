@@ -11,9 +11,9 @@ class LocationController{
     }
 
     async addLocation(req, res){
-        const { chip_id, latitude, longitude, timestamp } = req.body;
+        const { chip_id, lat, lng } = req.body;
         // Validación básica
-        if (!chip_id || latitude === undefined || longitude === undefined || !timestamp) {
+        if (!chip_id || lat === undefined || lng === undefined) {
             return res.status(400).json({ 
                 error: "Campos obrigatórios faltando", 
                 data: req.body 
@@ -22,8 +22,8 @@ class LocationController{
         try {
             const newLocation = await locationService.createLocation({
                 chip_id, 
-                latitude, 
-                longitude, 
+                lat, 
+                lng, 
                 timestamp
             });
 
@@ -47,13 +47,24 @@ class LocationController{
     }
 
     async updateLocation(req, res){
+        const { chip_id } = req.params;
+        if (!chip_id) {
+            return res.status(404).json({ error: 'chip_id no fue encontrado' });
+        }
+        const { lat, lng } = req.body;
+        if(lat === undefined || lng === undefined){
+            return res.status(400).json({ error: 'Campos lat y lng son obligatórios' });
+        }
+        const updateFields = { lat, lng };
         try {
-            const updatedLocation = await locationService.updateLocation(req.params.chip_id, req.body);
+            const updatedLocation = await locationService.updateLocation(chip_id, updateFields);
             if(!updatedLocation){
-                return res.status(404).json({ error: 'Localización no fue encontrada para actualizar' });
+                console.error(`Location con id ${chip_id}, no fue encontrada para actualizar`, updateFields);
+                return res.status(404).json({ error: `Location con id ${chip_id}, no fue encontrada` });
             }
-            res.json(updatedLocation);
+            res.json({ message: 'Localización actualizada con éxito', location: updatedLocation });
         } catch (error) {
+            console.log(error);
             res.status(500).json({ error: `Erro al actualizar la localización: ${error.message}` });
         }
     }

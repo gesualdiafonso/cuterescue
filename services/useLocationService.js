@@ -26,27 +26,44 @@ class LocationService {
             timestamp: new Date().toISOString(),
         };
 
-        await this.locationModel.add(newLocation);
+        // actualiza se existe, insere si no
+        const result = await this.locationModel.getCollection().findOneAndUpdate(
+            {chip_id},
+            { $set: newLocation},
+            { upsert: true, returnDocument: 'after' }
+        );
+        
+        const savedLocation = result.value;
+
+
+        // await this.locationModel.add(newLocation);
 
         //Actualiza el ultima_localizacion en el pet
-        await this.petService.updatePetByChipId(chip_id, {
-            ultima_localizacion: newLocation
-        });
+        if(this.petService){
+            await this.petService.updatePetByChipId(chip_id, {ultima_localizacion: savedLocation})
+        }
+        // await this.petService.updatePetByChipId(chip_id, {
+        //     ultima_localizacion: newLocation
+        // });
 
-        return newLocation;
+        return savedLocation;
     }
 
-    async updateLocation(chip_id, updates){
-        const updatedLocation = await this.locationModel.update(chip_id, {
-            ...updates,
+    async updateLocation(chip_id, updatedFields){
+        const fieldsToUpdate =
+        {
+            ...updatedFields,
             timestamp: new Date().toISOString(),
-        });
-
-        if(updatedLocation){
-            await this.petService.updatePetByChipId(chip_id, {
-                ultima_localizacion: updatedLocation
-            });
         }
+        const updatedLocation = await this.locationModel.update(chip_id, fieldsToUpdate);
+
+        // Se não encontrou a location, retorne null para o controller responder 404
+        if (!updatedLocation) return null;
+
+        if (this.petService){
+            await this.petService.updatePetByChipId(chip_id, {ultima_localizacion: updatedLocation})
+        }
+        // await this.petService.updatePetByChipId(chip_id, { ultima_localizacion: updatedLocation });
 
         return updatedLocation;
     }

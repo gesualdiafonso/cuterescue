@@ -78,13 +78,18 @@ class PetService {
 
     async updatePetByChipId(chip_id, updatedFields) {
         const pet = await this.getPetByChipId(chip_id);
-        if (!pet) return null;
-
-        if (updatedFields.ultima_localizacion){
-            await this.locationService.updateLocation(chip_id, updatedFields.ultima_localizacion);
+        if (!pet) {
+            console.error('Pet no encontrado para chip_id:', chip_id);
+            return null;
         }
 
-        return await this.pets.update(pet.id, updatedFields);
+        const updatedPet = await this.pets.update(pet.id, updatedFields);
+        
+        if (updatedPet) {
+            console.log('Pet atualizado con sucesso:', updatedPet.id);
+        }
+        
+        return updatedPet;
     }
 
     async deletePet(id){

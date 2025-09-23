@@ -44,6 +44,16 @@ class Pet {
         return result.value;
     }
 
+    async updateLocation(chip_id, updatedFields){
+        const collection = await this.getCollection();
+        const result = await collection.findOneAndUpdate(
+            { chip_id },
+            { $set: updatedFields },
+            { returnDocument: 'after' }
+        );
+        return result.value;
+    }
+
     async delete(id){
         const collection = await this.getCollection();
         return await collection.deleteOne({ id });
