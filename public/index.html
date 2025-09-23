@@ -24,7 +24,7 @@
             <h1>
               API Geolocalización de Pets
             </h1>
-            <p>Gestión de Pets, Dueños y Localización en tiempo real</p>
+            <p>Gestión de Pets, Dueños y Localización, <strong>por ahora solo se maneja en tiempo 0 absoluto cuando creas el pet. AL futuro se manejará en tiempo real.</strong></p>
           </div>
         </div>
       </div>
@@ -35,6 +35,7 @@
             como la geolocalización de los animales en tiempo real.
             Toda la información está almacenada en <strong>MongoDB Atlas</strong> y los endpoints cuentan
             con validaciones de datos.
+            <strong>por ahora solo se maneja en tiempo 0 absoluto cuando creas el pet. Al futuro se manejará en tiempo real.</strong>
           </p>
         </div>
       </div>
@@ -53,13 +54,15 @@
             Esta API REST provee operaciones CRUD para:
           </p>
           <ul>
-            <li><strong>Pets:</strong> Registro, actualización, búsqueda y eliminación de mascotas, con
+            <li><strong>Usuarios:</strong> Creación de usuario (email y contraseña)</li>
+            <li><strong>Dueños:</strong> Creación de detalles adicionales del usuarios como:
+            (nombre, teléfono, ubicación).</li>
+            <li><strong>Pets:</strong> Registro de las pets, actualización, búsqueda y eliminación de mascotas, con
               identificación por <code>chip_id</code>.</li>
-            <li><strong>Dueños:</strong> Creación de usuario (email y contraseña) + detalles adicionales
-              (nombre, teléfono, ubicación).</li>
             <li><strong>Localización:</strong> Creación automática en la posición inicial (0), registro de
               nuevas coordenadas y consulta de histórico.</li>
           </ul>
+          <span>⚡ Recordamos que por ahora solo se maneja en tiempo 0 absoluto cuando creas el pet. Al futuro se manejará en tiempo real. Y cada data tiene su propio <code>id</code></span>
         </div>
       </div>
     </section>
@@ -81,11 +84,12 @@
           </p>
 
           <ul>
-            <li><strong>Pets:</strong> Permite registrar, consultar, actualizar y eliminar mascotas usando su
-              <code>chip_id</code>.</li>
-            <li><strong>Dueños:</strong> Permite la creación de usuarios y la gestión de sus datos (nombre, email,
+            <li><strong>Rota /user:</strong> Permite la creación de usuarios y la gestión de sus datos (email y contraseña)</li>
+            <li><strong>Rota /user/:userId/details:</strong> Permite la creación de usuarios y la gestión de sus datos (nombre, email,
               teléfono, ubicación, etc.).</li>
-            <li><strong>Localización:</strong> Permite registrar coordenadas y consultar el historial de movimientos de
+            <li><strong>Rota /pets:</strong> Permite registrar, consultar, actualizar y eliminar mascotas usando su
+              <code>chip_id</code>.</li>
+            <li><strong>Rota /locations:</strong> consultar el historial de movimientos de
               cada mascota.</li>
           </ul>
 
@@ -110,55 +114,37 @@
         </div>
 
         <div class="accordion" id="endpointsAccordion">
-
-          <!-- Pets -->
+          <!-- Usuarios -->
           <div class="accordion-item">
-            <h4 class="accordion-header" id="headingPets">
-              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePets">
-                🐾 Pets
+            <h4 class="accordion-header" id="headingUsers">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseUsers">
+                👤 Usuarios
               </button>
             </h4>
-            <div id="collapsePets" class="accordion-collapse collapse show" data-bs-parent="#endpointsAccordion">
+            <div id="collapseUsers" class="accordion-collapse collapse" data-bs-parent="#endpointsAccordion">
               <div class="accordion-body">
                 <ul>
-                  <li><a href="/api/pets" target="_blank"><code>GET /api/pets</code></a> → Listar todas las mascotas</li>
-                  <li><a href="/api/pets/61a35ddb0c2e1906" target="_blank"><code>GET /api/pets/:id</code></a> → Obtener mascota por ID</li>
-                  <li><code>POST /api/pets</code> → Crear nueva mascota</li>
+                  <li><a href="/api/users" target="_blank"><code>GET /api/users</code></a> → Listar todos los usuarios</li>
+                  <li><a href="/api/users/:id" target="_blank"><code>GET /api/users/:id</code></a> → Consultar usuario por ID</li>
+                  <li><code>POST /api/users</code> → Crear usuario (email y contraseña)</li>
                   <ul>
                     <li>
                       <span class="mt-3">📌 Ejemplo de respuesta (GET/POST)</span>
                     </li>
                     <li>
-                      <pre>
-                        <code class="language-json">{
-                          "_id": "68c9bb4aa8ccefaf3b7e998b",
-                          "id": "61a35ddb0c2e1906",
-                          "chip_id": "CHIP-6767999F15DE",
-                          "nombre": "Luna",
-                          "especie": "Perro",
-                          "raza": "Golden Retriever",
-                          "dueno_id": "faa530534b767b9e",
-                          "fecha_nacimiento": "2020-03-15",
-                          "edad": 5,
-                          "sexo": "Hembra",
-                          "color": "Dorado",
-                          "foto_url": "https://miapi.com/uploads/nina_new.png",
-                          "activo": true,
-                          "ultima_localizacion": {
-                            "lat": -34.6037,
-                            "lng": -58.3816,
-                            "timestamp": "2025-09-01T11:00:00Z"
-                          },
-                          "estado_salud": "Revisión veterinaria pendiente",
-                          "alertas": [],
-                          "collar_bateria": 87,
-                          "nivel_actividad": "Alta"
-                        }</code>
-                      </pre>
+                      <pre><code class="language-json">{
+                        "id": "hash-id",
+                        "email": "string",
+                        "password": true,
+                        "activo": true,
+                        "pets": []
+                      }</code></pre>
                     </li>
                   </ul>
-                  <li><code>PUT /api/pets/:id</code> → Actualizar datos de mascota</li>
-                  <li><code>DELETE /api/pets/:id</code> → Eliminar mascota</li>
+                  <li><code>POST /api/users/details</code> → Agregar detalles del dueño</li>
+                  <li><code>PUT /api/users/:id</code> → Actualizar datos del dueño</li>
+                  <li><code>DELETE /api/users/:id</code> → Eliminar dueño</li>
                 </ul>
               </div>
             </div>
@@ -201,6 +187,54 @@
                   <li><code>POST /api/users/details</code> → Agregar detalles del dueño</li>
                   <li><code>PUT /api/users/:id</code> → Actualizar datos del dueño</li>
                   <li><code>DELETE /api/users/:id</code> → Eliminar dueño</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pets -->
+          <div class="accordion-item">
+            <h4 class="accordion-header" id="headingPets">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePets">
+                🐾 Pets
+              </button>
+            </h4>
+            <div id="collapsePets" class="accordion-collapse collapse show" data-bs-parent="#endpointsAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li><a href="/api/pets" target="_blank"><code>GET /api/pets</code></a> → Listar todas las mascotas</li>
+                  <li><a href="/api/pets/:id" target="_blank"><code>GET /api/pets/:id</code></a> → Obtener mascota por ID</li>
+                  <li><code>POST /api/pets</code> → Crear nueva mascota (Todas las propiedades son obligatorias) y en ultima_localizacion se debe dejar vacio que se creeará automaticamente al crear la mascota.</li>
+                  <ul>
+                    <li>
+                      <span class="mt-3">📌 Ejemplo de respuesta (GET/POST)</span>
+                    </li>
+                    <li>
+                      <pre>
+                        <code class="language-json">{
+                          "id": "hash-id",
+                          "chip_id": "CHIP-HASH",
+                          "nombre": "string",
+                          "especie": "string",
+                          "raza": "string",
+                          "dueno_id": "hash-id",
+                          "fecha_nacimiento": "string",
+                          "edad": number,
+                          "sexo": "string",
+                          "color": "string",
+                          "foto_url": "string",
+                          "activo": true,
+                          "ultima_localizacion": {object},
+                          "estado_salud": "string",
+                          "alertas": [],
+                          "collar_bateria": number,
+                          "nivel_actividad": "string"
+                        }</code>
+                      </pre>
+                    </li>
+                  </ul>
+                  <li><code>PUT /api/pets/:id</code> → Actualizar datos de mascota</li>
+                  <li><code>DELETE /api/pets/:id</code> → Eliminar mascota</li>
                 </ul>
               </div>
             </div>
