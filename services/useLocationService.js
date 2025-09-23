@@ -49,24 +49,33 @@ class LocationService {
         return savedLocation;
     }
 
-    async updateLocation(chip_id, updatedFields){
-        const fieldsToUpdate =
-        {
-            ...updatedFields,
-            timestamp: new Date().toISOString(),
-        }
-        const updatedLocation = await this.locationModel.update(chip_id, fieldsToUpdate);
-
-        // Se não encontrou a location, retorne null para o controller responder 404
+    async updateLocation(chip_id, updates){
+        // A própria Location já atualiza a última localização no pet
+        const updatedLocation = await this.locationModel.update(chip_id, updates);
+    
         if (!updatedLocation) return null;
-
-        if (this.petService){
-            await this.petService.updatePetByChipId(chip_id, {ultima_localizacion: updatedLocation})
-        }
-        // await this.petService.updatePetByChipId(chip_id, { ultima_localizacion: updatedLocation });
-
+        
         return updatedLocation;
     }
+
+    // async updateLocation(chip_id, updatedFields){
+    //     const fieldsToUpdate =
+    //     {
+    //         ...updatedFields,
+    //         timestamp: new Date().toISOString(),
+    //     }
+    //     const updatedLocation = await this.locationModel.update(chip_id, fieldsToUpdate);
+
+    //     // Se não encontrou a location, retorne null para o controller responder 404
+    //     if (!updatedLocation) return null;
+
+    //     if (this.petService){
+    //         await this.petService.updatePetByChipId(chip_id, {ultima_localizacion: updatedLocation})
+    //     }
+    //     // await this.petService.updatePetByChipId(chip_id, { ultima_localizacion: updatedLocation });
+
+    //     return updatedLocation;
+    // }
 
     async deleteLocation(chip_id){
         const deleted = await this.locationModel.delete(chip_id);

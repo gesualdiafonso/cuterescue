@@ -48,24 +48,22 @@ class LocationController{
 
     async updateLocation(req, res){
         const { chip_id } = req.params;
-        if (!chip_id) {
-            return res.status(404).json({ error: 'chip_id no fue encontrado' });
-        }
-        const { lat, lng } = req.body;
-        if(lat === undefined || lng === undefined){
-            return res.status(400).json({ error: 'Campos lat y lng son obligatórios' });
-        }
-        const updateFields = { lat, lng };
+        const updates = req.body; // CORRIGIDO: estava 'upadtes'
+    
         try {
-            const updatedLocation = await locationService.updateLocation(chip_id, updateFields);
-            if(!updatedLocation){
-                console.error(`Location con id ${chip_id}, no fue encontrada para actualizar`, updateFields);
-                return res.status(404).json({ error: `Location con id ${chip_id}, no fue encontrada` });
+            const updated = await locationService.updateLocation(chip_id, updates);
+    
+            if (!updated){
+                return res.status(404).json({
+                    error: `Location con id ${chip_id}, no fue encontrada`
+                });
             }
-            res.json({ message: 'Localización actualizada con éxito', location: updatedLocation });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: `Erro al actualizar la localización: ${error.message}` });
+    
+            res.json(updated);
+        } catch (error){
+            res.status(500).json({
+                error: `Error al actualizar ubicación: ${error.message}`
+            });
         }
     }
 

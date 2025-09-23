@@ -33,12 +33,26 @@ class Location{
 
     async update(chip_id, updateFields){
         const collection = await this.getCollection();
+    
+        // Atualiza a localização
         const result = await collection.findOneAndUpdate(
-            { chip_id}, 
-            { $set: updateFields },
+            { chip_id }, 
+            { $set: { ...updateFields, timestamp: new Date().toISOString() } },
             { returnDocument: 'after' }
         );
-
+    
+        // Se encontrou a localização, atualiza a última localização do pet
+        if (result.value) {
+            const client = await clientPromise;
+            const db = client.db('cuterescue');
+            const petCollection = db.collection('pets');
+    
+            await petCollection.updateOne(
+                { chip_id },
+                { $set: { ultima_localizacion: result.value } }
+            );
+        }
+    
         return result.value;
     }
 
