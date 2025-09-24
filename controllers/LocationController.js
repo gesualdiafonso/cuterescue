@@ -48,7 +48,7 @@ class LocationController{
 
     async updateLocation(req, res){
         const { chip_id } = req.params;
-        const updates = req.body; // CORRIGIDO: estava 'upadtes'
+        const updates = req.body; 
     
         try {
             const updated = await locationService.updateLocation(chip_id, updates);

@@ -18,7 +18,8 @@ class LocationService {
         return await this.locationModel.getByChipId(chip_id);
     }
 
-    async createLocation(chip_id, coords){
+    async createLocation(chip_id, coords = { lat: 0, lng: 0 }) {
+        // Cria objeto de localização garantindo timestamp
         const newLocation = {
             chip_id,
             lat: coords.lat,
@@ -26,25 +27,25 @@ class LocationService {
             timestamp: new Date().toISOString(),
         };
 
-        // actualiza se existe, insere si no
-        const result = await this.locationModel.getCollection().findOneAndUpdate(
-            {chip_id},
-            { $set: newLocation},
-            { upsert: true, returnDocument: 'after' }
+        const collection = await this.locationModel.getCollection();
+
+        // Atualiza se existe, insere se não
+        const result = await collection.findOneAndUpdate(
+            { chip_id },
+            { $set: newLocation },
+            { upsert: true, returnDocument: 'after' } // use returnOriginal: false se driver antigo
         );
-        
-        const savedLocation = result.value;
 
-
-        // await this.locationModel.add(newLocation);
-
-        //Actualiza el ultima_localizacion en el pet
-        if(this.petService){
-            await this.petService.updatePetByChipId(chip_id, {ultima_localizacion: savedLocation})
+        // Se result.value for null, busca manualmente
+        let savedLocation = result.value;
+        if (!savedLocation) {
+            savedLocation = await collection.findOne({ chip_id });
         }
-        // await this.petService.updatePetByChipId(chip_id, {
-        //     ultima_localizacion: newLocation
-        // });
+
+        // Atualiza ultima_localizacion no pet se petService estiver disponível
+        if (this.petService && savedLocation) {
+            await this.petService.updatePetByChipId(chip_id, { ultima_localizacion: savedLocation });
+        }
 
         return savedLocation;
     }

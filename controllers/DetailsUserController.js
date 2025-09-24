@@ -1,4 +1,5 @@
 import DetailsUserService from "../services/useDetailsUser.js";
+import { validateDetailsUser } from "../types/UserType.js";
 
 const detrailsService = new DetailsUserService();
 
@@ -27,27 +28,24 @@ class DetailsUserController{
 
     async create(req, res){
         const { userId } = req.params;
-        const { nombre, telefono, ubicacion, pets=[]} = req.body;
-        try {
-            if (!userId || !nombre || !telefono || !ubicacion) {
-                return res.status(400).json({ 
-                    error: "Campos obrigatórios faltando", 
-                    data: req.body 
-                });
-            }
+        const { nombre, telefono, ubicacion, pets } = req.body;
 
-            // validar si existe el user
-            const user = await detrailsService.getByUserId(userId);
-            if(user){
-                return res.status(400).json({ error: 'Los detalles del usuario ya existen' });
-            }
-            
-            const newDetails = await detrailsService.create(userId, { nombre, telefono, ubicacion, pets });
+        // pets no es obligatorio, si no viene => array vacío
+        const detailsData = { userId, nombre, telefono, ubicacion, pets: pets || [] };
+
+        // Validación con tipagens
+        const { isValid, errors } = validateDetailsUser(detailsData);
+        if (!isValid) {
+            return res.status(400).json({ error: "Validación fallida", details: errors });
+        }
+
+        try {
+            const newDetails = await detrailsService.create(userId, detailsData);
             res.status(201).json(newDetails);
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
-    }
+}
 
     async update(req, res){
         const { userId } = req.params;

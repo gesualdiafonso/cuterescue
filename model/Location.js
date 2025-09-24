@@ -1,8 +1,5 @@
 
 import clientPromise from '../services/useConnection.js';
-
-
-
 class Location{
 
     constructor(){
@@ -45,6 +42,7 @@ class Location{
             const db = client.db('cuterescue');
             const petCollection = db.collection('pets');
 
+            // Actualiza el campo ultima_localizacion en pet correposdiente
             await petCollection.updateOne(
                 { chip_id },
                 { $set: { ultima_localizacion: result.value } }

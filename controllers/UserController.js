@@ -1,4 +1,5 @@
 import UserService from '../services/UserService.js';
+import { validateUser } from '../types/UserType.js';
 
 class UserController {
     async getAll(req, res) {
@@ -40,13 +41,13 @@ class UserController {
     async createUser(req, res) {
         try {
             const { email, password } = req.body;
-            if ( !email || !password) {
-                return res.status(400).json({ error: 'Campos obrigatórios faltando', data: req.body });
-            } else if (password.length < 6) {
-                return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
-            } else if (!/\S+@\S+\.\S+/.test(email)) {
-                return res.status(400).json({ error: 'Email no es válido' });
+            
+            // Validación de los campos
+            const { isValid, errors } = validateUser(req.body);
+            if(!isValid) {
+                return res.status(400).json({ error: errors});
             }
+
             const userService = new UserService();
             const newUser = await userService.createUser({ email, password });
             res.status(201).json(newUser);
@@ -66,36 +67,15 @@ class UserController {
             if (!existingUser) {
                 return res.status(404).json({ error: 'Usuario no encontrado' });
             }
-
-            // criamos el objeto con los campos a actualizar
-            const updateFields = {};
-
-                    // Validar email, se informado
-            if (email !== undefined) {
-                if (email === '' || !/\S+@\S+\.\S+/.test(email)) {
-                    return res.status(400).json({ error: 'Email no es válido' });
-                }
-                updateFields.email = email;
-            }
-
-            // Validar senha, se informada
-            if (password !== undefined) {
-                if (password === '' || password.length < 6) {
-                    return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
-                }
-                updateFields.password = password; // o UserService já faz o hash
-            }
-
-            // Adicionar outros campos extras, se existirem
-            Object.assign(updateFields, rest);
-
-            // Se nenhum campo foi passado
-            if (Object.keys(updateFields).length === 0) {
-                return res.status(400).json({ error: 'No se enviaron campos para actualizar' });
+            // Validar email, se informado
+            
+            const { isValid, errors } = validateUser(req.body, []);
+            if(!isValid){
+                return res.status(400).json({ error: errors })
             }
 
             // Atualizar
-            const updatedUser = await userService.updateUser(id, updateFields);
+            const updatedUser = await userService.updateUser(id, { email, password, ...rest });
 
             res.status(200).json({
                 message: 'Usuario actualizado con éxito',
