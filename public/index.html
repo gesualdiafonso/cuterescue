@@ -17,7 +17,7 @@
 <body>
   <main>
 
-    <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+    <section class="container d-flex flex-column flex-lg-row justify-content-center align-items-center cs-container " id="top">
       <div class="cs-background-img w-100 h-100 p-5">
         <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
           <div class="cs-hero">
@@ -42,7 +42,7 @@
     </section>
 
     <!-- Sobre la API -->
-    <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+    <section class="container d-flex flex-column flex-lg-row justify-content-center align-items-center cs-container " id="sobre-la-api">
       <div class="cs-background-img w-100 h-100 p-5">
         <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
           <h2 class="text-start">¿Qué hace esta API?</h2>
@@ -68,7 +68,7 @@
     </section>
 
     <!-- Sobree los ENDPOITS -->
-    <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+    <section class="container d-flex flex-column flex-lg-row justify-content-center align-items-center cs-container " id="endpoints">
       <div class="cs-background-img w-100 h-100 p-5">
         <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
           <h3>Endpoints de la API</h3>
@@ -98,7 +98,7 @@
 
 
     <!-- Como acceder a los Endpoits -->
-    <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+    <section class="container d-flex flex-column flex-lg-row justify-content-center align-items-center cs-container " id="como-acceder">
       <div class="cs-background-img w-100 h-100 p-5 ">
         <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
           <h3 class="text-center mb-4">Cómo acceder a los Endpoints</h3>
@@ -108,8 +108,11 @@
         <div class="w-100 h-100 p-5">
           <p class="text-center">
             Cada <strong>endpoint</strong> es una ruta específica para interactuar con un recurso.
-            Los métodos soportados son <code>GET</code>, <code>POST</code>, <code>PUT</code> y
+            Los métodos soportados son <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code> y
             <code>DELETE</code>.
+          </p>
+          <p>
+            <strong class="text-warning text-uppercase">Observación:</strong> Los campos de Id creado en el usuarios son unicos y van a reflejar en comunicación de los demás campos como: <strong>userId</strong>, <strong>dueno_id</strong>, estes campos son obligatorios y de recuerdo dado que son campos hasheados en hex. <strong>No comunicamos nuestros id con _id.</strong>
           </p>
         </div>
 
@@ -155,38 +158,35 @@
             <h4 class="accordion-header" id="headingOwners">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                 data-bs-target="#collapseOwners">
-                👤 Dueños
+                👤 Detalles Usuarios | DetailsUser
               </button>
             </h4>
             <div id="collapseOwners" class="accordion-collapse collapse" data-bs-parent="#endpointsAccordion">
               <div class="accordion-body">
                 <ul>
-                  <li><a href="/api/users" target="_blank"><code>GET /api/users</code></a> → Listar todos los dueños</li>
-                  <li><a href="/api/users/faa530534b767b9e" target="_blank"><code>GET /api/users/:id</code></a> → Consultar dueño por ID</li>
-                  <li><code>POST /api/users</code> → Crear usuario (email y contraseña)</li>
+                  <li><a href="/api/users" target="_blank"><code>GET /api/users</code></a> → Listar todos los detalles de los usuarios creado</li>
+                  <li><a href="/api/users/faa530534b767b9e" target="_blank"><code>GET /api/users/:userId/details</code></a> → Consultar detalles según el Id </li>
+                  <li><code>POST /api/users/:userId/details</code> → Crear los detalles de los usuario (llevar userId (id), nombre, telefono, ubicacion pets), en pets de inicio es <strong class="text-danger text-uppercase">vacio</strong></li>
                   <ul>
                     <li>
                       <span class="mt-3">📌 Ejemplo de respuesta (GET/POST)</span>
                     </li>
                     <li>
-                      <pre><code class="language-json">{
-                        "_id": "68c9bb4aa8ccefaf3b7e998a",
-                        "id": "faa530534b767b9e",
-                        "nombre": "Carlos Gómez",
-                        "email": "carlosg@example.com",
-                        "telefono": "+54 9 11 5555-1234",
-                        "ubicacion": "Buenos Aires, Argentina",
-                        "activo": true,
-                        "password": "$2b$10$uikTqWMCPDDKMStk0/SGbO4b2cy5t803QrtHiYlisg2./C5YQR2tq",
-                        "pets": [
-                          "61a35ddb0c2e1906"
-                        ]
-                      }</code></pre>
+                      <pre>
+                          <code class="language-json">
+                            {
+                            "userId": "stringId",
+                            "nombre": "string(required)",
+                            "telefono": "string(required)",
+                            "ubicacion": "string(required|)",
+                            "pets": []
+                          }
+                        </code>
+                    </pre> 
                     </li>
                   </ul>
-                  <li><code>POST /api/users/details</code> → Agregar detalles del dueño</li>
-                  <li><code>PUT /api/users/:id</code> → Actualizar datos del dueño</li>
-                  <li><code>DELETE /api/users/:id</code> → Eliminar dueño</li>
+                  <li><code>PUT /api/users/:userId/details</code> → Actualizar detalles del usuario</li>
+                  <li><code>DELETE /api/users/:userId/details</code> → Elimina los detalles del usuario, <strong class="text-danger text-uppercase">Aviso:</strong> <strong>No borres el detalle sin antes borrar al pet que está asignado a lo usuario!</strong></li>
                 </ul>
               </div>
             </div>
@@ -199,12 +199,18 @@
                 🐾 Pets
               </button>
             </h4>
-            <div id="collapsePets" class="accordion-collapse collapse show" data-bs-parent="#endpointsAccordion">
+            <div id="collapsePets" class="accordion-collapse collapse" data-bs-parent="#endpointsAccordion">
               <div class="accordion-body">
                 <ul>
-                  <li><a href="/api/pets" target="_blank"><code>GET /api/pets</code></a> → Listar todas las mascotas</li>
-                  <li><a href="/api/pets/:id" target="_blank"><code>GET /api/pets/:id</code></a> → Obtener mascota por ID</li>
-                  <li><code>POST /api/pets</code> → Crear nueva mascota (Todas las propiedades son obligatorias) y en ultima_localizacion se debe dejar vacio que se creeará automaticamente al crear la mascota.</li>
+                  <li>
+                    <a href="/api/pets" target="_blank"><code>GET /api/pets</code></a> → Listar todas las mascotas existente en la base de datos</li>
+                  <li>
+                    <a href="/api/pets/:id" target="_blank"><code>GET /api/pets/:id</code></a> → Obtener mascota por ID
+                  </li>
+                  <li>
+                    <code>POST /api/pets</code> → Crear nueva mascota (Todas las propiedades son obligatorias) y en <strong class="text-danger text-uppercase">Aviso:</strong> en el campo de ultima_localizacion <strong>se debe dejar vacio que se creeará automaticamente al crear la mascota</strong>.
+                    <span><strong class="text-warning">Observación Importante:</strong> en campo <strong>dueno_id se debe traer el id del userId creado</strong>, si no lo recuerdas puedes volver al <code>GET /api/user</code> para buscar el id del ultimo usuario creado</span>
+                  </li>
                   <ul>
                     <li>
                       <span class="mt-3">📌 Ejemplo de respuesta (GET/POST)</span>
@@ -233,8 +239,9 @@
                       </pre>
                     </li>
                   </ul>
+                  <li><code>GET /api/pets/:chip_id</code> → Va poder buscar la mascota según el campo <strong>chip_id</strong> generado del POST</li>
                   <li><code>PUT /api/pets/:id</code> → Actualizar datos de mascota</li>
-                  <li><code>DELETE /api/pets/:id</code> → Eliminar mascota</li>
+                  <li><code>DELETE /api/pets/:id</code> → Eliminar mascota, que por defecto elemina del detalles del usuario</li>
                 </ul>
               </div>
             </div>
@@ -251,8 +258,8 @@
             <div id="collapseLocation" class="accordion-collapse collapse" data-bs-parent="#endpointsAccordion">
               <div class="accordion-body">
                 <ul>
-                  <li><a href="/api/locations" target="_blank"><code>POST /api/locations</code></a> → Registrar nueva localización</li>
-                  <li><a href="/api/locations/CHIP-6767999F15DE"><code>GET /api/locations/:chip_id</code></a> → Consultar histórico por chip_id</li>
+                  <li><a href="/api/locations" target="_blank"><code>GET /api/locations</code></a> → Busca a todas las ultimas ubicación creadas en el punto 0</li>
+                  <li><a href="/api/locations/CHIP-6767999F15DE"><code>GET /api/locations/:chip_id</code></a> → Consultar histórico por chip_id de la mascota</li>
                 </ul>
                 <p>
                   ⚡ Al crear un <strong>Pet</strong>, se genera automáticamente una localización inicial
@@ -266,7 +273,7 @@
     </section>
 
     <!-- Presentación para el fin del Proyecto -->
-    <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+    <section class="container d-flex flex-column flex-lg-row justify-content-center align-items-center cs-container " id="presentacion-final">
       <div class="cs-background-img w-100 h-100 p-5 ">
         <div class="w-100 h-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
           <h2 class="text-center mb-4">Presentación del Proyecto Final</h2>
@@ -295,8 +302,8 @@
     </section>
 
     <footer>
-      <!-- Sobre la API -->
-      <section class="container d-flex flex-column flex-md-row justify-content-center align-items-center cs-container ">
+      <!-- Fin-->
+      <section class="container d-flex flex-column flex-lg-row justify-content-center align-items-center cs-container " id="footer">
         <div class="cs-background-img w-100 h-100 p-5 ">
           <div class="w-100 p-5 d-flex flex-column justify-content-center align-items-center animate-on-scroll">
             <div class="cs-hero">
@@ -325,6 +332,7 @@
     integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
     crossorigin="anonymous"></script>
 
+    <script src="scripts/navbar.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const elements = document.querySelectorAll(".animate-on-scroll");

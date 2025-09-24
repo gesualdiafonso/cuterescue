@@ -18,8 +18,72 @@ body {
 main {
   max-width: 1040px;
   min-width: 350px;
-  margin: 0 auto;
+  margin-left: 240px;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-right: auto;
   padding: 0 1.2rem;
+}
+
+#navContainer{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #1c293b;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 10px;
+  gap: 15px;
+  z-index: 1000;
+}
+
+#backgroundLogo{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url('/image/LogoCuteRescue_logoBlaco.png');
+  /* background-color: #007dc4; */
+  background-size: cover;
+  background-position: -450px;
+  background-repeat: no-repeat;
+  z-index: -10;
+  opacity: 0.4;
+}
+
+#sideNav{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#sideNav a{
+  color: #ffefdb;
+  text-decoration: none;
+  font-size: x-large;
+  font-weight: 500;
+  margin: 5px 0;
+  display: block;
+  transition: all 0.3s ease-in-out;
+}
+
+#sideNav a:hover{
+  color: #ffaa2e;
+  transform: translateX(5px);
+}
+
+#sideNav a.active{
+  color: #ffaa2e;
+  transform: translateX(5px);
+}
+
+#sideNav a.active:hover{
+  color: #ffaa2e;
 }
 
 /* Títulos com destaque */
@@ -132,7 +196,7 @@ a {
   /* ====== RESPONSIVIDADE ====== */
 
 /* Telas menores que tablets */
-@media (max-width: 768px) {
+@media (max-width: 1020px) {
     h1 {
       font-size: 2rem;
     }
@@ -146,7 +210,8 @@ a {
     }
   
     .cs-container {
-      height: auto; /* remove 100vh em mobile */
+      width: 100% !important;
+      height: 100%; /* remove 100vh em mobile */
       flex-direction: column;
       text-align: center;
       padding: 2rem 1rem;
