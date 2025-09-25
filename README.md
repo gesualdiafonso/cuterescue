@@ -15,6 +15,118 @@ API REST - Trabajo Práctico de Aplicaciones Híbridas y BackEnd Test para Proye
 
 ---
 
+## 🐾 Test de la Api
+⚠️ **Observación:**  
+Los campos de Id creados en los usuarios son únicos y reflejan en la comunicación con otros recursos como: **userId**, **dueno_id**.  
+Son obligatorios y están hasheados en **hex**.  
+**No se comunica con `_id`.**
+
+---
+
+### 👤 Usuarios
+- **GET /api/users** → Listar todos los usuarios  
+- **GET /api/users/:id** → Consultar usuario por ID  
+- **GET /api/users/email/:id** → Consultar usuario por Email  
+- **POST /api/users** → Crear usuario  
+- **PUT /api/user/:userId/details** → Actualiza el usuario 
+- **DELETE /api/user/:userId/details** → Deleta el usuario
+  ```json
+  {
+    "email": "string",
+    "password": "string"
+  }
+  ```
+  - Respuesta
+  ```json
+  {
+    "id": "hash-id",
+    "email": "string",
+    "password": "hash-string",
+    "activo": true,
+  }
+  ```
+
+### 🫡 Usuarios Details
+- **GET /api/details** → Listar todos los usuarios  
+- **POST /api/users/:userId/details** → Crear el detalles de usuarios 
+- **PUT /api/user/:userId/details** → Actualiza el detalles del usuario 
+- **DELETE /api/user/:userId/details** → Deleta el detalles de usuarios 
+  ```json
+  {
+    "userId": "hash-id",
+    "nombre": "string",
+    "telefono": "string",
+    "ubicacion": "string",
+    "pets": []
+  }
+  ```
+  - Respuesta
+  ```json
+  {
+    "userId": "hash-id",
+    "nombre": "string",
+    "telefono": "string",
+    "ubicacion": "string",
+    "pets": []
+  }
+  ```
+
+### 🐾 Pet
+- **GET /api/pets** → Listar todos los pets  
+- **GET /api/pets/:id** → Pega el pet por el ID
+- **GET /api/pets/chip/:chip_id** → Pega el pet por el valor chip_id
+- **POST /api/pets** → Crea el pet
+- **PUT /api/pets/:id** → Actualiza el pet 
+- **DELETE /api/pets/:id** → Deleta el pet
+  ```json
+  {
+    "chip_id": "CHIP-HASH",
+    "nombre": "string",
+    "especie": "string",
+    "raza": "string",
+    "dueno_id": "hash-id",
+    "fecha_nacimiento": "string",
+    "edad": 0,
+    "sexo": "string",
+    "color": "string",
+    "foto_url": "string",
+    "estado_salud": "string",
+    "collar_bateria": 100,
+    "nivel_actividad": "string"
+  }
+  ```
+  - Respuesta
+  ```json
+  {
+    "chip_id": "CHIP-HASH",
+    "nombre": "string",
+    "especie": "string",
+    "raza": "string",
+    "dueno_id": "hash-id",
+    "fecha_nacimiento": "string",
+    "edad": 0,
+    "sexo": "string",
+    "color": "string",
+    "foto_url": "string",
+    "estado_salud": "string",
+    "collar_bateria": 100,
+    "nivel_actividad": "string"
+  }
+  ```
+
+### 📍 Locations
+- **GET /api/locations** → Listar todos los pets  
+- **GET /api/locations/:chip_id** → Pega el pet por el ID
+  ```json
+  {
+    "chip_id": "CHIP-HASH",
+    "lat": 0,
+    "lng": 0,
+    "timestamp": "2025-09-25T00:00:00Z"
+  }
+  ```
+---
+
 ## 📌 Descripción del Proyecto
 
 La **Cute Rescue API** es el **punto de partida (fase 0)** de un ecosistema PetTech que busca garantizar la **seguridad, rastreabilidad y cuidado integral de mascotas**.  
