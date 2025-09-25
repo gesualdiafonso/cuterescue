@@ -127,6 +127,20 @@ Son obligatorios y están hasheados en **hex**.
   ```
 ---
 
+### Iniciar el proyecto
+  ```bash
+    npm start 
+  ```
+
+---
+
+### Variables de Entorno
+  ```bash
+    PORT=3000
+    MONGO_URI=mongodb+srv://cuterescue_admin:gJqOT3x6yMpsPgYR@cluster44489.erthep0.mongodb.net/cuterescue?retryWrites=true&w=majority&appName=Cluster44489
+  ```
+---
+
 ## 📌 Descripción del Proyecto
 
 La **Cute Rescue API** es el **punto de partida (fase 0)** de un ecosistema PetTech que busca garantizar la **seguridad, rastreabilidad y cuidado integral de mascotas**.  
