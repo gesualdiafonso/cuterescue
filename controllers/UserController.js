@@ -104,7 +104,7 @@ class UserController {
         const { id } = req.params;
         try {
             const userService = new UserService();
-            const deleted = await userService.deleteUser(id);
+            const deleted = await userService.delete(id);
             if (!deleted) {
                 return res.status(404).json({ error: 'Usuario no encontrado para eliminar' });
             }
