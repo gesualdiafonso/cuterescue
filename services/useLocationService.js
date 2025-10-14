@@ -51,32 +51,38 @@ class LocationService {
     }
 
     async updateLocation(chip_id, updates){
-        // A própria Location já atualiza a última localização no pet
         const updatedLocation = await this.locationModel.update(chip_id, updates);
-    
         if (!updatedLocation) return null;
-        
-        return updatedLocation;
+
+        // 🔔 Disparar alerta de movimento
+        if (updates.movement_detected === true) {
+            try {
+                // Buscar dados do pet
+                let petData = null;
+                if (this.petService) {
+                    petData = await this.petService.getPetByChipId(chip_id);
+                }
+
+                await alertService.createAlert({
+                    chip_id,
+                    pet_id: petData?.id || null,
+                    dueno_id: petData?.dueno_id || null,
+                    type: "movement",
+                    message: `El pet ${petData?.nombre || "desconocido"} ha cambiado de ubicación.`,
+                    status: "active",
+                    timestamp: new Date().toISOString(),
+                    location: {
+                        lat: updatedLocation.lat,
+                        lng: updatedLocation.lng,
+                        address: updatedLocation.address || "Ubicación actualizada",
+                    }
+                });
+            } catch (err) {
+                console.error("Error creando alerta automática:", err);
+            }
+            return updatedLocation;
+        }
     }
-
-    // async updateLocation(chip_id, updatedFields){
-    //     const fieldsToUpdate =
-    //     {
-    //         ...updatedFields,
-    //         timestamp: new Date().toISOString(),
-    //     }
-    //     const updatedLocation = await this.locationModel.update(chip_id, fieldsToUpdate);
-
-    //     // Se não encontrou a location, retorne null para o controller responder 404
-    //     if (!updatedLocation) return null;
-
-    //     if (this.petService){
-    //         await this.petService.updatePetByChipId(chip_id, {ultima_localizacion: updatedLocation})
-    //     }
-    //     // await this.petService.updatePetByChipId(chip_id, { ultima_localizacion: updatedLocation });
-
-    //     return updatedLocation;
-    // }
 
     async deleteLocation(chip_id){
         const deleted = await this.locationModel.delete(chip_id);
