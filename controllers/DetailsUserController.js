@@ -1,5 +1,5 @@
 import DetailsUserService from "../services/useDetailsUser.js";
-import { validateDetailsUser } from "../types/UserType.js";
+import { validateDetailsUser } from "../types/UserDetailsType.js";
 
 const detrailsService = new DetailsUserService();
 

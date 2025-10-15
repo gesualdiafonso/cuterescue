@@ -6,7 +6,7 @@ const DetailsUserType = {
         address: "string",
         lat: "number",
         lng: "number",
-        place_id: "string",
+        source: "string",
         is_safe_location: "boolean"
     },
     image: "string",
@@ -16,7 +16,7 @@ const DetailsUserType = {
 // Validacion de los campos detalles
 export function validateDetailsUser(
     data,
-    requiredFields = ["userId", "nombre", "telefono", "ubicacion"]
+    requiredFields = ["userId", "nombre", "telefono"]
 ) {
     const errors = [];
 
