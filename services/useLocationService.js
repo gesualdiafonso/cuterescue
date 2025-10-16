@@ -10,6 +10,14 @@ class LocationService {
         this.petService = petServiceInstance;
     }
 
+    setDetailsUserService(detailsUserServiceInstance){
+        this.detailsUserService = detailsUserServiceInstance;
+    }
+
+    setChipService(chipServiceInstance){
+        this.chipService = chipServiceInstance;
+    }
+
     async getAllLocations(){
         return await this.locationModel.getAll();
     }
@@ -18,20 +26,31 @@ class LocationService {
         return await this.locationModel.getByChipId(chip_id);
     }
 
-    async createLocation(chip_id, coords = { lat: 0, lng: 0 }) {
+    async createLocation(locationData) {
+        const { pet_id, dueno_id, chip_id, lat, lng, address, source, is_safe_location } = locationData;
+        
+    
         // Cria objeto de localização garantindo timestamp
         const newLocation = {
-            chip_id,
-            lat: coords.lat,
-            lng: coords.lng,
+            pet_id: pet_id, 
+            dueno_id: dueno_id,
+            chip_id: chip_id,
+            lat,
+            lng,
+            address,
+            source: source || 'geocode_osm',
+            is_safe_location,
             timestamp: new Date().toISOString(),
         };
 
         const collection = await this.locationModel.getCollection();
 
+        // Elija la llave del filtro: chip_id si existir, si no pet_id
+        const filter = chip_id ? { chip_id } : { pet_id };
+
         // Atualiza se existe, insere se não
         const result = await collection.findOneAndUpdate(
-            { chip_id },
+            filter,
             { $set: newLocation },
             { upsert: true, returnDocument: 'after' } // use returnOriginal: false se driver antigo
         );
@@ -42,9 +61,14 @@ class LocationService {
             savedLocation = await collection.findOne({ chip_id });
         }
 
-        // Atualiza ultima_localizacion no pet se petService estiver disponível
+        // Atualiza ultima_localizacion no pet
         if (this.petService && savedLocation) {
-            await this.petService.updatePetByChipId(chip_id, { ultima_localizacion: savedLocation });
+            // Se não há chip_id, atualiza via ID do pet
+            if (chip_id) {
+                await this.petService.updatePetByChipId(chip_id, { last_location: savedLocation });
+            } else {
+                await this.petService.updatePet(pet_id, { last_location: savedLocation });
+            }
         }
 
         return savedLocation;

@@ -103,7 +103,7 @@ class PetService {
         await this.pets.add(newPet);
 
         // Cria la ubicación incial basa en el home_location
-        const savedLocation = await this.locationService.createLocation(uniqueId, {
+        const savedLocation = await this.locationService.createLocation({
             pet_id: uniqueId,
             dueno_id: petData.dueno_id || owner?.userId,
             chip_id: null,
