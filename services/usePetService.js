@@ -2,6 +2,9 @@ import crypto from 'crypto'
 import Pet from '../model/Pet.js'
 import DetailsUserService from './useDetailsUser.js';
 import PetType from '../types/PetType.js';
+import GeoAPI from '../lib/utils/services/GeoAPI.js';
+
+const geoAPI = new GeoAPI();
 
 const petModel = new Pet();
 const detailsUserService = new DetailsUserService();
@@ -21,7 +24,7 @@ class PetService {
     validatePetData(data){
         const pet = {};
         for(const key in PetType){
-            if (key === 'ultima_localizacion') continue;
+            if (key === 'last_location') continue;
             if(!(key in data)){
                 throw new Error(`Campos obligatorios "${key}", no fueron fornecidos`);
             }
@@ -44,67 +47,94 @@ class PetService {
 
     async createPet(petData){
         const uniqueId = crypto.randomBytes(8).toString('hex');
-        const chipId = petData.chip_id || `CHIP-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
         // validación de campos
-        const requiredFieldsPet = this.validatePetData(petData);
+        //const requiredFieldsPet = this.validatePetData(petData);
 
-        // inicializa la ultima_localización
-        let initialCoords;
-        if(!petData.ultima_localizacion || Object.keys(petData.ultima_localizacion).length === 0){
-            // No fornecido o vazio --> default
-            initialCoords = { lat: 0, lng: 0, timestamp: new Date() };
-        } else {
-            // Datos fornecidos -> usa valores o default 0
-            initialCoords = {
-                lat: petData.ultima_localizacion.lat || 0,
-                lng: petData.ultima_localizacion.lng || 0,
-                timestamp: new Date()
+        // Buscar dados del dueño
+        let owner = null;
+        if (petData.dueno_id){
+            owner = await this.detailsUser.getByUserId(petData.dueno_id);
+            if (!owner){
+                throw new Error(`Dueño con ID "${petData.dueno_id}" no encontrado.`);
+            }
+        }
+
+        // Determino la home_location
+        let home_location = null;
+
+        if(typeof petData.home_location === 'string' && petData.home_location.trim() !== ''){
+            // Usuário ha pasadoel ederezo manual --> converter via GeoAPI
+            const coords = await geoAPI.getCoordinatesFromAddress(petData.home_location);
+            home_location = {
+                address: petData.home_location,
+                lat: coords.lat,
+                lng: coords.lng,
+                soruce: 'geocode_osm',
+                is_safe_location: true
             };
+        }
+        // Si el usuario no ha informado la ubicación
+        else if (owner?.ubicacion){
+            // Usa la ubicación del dueño
+            home_location = {
+                address: owner.ubicacion.address,
+                lat: owner.ubicacion.lat,
+                lng: owner.ubicacion.lng,
+                source: 'geocode_osm',
+                is_safe_location: true
+            };
+        } else{
+            throw new Error(
+                "No se pudo geocodificar el enderezo proporcionado. Por favor, verifique y corrija el enderezo."
+            );
         }
 
         // Cria el pet inicialmente
         const newPet = {
             id: uniqueId,
-            chip_id: chipId,
             ...petData,
-            ultima_localizacion: null,
-        }
+            home_location,
+            last_location: null, // se inicializa después
+            activo: true,
+            created: new Date().toISOString
+        };
 
         await this.pets.add(newPet);
 
-        // Cria localización inicial inicial, mesmo que usuario não forneça
-        // const initialCoords = (petData.ultima_localizacion && 
-        //     typeof petData.ultima_localizacion.lat !== 'undefined' &&
-        //     typeof petData.ultima_localizacion.lng !== 'undefined') 
-        //     petData.ultima_localizacion 
-        //     : { lat: 0, lng: 0 };
+        // Cria la ubicación incial basa en el home_location
+        const savedLocation = await this.locationService.createLocation(uniqueId, {
+            pet_id: uniqueId,
+            dueno_id: petData.dueno_id || owner?.userId,
+            chip_id: null,
+            lat: home_location.lat,
+            lng: home_location.lng,
+            address: home_location.address,
+            source: home_location.source,
+            is_safe_location: true,
+            timestamp: new Date().toISOString()
+        });
 
-        const savedLocation = await this.locationService.createLocation(chipId, initialCoords);
-
-        // Atualiza ultima_localizacion en pet
-        await this.pets.update(uniqueId, { ultima_localizacion: savedLocation });
-        newPet.ultima_localizacion = savedLocation;
+        // Actualizar la ultima localizacion del pet
+        await this.pets.update(uniqueId, { last_location: savedLocation });
+        newPet.last_location = savedLocation;
 
         // Actualizar el dueño del pet
-        if(petData.dueno_id){
-            const owner = await this.detailsUser.getByUserId(petData.dueno_id);
-            if (owner){
-                owner.pets = owner.pets || [];
-                owner.pets.push(uniqueId);
-                await this.detailsUser.update(petData.dueno_id, { pets: owner.pets });
-            }
-        }
+       if(owner){
+            owner.pets = owner.pets || [];
+            owner.pets.push(uniqueId);
+            await this.detailsUser.update(owner.userId, { pets: owner.pets });
+       }
 
         return newPet;
     }
 
     async updatePet(id, updatedFields){
         // Se atualizar ultima_localizacion, atualiza também no LocationService
-        if (updatedFields.ultima_localizacion){
+        if (updatedFields.last_location){
             const pet = await this.pets.getById(id);
             if (pet) {
-                await this.locationService.updateLocation(pet.chip_id, updatedFields.ultima_localizacion);
+                await this.locationService.updateLocation(pet.chip_id, updatedFields.last_location);
             }
         }
         return await this.pets.update(id, updatedFields);

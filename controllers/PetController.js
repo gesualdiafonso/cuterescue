@@ -6,7 +6,7 @@ class PetController{
             const pets = await petService.getAllPets();
             res.json(pets);
         } catch(err){
-            res.status(500).json({ error: 'Erro al cargar los pets', data: err });
+            res.status(500).json({ error: 'Erro al cargar los pets', message: err.message });
         }
     }
 
@@ -15,7 +15,7 @@ class PetController{
             const newPet = await petService.createPet(req.body);
             res.status(201).json(newPet);
         } catch(error){
-            res.status(500).json({ error: 'Erro al cargar el pet'})
+            res.status(500).json({ error: 'Erro al cargar el pet', message: error.message})
         }
     }
 
