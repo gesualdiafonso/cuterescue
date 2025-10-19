@@ -53,9 +53,9 @@ export default function Navbar() {
 
             {/* Botones desktop (idénticos) */}
             <div className="ml-6 flex space-x-2">
+              <Link to="/formulario-de-ingreso">
               <button
-                className="px-4 py-2 border rounded text-[#3D8E88] hover:text-white"
-                style={{ borderColor: "#3D8E88" }}
+                className="btn-outline"
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = "#32726b";
                   e.currentTarget.style.color = "white";
@@ -66,12 +66,11 @@ export default function Navbar() {
                 }}
               >
                 Ingresar
-              </button>
+              </button></Link>
 
               <Link to="/formulario-titular">
                 <button
-                  className="px-4 py-2 rounded text-white"
-                  style={{ backgroundColor: "#3D8E88" }}
+                  className="btn"
                   onMouseOver={(e) =>
                     (e.currentTarget.style.backgroundColor = "#32726b")
                   }

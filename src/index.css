@@ -1,5 +1,27 @@
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 976px;
+  --color-twitter-blue: #a200ff;
+}
+
+.btn {
+  @apply px-4 py-2 rounded text-white bg-[#3D8E88] hover:bg-[#32726b] transition-colors duration-300;
+}
+
+.btn-outline {
+  @apply px-4 py-2 border border-[#3D8E88] text-[#3D8E88] rounded hover:bg-[#32726b] hover:text-white transition-colors duration-300;
+}
+.btn-form-login {
+  @apply px-4 py-2  text-[#ff8800] rounded hover:bg-[#ffd28f] transition-colors duration-300 bg-white;
+}
+.custom-input {
+  @apply rounded-md !border-t-white focus:!border-t-gray-900 px-4 py-2 bg-amber-50 border-none;
+}
+
 body {
   font-family: "Agrandir", sans-serif;
 }

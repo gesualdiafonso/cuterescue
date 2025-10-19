@@ -108,6 +108,8 @@ export default function FormTitular() {
           <h1 className="text-2xl font-semibold mb-6">Datos del titular</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+
             <div>
               <label className="block text-gray-700 mb-1">Nombre</label>
               <input
