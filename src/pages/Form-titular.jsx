@@ -2,6 +2,42 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProcesoRegistro from '../components/ProcesoRegistro';
 
+// Array de provincias argentinas
+const provincias = [
+  "Buenos Aires",
+  "Catamarca",
+  "Chaco",
+  "Chubut",
+  "Córdoba",
+  "Corrientes",
+  "Entre Ríos",
+  "Formosa",
+  "Jujuy",
+  "La Pampa",
+  "La Rioja",
+  "Mendoza",
+  "Misiones",
+  "Neuquén",
+  "Río Negro",
+  "Salta",
+  "San Juan",
+  "San Luis",
+  "Santa Cruz",
+  "Santa Fe",
+  "Santiago del Estero",
+  "Tierra del Fuego",
+  "Tucumán",
+  "Ciudad Autónoma de Buenos Aires"
+];
+
+
+const normalizeValue = (str) =>
+  str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "")
+    .toLowerCase();
+
 export default function FormTitular() {
   const navigate = useNavigate();
 
@@ -25,8 +61,7 @@ export default function FormTitular() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
-    // si el campo estaba marcado como error y ahora el usuario escribio, se quita
+
     if (errores.includes(name) && value.trim() !== '') {
       setErrores((prev) => prev.filter((campo) => campo !== name));
     }
@@ -34,8 +69,8 @@ export default function FormTitular() {
 
   const handleNext = () => {
     const camposObligatorios = [
-      'nombre', 'apellido', 'fechaNacimiento', 'genero', 
-      'tipoDocumento', 'documento', 'telefono', 'email', 
+      'nombre', 'apellido', 'fechaNacimiento', 'genero',
+      'tipoDocumento', 'documento', 'telefono', 'email',
       'direccion', 'provincia', 'codigoPostal'
     ];
 
@@ -49,7 +84,6 @@ export default function FormTitular() {
       return;
     }
 
-    // si todo está completo, redirijo
     setMostrarMensaje(false);
     navigate('/formulario-mascota');
   };
@@ -196,9 +230,11 @@ export default function FormTitular() {
                 className={inputClass('provincia')}
               >
                 <option value="">Seleccionar</option>
-                <option value="buenosaires">Buenos Aires</option>
-                <option value="cordoba">Córdoba</option>
-                <option value="mendoza">Mendoza</option>
+                {provincias.map((prov) => (
+                  <option key={prov} value={normalizeValue(prov)}>
+                    {prov}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -215,7 +251,6 @@ export default function FormTitular() {
             </div>
           </div>
 
-        
           <div className="mt-6 flex flex-col items-start gap-2">
             <button
               onClick={handleNext}

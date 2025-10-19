@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProcesoRegistro from '../components/ProcesoRegistro';
+import axios from 'axios';
 
 export default function FormMascota() {
   const navigate = useNavigate();
@@ -17,6 +18,36 @@ export default function FormMascota() {
 
   const [errores, setErrores] = useState([]);
   const [mostrarMensaje, setMostrarMensaje] = useState(false);
+  const [razas, setRazas] = useState([]);
+
+  // Actualiza el listado de razas según la especie seleccionada
+  useEffect(() => {
+    if (formData.especie === 'canino') {
+      axios.get('https://dog.ceo/api/breeds/list/all')
+        .then(res => {
+          const data = res.data.message;
+          const todasRazas = Object.keys(data).map(b => {
+            if (data[b].length > 0) {
+              return data[b].map(sub => `${sub} ${b}`);
+            }
+            return b;
+          }).flat();
+          setRazas(todasRazas);
+          setFormData(prev => ({ ...prev, raza: '' })); // limpia raza al cambiar especie
+        })
+        .catch(err => console.error(err));
+    } else if (formData.especie === 'felino') {
+      const razasFelinas = [
+        'Siamés', 'Persa', 'Maine Coon', 'Ragdoll', 'Bengal',
+        'Sphynx', 'Abisinio', 'Birmano', 'Exótico', 'Bombay'
+      ];
+      setRazas(razasFelinas);
+      setFormData(prev => ({ ...prev, raza: '' }));
+    } else {
+      setRazas([]);
+      setFormData(prev => ({ ...prev, raza: '' }));
+    }
+  }, [formData.especie]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -61,17 +92,15 @@ export default function FormMascota() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex flex-col md:flex-row gap-8">
-   
         <div className="md:w-1/4">
           <ProcesoRegistro currentStep={2} />
         </div>
 
-        {/* Columna derecha: Formulario */}
         <div className="md:w-3/4">
           <h1 className="text-2xl font-semibold mb-6">Datos de la mascota</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Nombre ocupa toda la fila */}
+            {/* Nombre */}
             <div className="col-span-2">
               <label className="block text-gray-700 mb-1">Nombre</label>
               <input
@@ -102,14 +131,18 @@ export default function FormMascota() {
             {/* Raza */}
             <div>
               <label className="block text-gray-700 mb-1">Raza</label>
-              <input
-                type="text"
+              <select
                 name="raza"
                 value={formData.raza}
                 onChange={handleChange}
-                placeholder="Raza"
                 className={inputClass('raza')}
-              />
+                disabled={razas.length === 0}
+              >
+                <option value="">Seleccionar raza</option>
+                {razas.map(r => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
             </div>
 
             {/* Fecha de nacimiento */}
@@ -150,7 +183,7 @@ export default function FormMascota() {
               />
             </div>
 
-            {/* Adjuntar foto */}
+            {/* Foto */}
             <div className="col-span-2">
               <label className="block text-gray-700 mb-1">Adjuntar una foto</label>
               <input
