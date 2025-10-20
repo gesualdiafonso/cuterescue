@@ -27,7 +27,7 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  to="/veterinarias"
+                  to="/veterinarias-24-hrs"
                   className="text-[#3D8E88] hover:text-[#2f6f6c]"
                 >
                   Veterinarias 24hrs
@@ -136,7 +136,7 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                to="/veterinarias"
+                to="/veterinarias-24-hrs"
                 className="block text-[#3D8E88] hover:text-[#2f6f6c]"
                 onClick={() => setIsOpen(false)}
               >

@@ -5,7 +5,10 @@
   --breakpoint-sm: 480px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 976px;
-  --color-twitter-blue: #a200ff;
+  --color-main-bg: #fcb974;
+    --color-footer-bg: #F5F5DC;
+  --color-brand-teal: #3D8E88;
+  --color-brand-yellow: #F7A934;
 }
 
 .btn {
@@ -22,6 +25,58 @@
   @apply rounded-md !border-t-white focus:!border-t-gray-900 px-4 py-2 bg-amber-50 border-none;
 }
 
+@layer components {
+  .veterinaria-card {
+    @apply flex items-center gap-6 bg-[#F5F5DC] p-6 rounded-3xl shadow-md transition-transform hover:scale-[1.02];
+  }
+
+  .veterinaria-img {
+    @apply w-20 h-20 bg-black rounded-2xl flex-shrink-0;
+  }
+
+  .veterinaria-text {
+    @apply flex flex-col;
+  }
+
+  .veterinaria-nombre {
+    @apply font-semibold text-xl text-gray-900;
+  }
+
+  .veterinaria-direccion {
+    @apply text-base text-gray-600;
+  }
+    .footer {
+    @apply bg-[var(--color-footer-bg)] text-[var(--color-brand-teal)] py-6;
+  }
+
+  .footer-container {
+    @apply max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between px-4;
+  }
+
+  .footer-logo {
+    @apply flex items-center gap-2;
+  }
+
+  .footer-img {
+    @apply w-12 h-12 object-contain;
+  }
+
+  .footer-title {
+    @apply text-xl font-semibold text-[var(--color-brand-teal)];
+  }
+
+  .footer-links {
+    @apply flex gap-6 mt-4 md:mt-0;
+  }
+
+  .footer-link {
+    @apply hover:text-[var(--color-brand-yellow)] transition-colors duration-300;
+  }
+
+  .footer-bottom {
+    @apply border-t border-[var(--color-brand-teal)] mt-6 pt-4 text-center text-sm text-[var(--color-brand-teal)];
+  }
+}
 body {
   font-family: "Agrandir", sans-serif;
 }

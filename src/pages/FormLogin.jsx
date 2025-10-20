@@ -8,7 +8,7 @@ import {
 
 export default function SimpleRegistrationForm() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-orange-300">
+    <div className="min-h-screen flex items-center justify-center bg-main-bg">
       <div className="bg-orange-500 p-20 py-30 rounded-2xl shadow-lg">
         <Card color="transparent" shadow={false} className="text-center">
           <Typography variant="h4" color="white">
