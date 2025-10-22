@@ -19,8 +19,9 @@ class Location{
 
     async add(location){
         const collection = await this.getCollection();
-        await collection.insertOne(location);
-        return location;
+        const fields = {...location, timestamp: new Date().toISOString()};
+        const result = await collection.insertOne(fields);
+        return result;
     }
 
     async getByChipId(chip_id){

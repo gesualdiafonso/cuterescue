@@ -1,6 +1,10 @@
 const DetailsUserType = {
     userId : "string",
     nombre: "string",
+    fecha_nacimiento: "string",
+    genero: "string",
+    tipo_documento: "string",
+    documento: "string",
     telefono: "string",
     ubicacion: {
         address: "string",

@@ -28,10 +28,16 @@ class DetailsUserController{
 
     async create(req, res){
         const { userId } = req.params;
-        const { nombre, telefono, ubicacion, pets } = req.body;
+        const { nombre, fecha_nacimiento, genero, tipo_documento, documento, telefono, ubicacion, pets } = req.body;
 
         // pets no es obligatorio, si no viene => array vacío
-        const detailsData = { userId, nombre, telefono, ubicacion, pets: pets || [] };
+        const detailsData = { 
+            userId, nombre, 
+            fecha_nacimiento, 
+            genero, tipo_documento, 
+            documento, telefono, 
+            ubicacion, pets: pets || [] 
+        };
 
         // Validación con tipagens
         const { isValid, errors } = validateDetailsUser(detailsData);

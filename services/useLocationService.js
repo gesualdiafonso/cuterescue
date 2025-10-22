@@ -28,42 +28,27 @@ class LocationService {
 
     async createLocation(locationData) {
         const { pet_id, dueno_id, chip_id, lat, lng, address, source, is_safe_location } = locationData;
-        
-    
-        // Cria objeto de localização garantindo timestamp
+
+        // Objeto de localização
         const newLocation = {
-            pet_id: pet_id, 
-            dueno_id: dueno_id,
-            chip_id: chip_id,
+            pet_id,
+            dueno_id,
+            chip_id: chip_id || null,
             lat,
             lng,
             address,
             source: source || 'geocode_osm',
-            is_safe_location,
+            is_safe_location: is_safe_location ?? true,
             timestamp: new Date().toISOString(),
         };
 
-        const collection = await this.locationModel.getCollection();
+        // 👉 Inserir diretamente, sem findOneAndUpdate
+        const insertResult = await this.locationModel.add(newLocation);
+        // const savedLocation = { _id: insertResult.insertedId, ...newLocation };
+        const savedLocation = { ...newLocation };
 
-        // Elija la llave del filtro: chip_id si existir, si no pet_id
-        const filter = chip_id ? { chip_id } : { pet_id };
-
-        // Atualiza se existe, insere se não
-        const result = await collection.findOneAndUpdate(
-            filter,
-            { $set: newLocation },
-            { upsert: true, returnDocument: 'after' } // use returnOriginal: false se driver antigo
-        );
-
-        // Se result.value for null, busca manualmente
-        let savedLocation = result.value;
-        if (!savedLocation) {
-            savedLocation = await collection.findOne({ chip_id });
-        }
-
-        // Atualiza ultima_localizacion no pet
+        // 👉 Atualizar a última localização no pet
         if (this.petService && savedLocation) {
-            // Se não há chip_id, atualiza via ID do pet
             if (chip_id) {
                 await this.petService.updatePetByChipId(chip_id, { last_location: savedLocation });
             } else {

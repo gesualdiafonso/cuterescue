@@ -116,8 +116,13 @@ class PetService {
         });
 
         // Actualizar la ultima localizacion del pet
-        await this.pets.update(uniqueId, { last_location: savedLocation });
-        newPet.last_location = savedLocation;
+        // await this.pets.update(uniqueId, { last_location: savedLocation });
+        // newPet.last_location = savedLocation;
+        const locationToSave = { ...savedLocation };
+        delete locationToSave._id;
+
+        await this.pets.update(uniqueId, { last_location: locationToSave });
+        newPet.last_location = locationToSave;
 
         // Actualizar el dueño del pet
        if(owner){
