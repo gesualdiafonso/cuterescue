@@ -1,23 +1,24 @@
 import crypto from 'crypto'
 import Pet from '../model/Pet.js'
-import DetailsUserService from './useDetailsUser.js';
 import PetType from '../types/PetType.js';
 import GeoAPI from '../lib/utils/services/GeoAPI.js';
 
 const geoAPI = new GeoAPI();
-
 const petModel = new Pet();
-const detailsUserService = new DetailsUserService();
 
 class PetService {
     constructor() {
         this.pets = petModel;
         this.locationService = null;
-        this.detailsUser = detailsUserService;
+        this.detailsUserService = null;
     }
 
     setLocationService(locationServiceInstace){
         this.locationService = locationServiceInstace;
+    }
+
+    setDetailsUserService(detailsUserService){
+        this.detailsUserService = detailsUserService;
     }
 
     // Validar los campos obligatorios con base a PetType
@@ -54,7 +55,7 @@ class PetService {
         // Buscar dados del dueño
         let owner = null;
         if (petData.dueno_id){
-            owner = await this.detailsUser.getByUserId(petData.dueno_id);
+            owner = await this.detailsUserService.getByUserId(petData.dueno_id);
             if (!owner){
                 throw new Error(`Dueño con ID "${petData.dueno_id}" no encontrado.`);
             }
@@ -128,7 +129,7 @@ class PetService {
        if(owner){
             owner.pets = owner.pets || [];
             owner.pets.push(uniqueId);
-            await this.detailsUser.update(owner.userId, { pets: owner.pets });
+            await this.detailsUserService.update(owner.userId, { pets: owner.pets });
        }
 
         return newPet;
@@ -159,10 +160,10 @@ class PetService {
 
         // Remove el pet del dueño
         if (pet.dueno_id){
-            const owner = await this.detailsUser.getByUserId(pet.dueno_id);
+            const owner = await this.detailsUserService.getByUserId(pet.dueno_id);
             if(owner){
                 owner.pets = (owner.pets || []).filter(p => p !== pet.id);
-                await this.detailsUser.update(pet.dueno_id, { pets: owner.pets });
+                await this.detailsUserService.update(pet.dueno_id, { pets: owner.pets });
             }
         }
 

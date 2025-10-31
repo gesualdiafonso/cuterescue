@@ -1,19 +1,22 @@
-import Chips from '../models/Chips.js';
-import DetailsUserService from './DetailsUserService.js';
+import Chips from '../model/Chip.js';
 import crypto from 'crypto';
-import Pet from '../models/Pet.js';
+import Pet from '../model/Pet.js';
 
 
 class useChipService{
     constructor(){
-        this.chips = new Chips();
-        this.detailsUserService = new DetailsUserService();
+        this.chipModel = new Chips();
+        this.detailsUserService = null;
         this.petModel = new Pet();
         this.locationService = null;
     }
 
-    setLocationService(locationServiceInstace){
+    setLocationService(locationService){
         this.locationService = locationService
+    }
+
+    setDetailsUserService(detailsUserService){
+        this.detailsUserService = detailsUserService
     }
 
     async createChip(data){
@@ -29,28 +32,33 @@ class useChipService{
         const chipId = `CHIP-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
         const timestamp = new Date().toISOString();
 
+        const lastLocation = pet.last_location;
+
         const chipData = {
             id: chipId,
             pet_id: data.pet_id,
             dueno_id: data.dueno_id, 
-            status: data.status,
-            ultima_location: data.ultima_location,
-            baterry: data.baterry,
+            status: data.status || "active",
+            last_location: lastLocation,
             created_at: timestamp,
             updated_at: timestamp
         }
 
-        await this.chips.create(chipData);
+        const createdChip = await this.chipModel.create(chipData);
 
         //Actualiza pet con el nuevo chiip_id
         await this.petModel.update( data.pet_id, { chip_id: chipId } );
 
-        // Actualizar location con el chip_id
-        if(this.locationService && pet.last_location){
-            await this.locationService.updateLocation(data.pet_id, { chip_id: chipId });
+         // Atualiza última localização no chip
+        if (this.locationService && updatedChip) {
+            const latestLocation = await this.locationService.getLocationsByChipId(id);
+            if (latestLocation && latestLocation.length > 0) {
+                const last = latestLocation[latestLocation.length - 1];
+                await this.chipModel.update(id, { ultima_location: last });
+            }
         }
 
-        return chipData;
+        return createdChip;
     }
 
     async getChips(){
@@ -59,7 +67,15 @@ class useChipService{
     }
 
     async getChipById(id){
-        return await this.chips.getById(id);
+        return await this.chipModel.getById(id);
+    }
+
+    async getByDuenoId(dueno_id){
+        return await this.chipModel.getByDuenoId(dueno_id);
+    }
+
+    async getByPetId(pet_id){
+        return await this.chipModel.getByPetId(pet_id);
     }
 
     async updateChip(id, data){
@@ -70,12 +86,12 @@ class useChipService{
         return await this.chipModel.getById(id);
     }
 
-    async deleteChip(id){
-        const result = await this.chipModel.delte(id);
+    async deleteChip(chip_id){
+        const result = await this.chipModel.delete(chip_id);
         if (result.deletedCount === 0){
-            throw new Error(`No se encontró el chip con id "${id}".`);
+            throw new Error(`No se encontró el chip con id "${chip_id}".`);
         }
-        return { message: `Chip con id "${id}" eliminado exitosamente.` };
+        return { message: `Chip con id "${chip_id}" eliminado exitosamente.` };
     }
 }
 

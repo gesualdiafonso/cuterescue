@@ -4,18 +4,20 @@ class LocationService {
     constructor(){
         this.locationModel = new Location();
         this.petService = null;
+        this.detailsUserService = null;
+        this.chipService = null;
     }
 
     setPetService(petServiceInstance){
         this.petService = petServiceInstance;
     }
 
-    setDetailsUserService(detailsUserServiceInstance){
-        this.detailsUserService = detailsUserServiceInstance;
+    setDetailsUserService(detailsUserService){
+        this.detailsUserService = detailsUserService;
     }
 
-    setChipService(chipServiceInstance){
-        this.chipService = chipServiceInstance;
+    setChipService(chipService){
+        this.chipService = chipService;
     }
 
     async getAllLocations(){
@@ -73,7 +75,7 @@ class LocationService {
                 }
 
                 await alertService.createAlert({
-                    chip_id,
+                    chip_id: chip_id,
                     pet_id: petData?.id || null,
                     dueno_id: petData?.dueno_id || null,
                     type: "movement",
@@ -91,6 +93,17 @@ class LocationService {
             }
             return updatedLocation;
         }
+    }
+
+    async updateLocationByPetId(pet_id, updates){
+        const collection = await this.locationModel.getCollection();
+        const result = await collection.findOneAndUpdate(
+            { pet_id },
+            { $set: updates },
+            { returnDocument: "after" }
+        );
+
+        return result.value;
     }
 
     async deleteLocation(chip_id){
