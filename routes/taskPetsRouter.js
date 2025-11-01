@@ -9,6 +9,8 @@ router.post('/api/pets', PetController.create);
 
 router.get('/api/pets/:id', PetController.getById);
 
+router.get('/api/pets/dueno/:dueno_id', PetController.getByDuenoId);
+
 router.get('/api/pets/chip/:chip_id', PetController.getByChipId);
 
 router.put('/api/pets/:id', PetController.update);

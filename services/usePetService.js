@@ -42,6 +42,10 @@ class PetService {
         return await this.pets.getById(id)
     }
 
+    async getPetByDuenoId(dueno_id) {
+        return await this.pets.getByDuenoId(dueno_id)
+    }
+
     async getPetByChipId(chip_id) {
         return await this.pets.getByChipId(chip_id)
     }

@@ -46,6 +46,19 @@ class LocationController{
         }
     }
 
+    async getByPetId(req, res){
+        const { pet_id } = req.params;
+        try{
+            const location = await locationService.getLocationsByPetId(pet_id);
+            if(!location){
+                return res.status(404).json({ error: 'Localización no fue encontrada' });
+            }
+            res.json(location);
+        } catch(err){
+            res.status(500).json({ error: 'Erro al cargar la localización' });
+        }
+    }
+
     async updateLocation(req, res){
         const { chip_id } = req.params;
         const updates = req.body; 

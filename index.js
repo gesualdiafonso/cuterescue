@@ -3,10 +3,17 @@ import express from 'express';
 import fs from 'fs/promises';
 import dotenv from 'dotenv';
 import routerAPI from './routes/index.js';
+import cors from 'cors'; 
 
 dotenv.config();
 
 const app = express();
+
+app.use(cors({
+    origin: '*', // Permitir todas as origens
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Permitir métodos específicos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Permitir cabeçalhos específicos
+}));
 
 app.use(express.json());
 app.use(express.static('public'));

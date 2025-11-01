@@ -28,6 +28,10 @@ class LocationService {
         return await this.locationModel.getByChipId(chip_id);
     }
 
+    async getLocationsByPetId(pet_id){
+        return await this.locationModel.getByPetId(pet_id);
+    }
+
     async createLocation(locationData) {
         const { pet_id, dueno_id, chip_id, lat, lng, address, source, is_safe_location } = locationData;
 

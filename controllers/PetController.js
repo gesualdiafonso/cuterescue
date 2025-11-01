@@ -31,6 +31,19 @@ class PetController{
         }
     }
 
+    async getByDuenoId(req, res){
+        const { dueno_id } = req.params;
+        try{
+            const pets = await petService.getPetByDuenoId(dueno_id);
+            if(pets.length === 0){
+                return res.status(404).json({ error: 'No se encontraron pets para este dueño' });
+            }
+            res.json(pets);
+        } catch(err){
+            res.status(500).json({ error: 'Erro al cargar los pets del dueño' });
+        }
+    }
+
     async getByChipId(req, res){
         const { chip_id } = req.params;
         try{

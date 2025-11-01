@@ -28,6 +28,11 @@ class Pet {
         return await collection.findOne({ id });
     }
 
+    async getByDuenoId(dueno_id){
+        const collection = await this.getCollection();
+        return await collection.find({ dueno_id }).toArray();
+    }
+
     async getByChipId(chip_id){
         const collection = await this.getCollection();
         return await collection.findOne({ chip_id }) || null;
