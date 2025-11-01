@@ -46,9 +46,11 @@
     @apply text-base text-gray-600;
   }
     .footer {
-    @apply bg-[var(--color-footer-bg)] text-[var(--color-brand-teal)] py-6;
+    @apply  text-[var(--color-brand-teal)] py-6;
   }
-
+/*    .footer {
+    @apply bg-[var(--color-footer-bg)] text-[var(--color-brand-teal)] py-6;
+  } */
   .footer-container {
     @apply max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between px-4;
   }
@@ -79,4 +81,145 @@
 }
 body {
   font-family: "Agrandir", sans-serif;
+}
+
+
+/* seccion documentacion */
+
+/* ======== CONTENEDORES ======== */
+.documentacion-container {
+  @apply flex flex-col gap-10 p-8;
+}
+
+.section-container {
+  @apply flex flex-col gap-6;
+}
+
+.section-title {
+  @apply text-xl font-semibold text-[#1E293B];
+}
+
+.cards-container {
+  @apply flex flex-wrap gap-6;
+}
+
+/* ======== CARD GENERAL ======== */
+.card {
+  @apply bg-[#1E293B] text-white rounded-2xl p-5 w-64 shadow-md flex flex-col justify-between;
+}
+
+.card-header {
+  @apply flex justify-between items-center mb-3;
+}
+
+.label {
+  @apply font-semibold text-sm;
+}
+
+.card-status {
+  @apply flex justify-between items-center mb-2;
+}
+
+.alert-active {
+  @apply bg-[#22C55E] text-white text-xs px-2 py-0.5 rounded;
+}
+
+/* ======== BOTÓN INTERNO DE CADA CARD ======== */
+.btn-card {
+  @apply mt-4 text-white text-xs py-2 rounded transition-colors duration-300 bg-[#22687B] hover:bg-[#1b5667];
+}
+
+/* ======== CARD AGREGAR ======== */
+.card-add {
+  @apply bg-[#FAC998] text-white rounded-2xl p-5 w-64 shadow-md flex flex-col justify-center items-center cursor-pointer hover:bg-[#f8b874] transition-colors duration-300;
+}
+
+.plus-sign {
+  @apply text-4xl font-light;
+}
+
+.add-text {
+  @apply mt-2 text-sm;
+}
+
+/* MODAL DOCUMENTACION*/
+
+/* ======== MODAL ======== */
+.modal-overlay {
+  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+}
+
+.modal-container {
+  @apply bg-[#22687B] rounded-2xl text-white w-[600px] max-w-full p-8 shadow-lg;
+}
+
+.modal-title {
+  @apply text-2xl font-bold text-center mb-2;
+}
+
+.modal-subtitle {
+  @apply text-sm text-center mb-6;
+}
+
+/* ======== FORM ======== */
+.modal-form {
+  @apply flex flex-col gap-4;
+}
+
+.form-row {
+  @apply flex flex-wrap gap-4;
+}
+
+.form-group {
+  @apply flex flex-col flex-1;
+}
+
+.input-field {
+  @apply rounded-md border-none px-3 py-2 text-[#1E293B] bg-white;
+}
+
+.file-upload {
+  @apply cursor-pointer;
+}
+
+/* ======== CHECKBOX & TOGGLE ======== */
+.checkbox input {
+  @apply mr-2 accent-[#FF8800];
+}
+
+.toggle-container {
+  @apply flex items-center gap-2;
+}
+
+.switch {
+  @apply relative inline-block w-10 h-5;
+}
+
+.switch input {
+  @apply opacity-0 w-0 h-0;
+}
+
+.slider {
+  @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition;
+}
+
+.slider:before {
+  @apply absolute content-[''] h-4 w-4 left-[2px] bottom-[2px] bg-white rounded-full transition;
+}
+
+.switch input:checked + .slider {
+  @apply bg-[#FF8800];
+}
+
+.switch input:checked + .slider:before {
+  @apply translate-x-5;
+}
+
+/* ======== BOTÓN Y FOOTER ======== */
+.btn-modal {
+  @apply mt-6 mx-auto block bg-[#38BDF8] text-white py-2 px-6 rounded hover:bg-[#0ea5e9] transition-colors duration-300;
+}
+
+.modal-footer {
+  @apply text-center text-xs mt-4 text-white/80;
 }
