@@ -8,13 +8,28 @@ export default function ModalDocumentacion({
   onAddOrUpdate,
   onDelete,
 }) {
-  const [formData, setFormData] = useState({
-    alerta: "Activo",
-  });
+  const [formData, setFormData] = useState({ alerta: "Activo" });
 
   useEffect(() => {
-    if (data) setFormData(data);
-    else setFormData({ alerta: "Activo" });
+    if (data) {
+      setFormData({
+        alerta: data.alerta || "Activo",
+        pet: data.pet || "",
+        tipo_vacuna: data.tipo_vacuna || "",
+        producto: data.producto || "",
+        antiparasitario: data.antiparasitario || "",
+        presentacion: data.presentacion || "",
+        fecha_aplicacion: data.fecha_aplicacion
+          ? data.fecha_aplicacion.split("T")[0]
+          : "",
+        fecha_vencimiento: data.fecha_vencimiento
+          ? data.fecha_vencimiento.split("T")[0]
+          : "",
+        foto_url: data.foto_url || "",
+      });
+    } else {
+      setFormData({ alerta: "Activo" });
+    }
   }, [data]);
 
   if (!isOpen) return null;
@@ -28,13 +43,19 @@ export default function ModalDocumentacion({
   };
 
   const handleSubmit = () => {
+    if (tipo === "vacuna" && (!formData.tipo_vacuna || !formData.pet)) {
+      alert("Debes ingresar el tipo de vacuna y el nombre de la mascota");
+      return;
+    }
     onAddOrUpdate(formData);
     onClose();
   };
 
   const handleDelete = () => {
-    onDelete(tipo, data.id);
-    onClose();
+    if (data) {
+      onDelete(tipo, data.id);
+      onClose();
+    }
   };
 
   const renderFields = () => {
@@ -46,8 +67,8 @@ export default function ModalDocumentacion({
               <div className="form-group">
                 <label>Tipo de vacunación</label>
                 <select
-                  name="tipoVacuna"
-                  value={formData.tipoVacuna || ""}
+                  name="tipo_vacuna"
+                  value={formData.tipo_vacuna || ""}
                   onChange={handleChange}
                   className="input-field"
                 >
@@ -56,11 +77,12 @@ export default function ModalDocumentacion({
                   <option>Leucemia Felina (FeLV)</option>
                   <option>Antirrábica</option>
                   <option>Bordetella (Tos de las perreras)</option>
-                  <option>Vacuna Sextuple</option>
+                  <option>Vacuna Séxtuple</option>
                 </select>
               </div>
+
               <div className="form-group">
-                <label>Pet</label>
+                <label>Mascota</label>
                 <input
                   type="text"
                   name="pet"
@@ -77,19 +99,18 @@ export default function ModalDocumentacion({
                 <label>Fecha de Aplicación</label>
                 <input
                   type="date"
-                  name="fechaAplicacion"
-                  value={formData.fechaAplicacion || ""}
+                  name="fecha_aplicacion"
+                  value={formData.fecha_aplicacion || ""}
                   onChange={handleChange}
                   className="input-field"
                 />
               </div>
-
               <div className="form-group">
                 <label>Fecha de Vencimiento</label>
                 <input
                   type="date"
-                  name="fechaVencimiento"
-                  value={formData.fechaVencimiento || ""}
+                  name="fecha_vencimiento"
+                  value={formData.fecha_vencimiento || ""}
                   onChange={handleChange}
                   className="input-field"
                 />
@@ -101,12 +122,12 @@ export default function ModalDocumentacion({
                 <label>Subir foto de libreta sanitaria</label>
                 <input
                   type="file"
-                  name="foto"
+                  name="foto_url"
                   onChange={handleChange}
                   className="input-field"
                 />
-                {formData.foto && (
-                  <p className="file-name mt-1">Archivo: {formData.foto}</p>
+                {formData.foto_url && (
+                  <p className="file-name mt-1">Archivo: {formData.foto_url}</p>
                 )}
               </div>
             </div>
@@ -116,6 +137,7 @@ export default function ModalDocumentacion({
       case "pipeta":
       case "desparasitacion":
         const label = tipo === "pipeta" ? "Producto" : "Antiparasitario";
+        const fieldName = tipo === "pipeta" ? "producto" : "antiparasitario";
         return (
           <>
             <div className="form-row">
@@ -123,12 +145,8 @@ export default function ModalDocumentacion({
                 <label>{label}</label>
                 <input
                   type="text"
-                  name={tipo === "pipeta" ? "producto" : "antiparasitario"}
-                  value={
-                    tipo === "pipeta"
-                      ? formData.producto || ""
-                      : formData.antiparasitario || ""
-                  }
+                  name={fieldName}
+                  value={formData[fieldName] || ""}
                   onChange={handleChange}
                   className="input-field"
                 />
@@ -155,8 +173,8 @@ export default function ModalDocumentacion({
                 <label>Fecha de Aplicación</label>
                 <input
                   type="date"
-                  name="fechaAplicacion"
-                  value={formData.fechaAplicacion || ""}
+                  name="fecha_aplicacion"
+                  value={formData.fecha_aplicacion || ""}
                   onChange={handleChange}
                   className="input-field"
                 />
@@ -165,8 +183,8 @@ export default function ModalDocumentacion({
                 <label>Fecha de Vencimiento</label>
                 <input
                   type="date"
-                  name="fechaVencimiento"
-                  value={formData.fechaVencimiento || ""}
+                  name="fecha_vencimiento"
+                  value={formData.fecha_vencimiento || ""}
                   onChange={handleChange}
                   className="input-field"
                 />
@@ -189,7 +207,7 @@ export default function ModalDocumentacion({
             : `Agregar ${tipo === "vacuna" ? "vacuna" : tipo}`}
         </h2>
 
-        <form className="modal-form">
+        <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
           {renderFields()}
 
           <div className="form-row mt-3">
@@ -218,11 +236,7 @@ export default function ModalDocumentacion({
 
             {data && (
               <>
-                <button
-                  type="button"
-                  className="btn-modal"
-                  onClick={handleSubmit}
-                >
+                <button type="button" className="btn-modal" onClick={handleSubmit}>
                   Editar
                 </button>
                 <button

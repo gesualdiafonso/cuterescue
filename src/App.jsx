@@ -12,6 +12,7 @@ import  Documentacion  from './pages/Documentacion';
 import ModalDocumentacion from './components/ModalDocumentacion';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 
 function App() {
@@ -29,8 +30,10 @@ function App() {
          <Route path="/formulario-de-ingreso" element={<FormLogin />} />
          <Route path="/veterinarias-24-hrs" element={<Veterinarias />} />
         <Route path="/documentacion" element={<Documentacion />} />
-        <Route path="/registro" element={<Register />} />
+        <Route path="/registrar" element={<Register />} />
         <Route path="/ingresar" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+
        
       </Routes>  
       <Footer/>

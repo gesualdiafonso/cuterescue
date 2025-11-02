@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
-import { Card, Input, Button, Typography } from "@material-tailwind/react";
 
 export default function LogIn() {
   const navigate = useNavigate();
@@ -21,90 +20,73 @@ export default function LogIn() {
 
     const { email, password } = formData;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
-      setError(error.message);
+    if (loginError) {
+      setError(loginError.message);
       setLoading(false);
       return;
     }
 
-    // Login exitoso: redirigir al dashboard o página principal
     navigate("/dashboard");
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-main-bg">
-      <div className="bg-orange-500 p-20 py-30 rounded-2xl shadow-lg">
-        <Card color="transparent" shadow={false} className="text-center">
-          <Typography variant="h4" color="white">
-            Cute Rescue
-          </Typography>
-          <Typography color="white" className="mt-1 font-normal">
-            Ingresa tu mail y contraseña
-          </Typography>
+    <div className="m-10 flex items-center justify-center">
+      <form
+        onSubmit={handleLogin}
+        className="rounded-2xl shadow-lg p-8 w-full max-w-md bg-[#22687B]/90 backdrop-blur-md"
+      >
+        <h2 className="text-2xl font-semibold text-white mb-6 text-center">
+          Cute Rescue
+        </h2>
+        <p className="text-white text-center mb-6">
+          Ingresa tu correo y contraseña
+        </p>
 
-          <form
-            onSubmit={handleLogin}
-            className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96 mx-auto"
-          >
-            <div className="mb-1 flex flex-col gap-6">
-              <Typography variant="h6" color="white" className="-mb-3 text-left">
-                Your Email
-              </Typography>
-              <Input
-                name="email"
-                size="lg"
-                placeholder="nombre@mail.com"
-                className="custom-input"
-                value={formData.email}
-                onChange={handleChange}
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-                required
-              />
+        <div className="flex flex-col gap-4">
+          <input
+            type="email"
+            name="email"
+            placeholder="nombre@mail.com"
+            value={formData.email}
+            onChange={handleChange}
+            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="********"
+            value={formData.password}
+            onChange={handleChange}
+            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            required
+          />
+        </div>
 
-              <Typography variant="h6" color="white" className="-mb-3 text-left">
-                Password
-              </Typography>
-              <Input
-                type="password"
-                name="password"
-                size="lg"
-                placeholder="********"
-                className="custom-input"
-                value={formData.password}
-                onChange={handleChange}
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-                required
-              />
-            </div>
+        {error && (
+          <p className="text-red-400 text-sm mt-4 text-center">{error}</p>
+        )}
 
-            {error && (
-              <Typography color="red" className="mt-4 text-center font-normal">
-                {error}
-              </Typography>
-            )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-[#1e88e5] text-white mt-6 py-2 px-6 rounded-lg hover:bg-[#1976d2] w-full transition-all"
+        >
+          {loading ? "Ingresando..." : "Ingresar"}
+        </button>
 
-            <Button className="mt-6 btn-form-login" fullWidth type="submit">
-              {loading ? "Ingresando..." : "Ingresar"}
-            </Button>
-
-            <Typography color="white" className="mt-4 text-center font-normal">
-              <a href="#" className="font-medium text-gray-900">
-                Me olvidaste la contraseña
-              </a>
-            </Typography>
-          </form>
-        </Card>
-      </div>
+        <p className="text-white text-center mt-4">
+          <a href="#" className="underline hover:text-gray-200">
+            Olvidaste tu contraseña?
+          </a>
+        </p>
+      </form>
     </div>
   );
 }
