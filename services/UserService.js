@@ -13,11 +13,13 @@ class UserService
     }
 
     //Vamos validar el password
-    async validateCredentials(email, password){
+    async validateCredentials(email, password) {
         const user = await this.userModel.getByEmail(email);
-        if(!user) return false;
-        if(user.password !== password) return false;
-        return await bcrypt.compare(password, user.password);
+        if (!user) return false;
+
+        // Compara a senha digitada com o hash armazenado
+        const isMatch = await bcrypt.compare(password, user.password);
+        return isMatch;
     }
 
     async createUser({ email, password, activo = true }){
@@ -48,6 +50,7 @@ class UserService
     }
 
     async getUserByEmail(email){
+        email = email.trim().toLowerCase();
         return await this.userModel.getByEmail(email);
     }
 
