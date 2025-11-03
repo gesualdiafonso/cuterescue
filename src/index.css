@@ -131,7 +131,7 @@ body {
 
 /* ======== CARD AGREGAR ======== */
 .card-add {
-  @apply bg-[#FAC998] text-white rounded-2xl p-5 w-64 shadow-md flex flex-col justify-center items-center cursor-pointer hover:bg-[#f8b874] transition-colors duration-300;
+  @apply bg-[#22687bbb] text-white rounded-2xl p-5 w-64 shadow-md flex flex-col justify-center items-center cursor-pointer hover:bg-[#22687B] transition-colors duration-300;
 }
 
 .plus-sign {
