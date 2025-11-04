@@ -4,9 +4,11 @@ import taskUser from './taskUserRouter.js';
 import taskUserDetails from './taskDetailsUserRouter.js';
 import taskChips from './taskChipsRouter.js';
 import authRouter from './authRouter.js';
+import uploadRouter from './taskUploadRouter.js';
 
 function routerAPI(app) {
     app.use(authRouter);
+    app.use(uploadRouter);
     app.use(taskPets);
     app.use(taskLocation);
     app.use(taskUser);
