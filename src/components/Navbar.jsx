@@ -40,20 +40,37 @@ export default function Navbar() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  const fetchAlerts = async (userId) => {
-    const { data, error } = await supabase
-      .from("notificaciones")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("vista", false)
-      .order("fecha_alerta", { ascending: true });
+const fetchAlerts = async (userId) => {
+  // genero un join con la tabla documentacion para ver si esa ficha tiene alerta = 'activo'
+  const { data, error } = await supabase
+    .from("notificaciones")
+    .select(`
+      id,
+      mensaje,
+      fecha_alerta,
+      vista,
+      documentacion:documentacion_id (alerta)
+    `)
+    .eq("user_id", userId)
+    .order("fecha_alerta", { ascending: true });
 
-    if (!error && data) {
-      const today = new Date();
-      const filtered = data.filter(n => new Date(n.fecha_alerta) <= today);
-      setAlerts(filtered);
-    }
-  };
+  if (error) {
+    console.error("Error cargando notificaciones:", error);
+    return;
+  }
+
+  const today = new Date();
+
+  // Filtra solo las que ya deben mostrarse y cuya documentación esté activa
+  const filtered = (data || []).filter(
+    (n) =>
+      new Date(n.fecha_alerta) <= today &&
+      n.documentacion?.alerta === "Activo" &&
+      n.vista === false
+  );
+
+  setAlerts(filtered);
+};
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

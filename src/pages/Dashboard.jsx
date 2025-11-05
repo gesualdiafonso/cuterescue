@@ -2,38 +2,20 @@ import { useState, useEffect } from "react";
 import { supabase } from "../services/supabase";
 import { useNavigate } from "react-router-dom";
 import { Card, Typography } from "@material-tailwind/react";
+import ModalMascota from "../components/ModalMascota";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [mascotas, setMascotas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
+  const [message, setMessage] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPet, setCurrentPet] = useState(null);
-  const [newPet, setNewPet] = useState({
-    nombre: "",
-    especie: "",
-    raza: "",
-    fecha_nacimiento: "",
-    peso: "",
-    foto_url: "",
-  });
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
-    if (!modalOpen) {
-      setCurrentPet(null);
-      setNewPet({
-        nombre: "",
-        especie: "",
-        raza: "",
-        fecha_nacimiento: "",
-        peso: "",
-        foto_url: "",
-      });
-    }
+    if (!modalOpen) setCurrentPet(null);
   };
 
   useEffect(() => {
@@ -44,99 +26,89 @@ export default function Dashboard() {
         return;
       }
 
-      const { data: userInfo, error: userError } = await supabase
+      const { data: userInfo } = await supabase
         .from("usuarios")
         .select("*")
         .eq("id", user.id)
         .single();
 
-      if (userError) setError(userError.message);
-      else setUserData(userInfo);
+      setUserData(userInfo);
 
-      const { data: petsData, error: petsError } = await supabase
+      const { data: petsData } = await supabase
         .from("mascotas")
         .select("*")
         .eq("owner_id", user.id);
 
-      if (petsError) setError(petsError.message);
-      else setMascotas(petsData);
-
+      setMascotas(petsData || []);
       setLoading(false);
     };
 
     fetchData();
   }, [navigate]);
 
-  const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    setNewPet({
-      ...newPet,
-      [name]: type === "file" ? URL.createObjectURL(files[0]) : value,
-    });
-  };
-
-  const handleSavePet = async () => {
+  const handleSavePet = async (form, file) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    if (
-      !newPet.nombre ||
-      !newPet.especie ||
-      !newPet.raza ||
-      !newPet.fecha_nacimiento ||
-      !newPet.peso ||
-      !newPet.foto_url
-    ) {
-      alert("Todos los campos son obligatorios");
-      return;
+    let fotoUrl = form.foto_url;
+
+    // Si hay archivo nuevo, subirlo
+    if (file) {
+      const fileName = `${user.id}_${Date.now()}_${file.name}`;
+      const { data, error: uploadError } = await supabase.storage
+        .from("mascotas")
+        .upload(fileName, file);
+
+      if (uploadError) {
+        console.error("Error al subir imagen:", uploadError.message);
+        setMessage("❌ Error al subir la imagen.");
+        return;
+      }
+
+      const { data: publicUrl } = supabase.storage
+        .from("mascotas")
+        .getPublicUrl(fileName);
+
+      fotoUrl = publicUrl.publicUrl;
     }
 
     if (currentPet) {
-      const { error: updateError } = await supabase
+      const { error } = await supabase
         .from("mascotas")
-        .update({ ...newPet })
+        .update({ ...form, foto_url: fotoUrl })
         .eq("id", currentPet.id);
 
-      if (updateError) setError(updateError.message);
-      else {
+      if (!error) {
         setMascotas((prev) =>
-          prev.map((m) => (m.id === currentPet.id ? { ...m, ...newPet } : m))
+          prev.map((m) =>
+            m.id === currentPet.id ? { ...m, ...form, foto_url: fotoUrl } : m
+          )
         );
+        setMessage("✅ Mascota actualizada correctamente.");
       }
     } else {
-      const { data: inserted, error: insertError } = await supabase
+      const { data: inserted, error } = await supabase
         .from("mascotas")
-        .insert([{ owner_id: user.id, ...newPet }])
+        .insert([{ owner_id: user.id, ...form, foto_url: fotoUrl }])
         .select()
         .single();
 
-      if (insertError) setError(insertError.message);
-      else setMascotas((prev) => [...prev, inserted]);
+      if (!error && inserted) {
+        setMascotas((prev) => [...prev, inserted]);
+        setMessage("✅ Mascota agregada correctamente.");
+      }
     }
 
-    toggleModal();
-  };
-
-  const handleEditPet = (pet) => {
-    setCurrentPet(pet);
-    setNewPet({
-      nombre: pet.nombre,
-      especie: pet.especie,
-      raza: pet.raza,
-      fecha_nacimiento: pet.fecha_nacimiento,
-      peso: pet.peso,
-      foto_url: pet.foto_url,
-    });
-    setModalOpen(true);
+    setTimeout(() => setMessage(""), 2000);
   };
 
   const handleDeletePet = async (pet) => {
-    if (!window.confirm("¿Deseas eliminar esta mascota?")) return;
-
     const { error } = await supabase.from("mascotas").delete().eq("id", pet.id);
-
-    if (error) setError(error.message);
-    else setMascotas((prev) => prev.filter((m) => m.id !== pet.id));
+    if (!error) {
+      setMascotas((prev) => prev.filter((m) => m.id !== pet.id));
+      setMessage("🗑️ Mascota eliminada correctamente.");
+      setTimeout(() => setMessage(""), 2000);
+    }
   };
 
   const calculateAge = (fecha_nacimiento) => {
@@ -163,7 +135,11 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {error && <p className="text-red-500 mt-2">{error}</p>}
+        {message && (
+          <p className="text-center mt-3 text-violet-600 font-medium">
+            {message}
+          </p>
+        )}
 
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           {mascotas.length === 0 ? (
@@ -178,31 +154,26 @@ export default function Dashboard() {
                     className="w-full h-60 object-cover rounded-lg mb-2"
                   />
                 )}
-                <Typography>
-                  <strong>Nombre:</strong> {m.nombre}
-                </Typography>
-                <Typography>
-                  <strong>Especie:</strong> {m.especie}
-                </Typography>
-                <Typography>
-                  <strong>Raza:</strong> {m.raza}
-                </Typography>
+                <Typography><strong>Nombre:</strong> {m.nombre}</Typography>
+                <Typography><strong>Especie:</strong> {m.especie}</Typography>
+                <Typography><strong>Raza:</strong> {m.raza}</Typography>
                 <Typography>
                   <strong>Edad:</strong> {calculateAge(m.fecha_nacimiento)} años
                 </Typography>
-                <Typography>
-                  <strong>Peso:</strong> {m.peso} kg
-                </Typography>
+                <Typography><strong>Peso:</strong> {m.peso} kg</Typography>
 
                 <div className="flex justify-end space-x-2 mt-2">
                   <button
                     className="btn-outline"
-                    onClick={() => handleEditPet(m)}
+                    onClick={() => {
+                      setCurrentPet(m);
+                      setModalOpen(true);
+                    }}
                   >
                     Editar
                   </button>
                   <button
-                    className="btn-outline"
+                    className="btn-outline text-red-500"
                     onClick={() => handleDeletePet(m)}
                   >
                     Eliminar
@@ -213,6 +184,13 @@ export default function Dashboard() {
           )}
         </div>
       </Card>
+
+      <ModalMascota
+        isOpen={modalOpen}
+        onClose={toggleModal}
+        currentPet={currentPet}
+        onSave={handleSavePet}
+      />
     </div>
   );
 }
