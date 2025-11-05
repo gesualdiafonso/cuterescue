@@ -1,67 +1,104 @@
-import React from "react";
+import React, { useState, useRef } from "react";
+import MapaVeterinaria from "../components/maps/MapaVeterinarias";
 
 const veterinarias = [
   {
     id: 1,
     nombre: "Centro Médico Veterinario Buenos Aires",
     direccion: "Av. Boedo 840, C1228 Cdad. Autónoma de Buenos Aires",
+    lat: -34.62246017340913, 
+    lng: -58.41604893069148,
     telefono: "011 4931-4425",
-    imagen: "/src/assets/veterinaria-1.png",
+    imagen: "/src/assets/images/veterinarias/veterinaria-1.png",
     link: "https://www.instagram.com/centrovetbuenosaires/",
   },
   {
     id: 2,
     nombre: "CAVI Clínica Veterinaria",
     direccion: "Av. La Plata 402, C1235 Cdad. Autónoma de Buenos Aires",
+    lat: -34.61926456677184,
+    lng: -58.4281911182422,
     telefono: "3533-8108",
-    imagen: "/src/assets/veterinaria-2.png",
+    imagen: "/src/assets/images/veterinarias/veterinaria-2.png",
     link: "https://cavi.com.ar/",
   },
   {
     id: 3,
     nombre: "Veterinaria UCIcoop",
     direccion: "Av. José María Moreno 635, C1424AAG Cdad. Autónoma de Buenos Aires",
+    lat: -34.62593787430421,
+    lng: -58.434401116390696,
     telefono: "011 4924-0026",
-    imagen: "/src/assets/veterinaria-3.png",
+    imagen: "/src/assets/images/veterinarias/veterinaria-3.png",
     link: "https://www.instagram.com/ucicoop/",
   },
   {
     id: 4,
     nombre: "Veterinaria Panda",
     direccion: "Ave. Ruiz Huidobro 4771, C1430 Cdad. Autónoma de Buenos Aires",
+    lat: -34.554730831491426,
+    lng: -58.49462365872152,
     telefono: "011 5263-0176",
-    imagen: "/src/assets/veterinaria-4.png",
+    imagen: "/src/assets/images/veterinarias/veterinaria-4.png",
     link: "https://medicinaintegral.veterinariapanda.com.ar/",
   },
   {
     id: 5,
     nombre: "Veterinaria del Libertador",
     direccion: "Blanco Encalada 1420, C1428 Cdad. Autónoma de Buenos Aires",
+    lat: -34.55333374807784,
+    lng: -58.449358160572835,
     telefono: "4788-0888",
-    imagen: "/src/assets/veterinaria-5.png",
+    imagen: "/src/assets/images/veterinarias/veterinaria-5.png",
     link: "https://www.instagram.com/veterinarialibertador/",
   },
   {
     id: 6,
     nombre: "Clínica Veterinaria Cilap",
     direccion: "Av. Angel Gallardo 75, C1405 Cdad. Autónoma de Buenos Aires",
+    lat: -34.602468569611766,
+    lng: -58.43363597221212,
     telefono: "011 3137-0132",
-    imagen: "/src/assets/veterinaria-6.png",
+    imagen: "/src/assets/images/veterinarias/veterinaria-6.png",
     link: "https://www.instagram.com/clinicaveterinariacilap/",
   },
   {
     id: 7,
     nombre: "Centro Asistencial Veterinario San Marcos",
     direccion: "Av. Díaz Vélez 4730, C1405 Cdad. Autónoma de Buenos Aires",
+    lat: -34.608735235472466,
+    lng: -58.43343338940672,
     telefono: "011 4981-1873",
-    imagen: "/src/assets/veterinaria-7.png",
+    imagen: "/src/assets/images/veterinarias/veterinaria-7.png",
     link: "https://cavsanmarcos.com/",
   },
 ];
 
 export default function Veterinaria() {
+    const [selectedVet, setSelectedVet] = useState(veterinarias[0]);
+
+    const mapRef = useRef(null);
+
+    const handleSelectVet = (vet) => {
+        setSelectedVet(vet);
+
+        //Scroll hasta el maps
+        setTimeout(() => {
+            mapRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 200);
+    };
+
   return (
     <div className="min-h-screen bg-[#F7F9F9] py-10 px-6">
+        <div className="flex justify-center" ref={mapRef}>
+            <div className="max-w-7xl w-full">
+                <MapaVeterinaria 
+                    lat={selectedVet.lat}
+                    lng={selectedVet.lng}
+                    nombre={selectedVet.nombre}
+                />
+            </div>
+        </div>
       <h1 className="text-3xl font-bold text-center text-[#3D8E88] mb-10">
         Veterinarias 24 hrs
       </h1>
@@ -70,7 +107,8 @@ export default function Veterinaria() {
         {veterinarias.map((vet) => (
           <div
             key={vet.id}
-            className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+            onClick={() => handleSelectVet(vet)}
+            className={`bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-shadow duration-300 ${selectedVet.id === vet.id ? "ring-2 ring-[#3D8E88]" : ""}`}
           >
             <img
               src={vet.imagen}

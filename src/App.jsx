@@ -13,7 +13,8 @@ import ModalDocumentacion from './components/ModalDocumentacion';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 function App() {
 
