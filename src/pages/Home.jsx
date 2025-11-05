@@ -8,7 +8,7 @@ import QR from "../assets/cardQR.png";
 export default function Home() {
   return (
     <div className="min-h-screen w-full bg-[url('/images/grid-bg.png')] bg-cover bg-center flex flex-col items-center py-10 px-4">
-      {/* LOGO */}
+
       <div className="mb-10">
         <img
           src={LogoNombre}
@@ -17,7 +17,7 @@ export default function Home() {
         />
       </div>
 
-      {/* Sección superior: gato - QR - perro */}
+  
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl w-full items-center">
         {/* Imagen gato */}
         <div className="flex justify-center">
@@ -28,7 +28,7 @@ export default function Home() {
           />
         </div>
 
-        {/* QR centrado */}
+ 
         <div className="flex justify-center">
           <img
             src={QR}
@@ -47,9 +47,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Sección inferior */}
+
       <div className="mt-12 grid md:grid-cols-2 gap-8 max-w-6xl w-full items-center">
-        {/* Imagen grande izquierda */}
+
         <div className="flex justify-center">
           <img
             src={Banner1}
@@ -58,7 +58,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Texto inferior derecha */}
+
         <div className="flex flex-col justify-center text-left px-2">
           <p className="font-semibold text-lg text-gray-900 mb-3 leading-relaxed">
             Contrary to popular belief, Lorem Ipsum is not simply random text.
