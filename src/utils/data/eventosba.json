@@ -1,0 +1,87 @@
+ [
+    {
+      "id": "castracion_vacunacion_001",
+      "title": "Castración y Vacunación Antirrábica Gratuita",
+      "summary": "Operativos gratuitos de vacunación antirrábica y castraciones para perros y gatos en unidades móviles y centros fijos de la Ciudad de Buenos Aires.",
+      "details": "Vacunación antirrábica sin turno; castración con turno online. Servicio 100% gratuito, a cargo del programa Animales BA. Llevar documentación si corresponde.",
+      "locations": [
+        {
+          "name": "Unidades móviles Animales BA (recorridos por comunas)",
+          "address": "Consultá cronograma semanal en la web oficial y redes"
+        },
+        {
+          "name": "Centro fijo - Parque Indoamericano (Villa Soldati)",
+          "address": "Av. Escalada y Paseo Islas Malvinas"
+        },
+        {
+          "name": "Centro fijo - Costanera Sur",
+          "address": "Av. Dr. T. Achával Rodríguez 1550 (frente a la fuente Lola Mora)"
+        }
+      ],
+      "schedule": [
+        {
+          "type": "Castración",
+          "info": "Los turnos para castración se habilitan los viernes a las 10:00 h para la semana siguiente. Verificar disponibilidad en buenosaires.gob.ar/animalesba"
+        },
+        {
+          "type": "Vacunación antirrábica",
+          "info": "Se realiza sin turno; consultar cronograma semanal para día y horario en la web o redes de Animales BA"
+        }
+      ],
+      "access": {
+        "vacunacion": "Sin turno. Presentarse en el lugar y horario del operativo.",
+        "castracion": "Turno online: ingresar a buenosaires.gob.ar/animalesba con cuenta MiBA y completar el formulario."
+      },
+      "requirements": [
+        "Perros: collar y correa; bozal obligatorio si corresponde",
+        "Gatos: transportadora o bolso ventilado",
+        "Acompañante mayor de 18 años",
+        "Si es castración: ayuno 12 h (comida) y 8 h (líquidos) antes de la cirugía"
+      ],
+      "free": true,
+      "notes": "Los operativos pueden tener cronograma variable; se recomienda chequear la semana previa en la web oficial.",
+      "source_url": "https://buenosaires.gob.ar/noticias/castracion-y-vacunacion-antirrabica-gratuita-nuevos-dias-y-horarios"
+    },
+    {
+      "id": "atencion_veterinaria_002",
+      "title": "Atención Veterinaria y Castraciones Gratuitas - Animales BA",
+      "summary": "Atención clínica y castraciones gratuitas a través de centros fijos y unidades móviles del programa Animales BA en la Ciudad de Buenos Aires.",
+      "details": "Servicio público de atención veterinaria preventiva y quirúrgica para perros y gatos. El programa comprende control, consultas, cirugías programadas (con turno) y seguimientos postoperatorios según corresponda.",
+      "locations": [
+        {
+          "name": "Centro fijo - Parque Indoamericano (Villa Soldati)",
+          "address": "Av. Escalada y Paseo Islas Malvinas"
+        },
+        {
+          "name": "Centro fijo - Costanera Sur",
+          "address": "Av. Dr. T. Achával Rodríguez 1550 (frente a la fuente Lola Mora)"
+        },
+        {
+          "name": "Unidades móviles",
+          "address": "Recorridos por comunas; consultar cronograma semanal"
+        }
+      ],
+      "schedule": [
+        {
+          "type": "Turnos castración",
+          "info": "Se habilitan los viernes a las 10:00 h para la semana siguiente (turnos online)."
+        },
+        {
+          "type": "Atención veterinaria",
+          "info": "Consultas y controles en días y lugares indicados en el cronograma semanal."
+        }
+      ],
+      "access": {
+        "turnos": "Solicitar turno por MiBA en buenosaires.gob.ar/animalesba",
+        "consulta": "Algunos servicios pueden atender sin turno según operativo; verificar cronograma"
+      },
+      "requirements": [
+        "Traer a la mascota con las condiciones de seguridad necesarias (collar/correa o transportadora)",
+        "Acompañante mayor de 18 años",
+        "Seguir indicaciones preoperatorias (ayuno, etc.) comunicadas al confirmar turno"
+      ],
+      "free": true,
+      "notes": "Servicio sujeto a agenda y organizacion del programa Animales BA. Consultá el cronograma y requisitos actualizados en la web oficial.",
+      "source_url": "https://buenosaires.gob.ar/vicejefatura/ambiente/animalesba/atencion-veterinaria-y-castraciones-gratuitas"
+    }
+  ]

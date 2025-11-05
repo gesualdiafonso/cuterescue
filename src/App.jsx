@@ -15,6 +15,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import Eventos from './pages/Eventos';
 
 function App() {
 
@@ -34,7 +35,7 @@ function App() {
         <Route path="/registrar" element={<Register />} />
         <Route path="/ingresar" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-
+        <Route path="/eventos" element={<Eventos />} />
        
       </Routes>  
       <Footer/>
