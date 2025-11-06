@@ -5,13 +5,14 @@ import App from './App.jsx'
 import './fonts.css'
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from "@material-tailwind/react";
+import { SavedDataProvider } from "./context/SavedDataContext.jsx";
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <StrictMode> <SavedDataProvider>
     <BrowserRouter>
          <ThemeProvider>
       <App />
     </ThemeProvider>
-    </BrowserRouter>
+    </BrowserRouter></SavedDataProvider>
   </StrictMode>,
 )

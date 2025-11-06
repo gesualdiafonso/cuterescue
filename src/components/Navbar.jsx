@@ -15,6 +15,7 @@ export default function Navbar() {
 
   const menuItems = [
     { name: "Home", path: "/" },
+    { name: "Informe", path: "/informe" },
     { name: "Veterinarias 24hrs", path: "/veterinarias-24-hrs" },
     { name: "Documentación", path: "/documentacion" },
     { name: "Eventos", path: "/eventos" },
