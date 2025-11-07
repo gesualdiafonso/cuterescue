@@ -1,6 +1,6 @@
 import multer from "multer";
 import { GridFsStorage } from "multer-gridfs-storage";
-import clientPromise from "../services/useConnection";
+import clientPromise from "../services/useConnection.js";
 
 let storage;
 

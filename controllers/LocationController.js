@@ -72,7 +72,10 @@ class LocationController{
                 });
             }
     
-            res.json(updated);
+            res.json({
+                message: "Localización actualizada con suceso",
+                data: updated
+            });
         } catch (error){
             res.status(500).json({
                 error: `Error al actualizar ubicación: ${error.message}`

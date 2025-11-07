@@ -1,5 +1,5 @@
 import { GridFSBucket } from "mongodb";
-import clientPromise from "../services/useConnection";
+import clientPromise from "../services/useConnection.js";
 
 class UploadController{
     async uploadFile(req, res){
