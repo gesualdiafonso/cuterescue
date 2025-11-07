@@ -27,7 +27,7 @@ export default function Informe() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-3 text-gray-800">
-        🐾 Seguimiento GPS 
+        🐾 Seguimiento GPS
       </h1>
 
       <div className="w-full h-96 rounded-2xl overflow-hidden shadow-lg">
@@ -45,29 +45,24 @@ export default function Informe() {
             <Popup>
               📍 <strong>Ubicación actual</strong> <br />
               {direccion || "Sin dirección"} <br />
-           <small>
-  Última actualización:{" "}
-  {new Date(
-    new Date(updated_at).getTime() - 3 * 60 * 60 * 1000 // resto 3 hrs para horario arg, CORREGIR!!! 💥💥
-  ).toLocaleTimeString("es-AR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  })}
-</small>
-
-
-
-
+              <small>
+                Última actualización:{" "}
+                {new Date(
+                  new Date(updated_at).getTime() - 3 * 60 * 60 * 1000 // resto 3 hrs para horario arg, CORREGIR!!! 💥💥
+                ).toLocaleTimeString("es-AR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })}
+              </small>
             </Popup>
           </Marker>
         </MapContainer>
       </div>
 
-        <div className="p-6">
-      <SimulateGPS /> {/* simula movimiento cuando estoy en la pagina */}
-
-    </div>
+      <div className="p-6">
+        <SimulateGPS /> {/* simula movimiento cuando estoy en la pagina */}
+      </div>
     </div>
   );
 }
