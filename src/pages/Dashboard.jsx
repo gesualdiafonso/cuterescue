@@ -3,11 +3,20 @@ import { supabase } from "../services/supabase";
 import { useNavigate } from "react-router-dom";
 import { Card, Typography } from "@material-tailwind/react";
 import ModalMascota from "../components/ModalMascota";
+import PersonalInform from "../components/PersonalInforme";
+import Maps from "../components/maps/Maps";
+import MapsViwer from "../components/maps/MapsViwer"
+import PetCards from "../components/ui/PetsCard";
+import BtnPetMove from "../components/ui/BtnPetMove"
+import { useSavedData } from "../context/SavedDataContext";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [mascotas, setMascotas] = useState([]);
+  const {selectedPet, setSelectedPet} = useSavedData();
+  const [location, setLocation] = useState(null);
+  const [ubicacion, setUbicacion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -40,6 +49,14 @@ export default function Dashboard() {
         .eq("owner_id", user.id);
 
       setMascotas(petsData || []);
+
+      const { data: userUbication } = await supabase
+        .from("localizacion_usuario")
+        .select("*")
+        .eq("owner_id", user.id)
+        .single()
+      setUbicacion(userUbication)
+      
       setLoading(false);
     };
 
@@ -117,9 +134,54 @@ export default function Dashboard() {
     return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
   };
 
+  // Función para que selecione el pet y busca los datos asociado a este pet
+  const handleSelectPet = async (petId) => {
+    const pet = mascotas.find((m) => m.id === petId);
+    if (!pet) return;
+
+    // Atualiza o Context + Service sincronizado
+    setSelectedPet(pet);
+
+    // Corrigido: busca pela localização real do pet
+    const { data: location, error } = await supabase
+      .from("localizacion")
+      .select("*")
+      .eq("mascota_id", pet.id) // ✅ Aqui estava o bug
+      .single();
+
+    if (error) {
+      console.error("Error buscando ubicación:", error.message);
+    }
+
+    setLocation(location || null);
+  };
+
   if (loading) return <p className="text-center mt-10">Cargando perfil...</p>;
 
   return (
+    <>
+      <div className="max-w-7xl mx-auto p-0">
+      <section className="flex gap-20 mb-10 w-full">
+        <PersonalInform details={userData} locations={ubicacion}/>
+        <div className="flex flex-col gap-5 w-1/2">
+          <MapsViwer selectedPet={selectedPet} location={location} />
+          <BtnPetMove />
+        </div>
+      </section>
+
+      <div className="bg-black w-full h-0.5 my-10" />
+
+      <section className="flex gap-20 mb-10 w-full justify-center items-center">
+        <PetCards
+          pets={mascotas}
+          selectedPet={selectedPet}
+          setSelectedPet={handleSelectPet}
+          onPetAdded={(newPet) => setMascotas((prev) => [...prev, newPet])}
+        />
+        <Maps selectedPet={selectedPet} location={location} />
+      </section>
+    </div>
+
     <div className="min-h-screen p-8 bg-[#f0f4f8]">
       <Card className="max-w-4xl mx-auto p-6 shadow-lg rounded-2xl">
         <Typography variant="h4" className="mb-4">
@@ -192,5 +254,6 @@ export default function Dashboard() {
         onSave={handleSavePet}
       />
     </div>
+    </>
   );
 }

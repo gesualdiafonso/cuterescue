@@ -1,13 +1,32 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
+import {
+  getSelectedPetService,
+  setSelectedPet as setSelectedPetService,
+  subscribeSelectedPet
+} from "../services/SelectedPet.js"
 
 const SavedDataContext = createContext();
 
 export function SavedDataProvider({ children }) {
   const [location, setLocation] = useState(null);
-  const MASCOTA_ID = "dd1e7afc-c65c-4914-bde2-247b01ba0a85"; // igual al del simulador
 
+  const [selectedPet, setSelectedPetState] = useState(getSelectedPetService());
+
+  const MASCOTA_ID = selectedPet?.id || null; // igual al del simulador
+
+  // Mantego el service sincronizado
   useEffect(() => {
+    const unsubscribe = subscribeSelectedPet((newPet) => {
+      setSelectedPetState(newPet);
+    })
+    return unsubscribe;
+  }, []);
+
+  /*useEffect(() => {
+
+    if(!MASCOTA_ID) return;
+
     async function fetchLocation() {
       const { data, error } = await supabase
         .from("localizacion")
@@ -27,10 +46,16 @@ export function SavedDataProvider({ children }) {
     // Polling cada 5 segundos
     const interval = setInterval(fetchLocation, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [MASCOTA_ID]); */
+
+  // 🔹 Atualiza context → service
+  const setSelectedPet = (pet) => {
+    setSelectedPetState(pet);
+    setSelectedPetService(pet); // mantém tudo sincronizado
+  };
 
   return (
-    <SavedDataContext.Provider value={{ location }}>
+    <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet }}>
       {children}
     </SavedDataContext.Provider>
   );
