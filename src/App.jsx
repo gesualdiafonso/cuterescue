@@ -13,6 +13,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import Eventos from './pages/Eventos';
 import Informe from './pages/Informe';
+import AgregarMascota from './pages/AgregarMascota';
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/eventos" element={<Eventos />} />
         <Route path="/informe" element={<Informe />} />
+        <Route path="/agregarmascota" element={<AgregarMascota />} />
       </Routes>  
       <Footer/>
       
