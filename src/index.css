@@ -82,7 +82,10 @@
 body {
   font-family: "Agrandir", sans-serif;
 }
-
+/* elimino barra lateral de formulario */
+.overflow-y-auto {
+    overflow-y: hidden;
+}
 
 /* seccion documentacion */
 
@@ -217,7 +220,7 @@ body {
 
 /* ======== BOTÓN Y FOOTER ======== */
 .btn-modal {
-  @apply mt-6 mx-auto block bg-[#38BDF8] text-white py-2 px-6 rounded hover:bg-[#0ea5e9] transition-colors duration-300;
+  @apply mt-6 mx-auto block bg-[#F5DCB3] text-black py-2 px-6 rounded hover:bg-[#0ea5e9] transition-colors duration-300;
 }
 
 .modal-footer {
