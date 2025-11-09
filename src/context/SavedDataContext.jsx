@@ -1,31 +1,39 @@
+// ✅ SavedDataContext.jsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import {
   getSelectedPetService,
   setSelectedPet as setSelectedPetService,
   subscribeSelectedPet
-} from "../services/SelectedPet.js"
+} from "../services/SelectedPet";
 
 const SavedDataContext = createContext();
 
 export function SavedDataProvider({ children }) {
   const [location, setLocation] = useState(null);
+  const [selectedPet, setSelectedPetState] = useState(null);
 
-  const [selectedPet, setSelectedPetState] = useState(getSelectedPetService());
+  // 🧩 Etapa 1: Carrega imediatamente o pet salvo no localStorage
+  useEffect(() => {
+    const saved = getSelectedPetService();
+    if (saved) {
+      setSelectedPetState(saved);
+    }
+  }, []);
 
-  const MASCOTA_ID = selectedPet?.id || null; // igual al del simulador
-
-  // Mantego el service sincronizado
+  // 🧩 Etapa 2: Subscreve às mudanças do service
   useEffect(() => {
     const unsubscribe = subscribeSelectedPet((newPet) => {
       setSelectedPetState(newPet);
-    })
+    });
     return unsubscribe;
   }, []);
 
-  /*useEffect(() => {
+  const MASCOTA_ID = selectedPet?.id || null;
 
-    if(!MASCOTA_ID) return;
+  // 🧩 Etapa 3: Atualiza a localização do pet ativo
+  useEffect(() => {
+    if (!MASCOTA_ID) return;
 
     async function fetchLocation() {
       const { data, error } = await supabase
@@ -34,24 +42,19 @@ export function SavedDataProvider({ children }) {
         .eq("mascota_id", MASCOTA_ID)
         .single();
 
-      if (error) {
-        console.error("❌ Error al obtener localización:", error.message);
-      } else {
-        setLocation(data);
-      }
+      if (!error) setLocation(data);
+      else console.error("❌ Error al obtener localización:", error.message);
     }
 
     fetchLocation();
-
-    // Polling cada 5 segundos
     const interval = setInterval(fetchLocation, 5000);
     return () => clearInterval(interval);
-  }, [MASCOTA_ID]); */
+  }, [MASCOTA_ID]);
 
-  // 🔹 Atualiza context → service
+  // 🧩 Etapa 4: Sincroniza bidirecionalmente
   const setSelectedPet = (pet) => {
     setSelectedPetState(pet);
-    setSelectedPetService(pet); // mantém tudo sincronizado
+    setSelectedPetService(pet);
   };
 
   return (

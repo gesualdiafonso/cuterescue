@@ -63,6 +63,13 @@ export default function Dashboard() {
     fetchData();
   }, [navigate]);
 
+  useEffect(() => {
+    if (!loading && mascotas.length > 0 && !selectedPet) {
+      setSelectedPet(mascotas[0]);
+      fetchPetLocation(mascotas[0].id);
+    }
+  }, [loading, mascotas, selectedPet]);
+
   const handleSavePet = async (form, file) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
