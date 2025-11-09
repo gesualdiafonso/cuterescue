@@ -15,23 +15,29 @@ import 'leaflet/dist/leaflet.css';
 import Eventos from './pages/Eventos';
 import Informe from './pages/Informe';
 import InformePet from './pages/InformePet';
+import ModalAlert from './components/modals/ModalAlert';
+import { useSavedData } from './context/SavedDataContext';
+import Maps from './pages/Maps';
 
 function App() {
+
+  const { showAlert, closeAlert } = useSavedData() 
 
   return (
     <>
 
     <Navbar />
-    
+        <ModalAlert show={showAlert} alert={alert} onClose={closeAlert} />
          <Routes>
        <Route path="/" element={<Dashboard />} />
-
+          
          <Route path="/veterinarias-24-hrs" element={<Veterinarias />} />
         <Route path="/documentacion" element={<Documentacion />} />
         <Route path="/registrar" element={<Register />} />
         <Route path="/ingresar" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path='/detalles' element={<UserProfile />}/>
+        <Route path="/maps" element={<Maps />} />
         <Route path="/eventos" element={<Eventos />} />
         <Route path="/informe" element={<InformePet />} />
       </Routes>  

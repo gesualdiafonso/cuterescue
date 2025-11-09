@@ -13,6 +13,11 @@ export function SavedDataProvider({ children }) {
   const [location, setLocation] = useState(null);
   const [selectedPet, setSelectedPetState] = useState(null);
 
+  const [alert, setAlert] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+
+
+
   // 🧩 Etapa 1: Carrega imediatamente o pet salvo no localStorage
   useEffect(() => {
     const saved = getSelectedPetService();
@@ -57,8 +62,16 @@ export function SavedDataProvider({ children }) {
     setSelectedPetService(pet);
   };
 
+  // Informo los alerts a usuario
+  useEffect(() => {
+    if(alert) setShowAlert(true);
+  }, [alert])
+
+  function closeAlert(){
+    setShowAlert(false);
+  }
   return (
-    <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet }}>
+    <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet, showAlert, closeAlert }}>
       {children}
     </SavedDataContext.Provider>
   );
