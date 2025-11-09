@@ -1,9 +1,12 @@
 import React from "react";
 
-export default function EditPetForm({ selectedPet, onEditClick, onDeleteClick  }) {
+export default function EditPetForm({ selectedPet, onEditClick, onDeleteClick, location, ubicacion  }) {
   if (!selectedPet) return <div className="felx justify-center items-center"><h2 className="text-3xl font-black text-center my-10">Todavía el Pet no ha sido agregado</h2></div>;
 
-  const { nombre, especie, raza, fecha_nacimiento, edad, sexo, color, estado_salud, activo, foto_url } = selectedPet;
+  const { nombre, especie, raza, fecha_nacimiento, peso, sexo, color, estado_salud, foto_url } = selectedPet;
+
+  const { direccion = "", codigoPostal = "", provincia = "" } = location || {};
+  const { direccion: userDireccion = "", codigoPostal: userCodigoPostal = "", provincia: userProvincia = "" } = ubicacion || {};
 
   return (
     <div className="flex gap-20 justify-center items-center w-full mb-10">
@@ -84,14 +87,35 @@ export default function EditPetForm({ selectedPet, onEditClick, onDeleteClick  }
           </div>
 
           <div className="flex flex-col">
-            <label className="font-light text-lg text-black">Activo</label>
+            <label className="font-light text-lg text-black">Peso</label>
             <input
               type="text"
-              value={activo ? "Sí" : "No"}
+              value={peso}
               disabled
               className="border border-[#22687c] p-2 mt-2 bg-gray-100 text-gray-700"
             />
           </div>
+
+          <div className="flex flex-col">
+            <label className="font-light text-lg text-black">Ubicación dueno:</label>
+            <input
+              type="text"
+              value={userDireccion + " " + userCodigoPostal + " " + userProvincia}
+              disabled
+              className="border border-[#22687c] p-2 mt-2 bg-gray-100 text-gray-700"
+            />
+          </div>
+
+            <div className="flex flex-col">
+              <label className="font-light text-lg text-black">Última ubicación:</label>
+              <input
+                type="text"
+                value={`${direccion} ${codigoPostal} ${provincia}`}
+                disabled
+                className="border border-[#22687c] p-2 mt-2 bg-gray-100 text-gray-700"
+              />
+            </div>
+          
         </div>
 
         <div className="flex gap-5 w-full">

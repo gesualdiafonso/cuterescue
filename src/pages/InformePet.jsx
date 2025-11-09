@@ -16,6 +16,7 @@ export default function InformePet(){
     const[mascotas, setMascotas] = useState([]);
     const{selectedPet, setSelectedPet}= useSavedData();
     const[location, setLocation] = useState(null);
+    const [ ubicacion, setUbicacion] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -31,6 +32,12 @@ export default function InformePet(){
             setMascotas(mascotas || []);
 
             if(mascotas && mascotas.length > 0) setSelectedPet(mascotas[0]);
+
+            const { data: ubicacioUser } = await supabase
+                .from("localizacion_usuario")
+                .select("*")
+                .eq("owner_id", user.id)
+            setUbicacion(ubicacioUser?.[0] || null);
         };
         fetchPets();
     }, []);
@@ -44,7 +51,7 @@ export default function InformePet(){
             .from("localizacion")
             .select("*")
             .eq("mascota_id", petId)
-            .single();
+            .maybeSingle();
         setLocation(data || null)
     };
 
@@ -68,7 +75,15 @@ export default function InformePet(){
             </section>
             <div className="bg-black w-full h-0.5 my-10"/>
             <section className="mb-5 mt-5">
-                <EditPetForm pets={mascotas} selectedPet={selectedPet} setSelectedPet={(pet) => handleSelectPet(pet.id)} onEditClick={() => setIsEditModalOpen(true)} onDeleteClick={() => setIsDeleteModalOpen(true)} />
+                <EditPetForm 
+                    pets={mascotas} 
+                    selectedPet={selectedPet} 
+                    location={location}
+                    ubicacion={ubicacion}
+                    setSelectedPet={(pet) => handleSelectPet(pet.id)} 
+                    onEditClick={() => setIsEditModalOpen(true)} 
+                    onDeleteClick={() => setIsDeleteModalOpen(true)} 
+                />
                 <MapsViwer selectedPet={selectedPet} location={location} />
                 <div className="flex gap-10 justify-center items-center">
                     <BtnViaje/>

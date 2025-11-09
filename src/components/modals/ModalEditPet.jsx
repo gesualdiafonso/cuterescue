@@ -19,7 +19,7 @@ export default function ModalEditPet({ pet, onClose }) {
         <h2 className="text-3xl font-bold mb-6 text-white">Editar informações do pet</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {["nombre", "especie", "raza", "color", "sexo", "estado_salud", "edad"].map((field) => (
+          {["nombre", "especie", "raza", "color", "sexo", "estado_salud", "peso"].map((field) => (
             <div key={field} className="flex flex-col">
               <label className="font-light text-lg text-white capitalize">{field}</label>
               <input

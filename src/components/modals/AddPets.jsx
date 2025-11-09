@@ -104,6 +104,7 @@ export default function AddPets({ onPetAdded }) {
           color: form.color,
           estado_salud: form.estado_salud,
           foto_url: fotoUrl,
+          ubicacion_usuario: ubicacion?.id || null,
         }])
         .select()
         .single();
