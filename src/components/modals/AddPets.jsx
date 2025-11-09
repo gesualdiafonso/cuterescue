@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase";
 
 export default function AddPets({ onPetAdded }) {
@@ -8,18 +8,39 @@ export default function AddPets({ onPetAdded }) {
     especie: "",
     raza: "",
     fecha_nacimiento: "",
-    edad: "",
+    peso: "",
     sexo: "",
     color: "",
     estado_salud: "",
-    home_location: "",
     foto_url: null,
   });
+  const [ubicacion, setUbicacion] = useState(null);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [message, setMessage] = useState("");
 
-  // Atualiza campos do formulário
+
+  // Vamos bucar la localizacion del usuario al abrir modal
+  useEffect(() => {
+    const fetchUbicacion = async () => {
+      const { data: { user }} = await supabase.auth.getUser();
+      if(!user) return;
+
+      const { data, error } = await supabase
+        .from("localizacion_usuario")
+        .select("*")
+        .eq("owner_id", user.id)
+        .single()
+
+      if(error) console.error("Error al obtener ubicación: ", error.message)
+      setUbicacion(data)
+    };
+
+    if(showModal) fetchUbicacion();
+
+  }, [showModal])
+
+  // Atualiza campos del formulário
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "foto_url" && files[0]) {
@@ -30,16 +51,20 @@ export default function AddPets({ onPetAdded }) {
     }
   };
 
-  // Envia pet ao Supabase
+  // Envia pet al Supabase y cria localización basada en la del usuario
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage("");
+
     if (
       !form.nombre ||
       !form.especie ||
       !form.raza ||
       !form.fecha_nacimiento ||
-      !form.peso
+      !form.peso ||
+      !form.color ||
+      !form.sexo
     ) {
       setMessage("⚠️ Todos los campos son obligatorios.");
       return;
@@ -48,71 +73,79 @@ export default function AddPets({ onPetAdded }) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado.");
 
-      let uploadedFileUrl = null;
-
       // 1️⃣ Upload da imagem (se houver)
+      let fotoUrl = null;
       if (form.foto_url instanceof File) {
         const fileName = `${user.id}_${Date.now()}_${form.foto_url.name}`;
         const { data, error: uploadError } = await supabase.storage
-          .from("mascotas") // bucket no Supabase Storage
+          .from("mascotas")
           .upload(fileName, form.foto_url);
 
-        if (uploadError) throw new Error("Erro ao subir imagem: " + uploadError.message);
+        if (uploadError) throw uploadError;
 
         const { data: publicUrl } = supabase.storage
           .from("mascotas")
           .getPublicUrl(fileName);
 
-        uploadedFileUrl = publicUrl.publicUrl;
+        fotoUrl = publicUrl.publicUrl;
       }
 
       // 2️⃣ Inserir dados na tabela "mascotas"
-      const petData = {
-        owner_id: user.id,
-        nombre: form.nombre,
-        especie: form.especie,
-        raza: form.raza,
-        fecha_nacimiento: form.fecha_nacimiento,
-        edad: form.edad ? parseInt(form.edad) : null,
-        sexo: form.sexo,
-        color: form.color,
-        estado_salud: form.estado_salud,
-        home_location: form.home_location,
-        foto_url: uploadedFileUrl || null,
-        activo: true,
-      };
-
-      const { data: inserted, error } = await supabase
+      const { data: pet, error: insertError } = await supabase
         .from("mascotas")
-        .insert([petData])
+        .insert([{
+          owner_id: user.id,
+          nombre: form.nombre,
+          especie: form.especie,
+          raza: form.raza,
+          fecha_nacimiento: form.fecha_nacimiento,
+          peso: parseInt(form.peso),
+          sexo: form.sexo,
+          color: form.color,
+          estado_salud: form.estado_salud,
+          foto_url: fotoUrl,
+        }])
         .select()
         .single();
 
-      if (error) throw new Error(error.message);
+      if(insertError) throw insertError;
 
-      alert("✅ Mascota agregada correctamente!");
-      setShowModal(false);
-      setForm({
-        nombre: "",
-        especie: "",
-        raza: "",
-        fecha_nacimiento: "",
-        edad: "",
-        sexo: "",
-        color: "",
-        estado_salud: "",
-        home_location: "",
-        foto_url: null,
-      });
-      setPreview(null);
+      // Inserir la localizacion del pet basado en la localizacion del usuario
+      if(ubicacion){
+        const { direccion, codigoPostal, provincia, lat, lng, source } = ubicacion
+        const { error: locErro } = await supabase
+          .from("localizacion")
+          .insert([{
+            owner_id: user.id,
+            mascota_id: pet.id,
+            chip_id: "1111",
+            direccion,
+            codigoPostal,
+            provincia,
+            lat,
+            lng,
+            source,
+            localizacion_segura: true,
+            created_at: new Date(),
+          }]);
 
+          if(locErro) throw locErro;
+      }
+
+     onPetAdded(pet);
+     setMessage(" Mascota registrada correctamente");
+
+     setShowModal(false);
+     setForm({});
+     setPreview(null)
       // Atualiza pets no Dashboard
-      onPetAdded?.(inserted);
+
     } catch (err) {
       console.error("Erro ao adicionar pet:", err);
       alert("❌ Falha ao adicionar pet: " + err.message);
     } finally {
       setLoading(false);
+      setTimeout(() => setMessage(""), 3000);
     }
   };
 
@@ -180,9 +213,9 @@ export default function AddPets({ onPetAdded }) {
               />
               <input
                 type="number"
-                name="edad"
-                placeholder="Edad"
-                value={form.edad}
+                name="peso"
+                placeholder="peso"
+                value={form.peso}
                 onChange={handleChange}
                 className="w-full border border-[#fd9b08] p-2 bg-white"
               />
@@ -212,14 +245,6 @@ export default function AddPets({ onPetAdded }) {
                 onChange={handleChange}
                 className="w-full border border-[#fd9b08] p-2 bg-white"
               />
-              <input
-                type="text"
-                name="home_location"
-                placeholder="Ubicación"
-                value={form.home_location}
-                onChange={handleChange}
-                className="w-full border border-[#fd9b08] p-2 bg-white"
-              />
               <div>
                 <label className="block mb-1 text-sm text-white">Foto</label>
                 <input
@@ -238,6 +263,15 @@ export default function AddPets({ onPetAdded }) {
                 )}
               </div>
 
+              {/* Localizacion bloqueada de usuario a pet */}
+              {ubicacion && (
+                <div className="bg-gray-100 p-3 rounded-lg text-sm text-gray-700 border">
+                  <p><strong>Dirección:</strong> {ubicacion.direccion}</p>
+                  <p><strong>Código Postal:</strong> {ubicacion.codigoPostal}</p>
+                  <p><strong>Provincia:</strong> {ubicacion.provincia}</p>
+                  <p className="text-green-700 font-medium mt-1">📍 Esta será la ubicación inicial de tu mascota.</p>
+                </div>
+              )}
               {message && (
                 <p
                   className={`mt-3 text-center ${

@@ -39,7 +39,7 @@ export default function MapsViwer({ selectedPet, location }) {
     );
 
   const { nombre } = selectedPet;
-  const { lat, lng, address } = location;
+  const { lat, lng, direccion, codigoPostal, provincia } = location;
   const position = [lat, lng];
 
   return (
@@ -62,7 +62,7 @@ export default function MapsViwer({ selectedPet, location }) {
             <strong>{nombre}</strong> 🐾
             <br />
             Última ubicación: <br />
-            {address}
+            {direccion}
           </Popup>
         </Marker>
       </MapContainer>

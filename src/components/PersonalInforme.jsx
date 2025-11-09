@@ -11,13 +11,13 @@ export default function PersonalInform( { details, locations }){
     }
 
     const { nombre, apellido } = details;
-    const { direccion, codigo_postal, provincia } = locations
+    const { direccion, codigoPostal, provincia } = locations
     const [firstName] = nombre.split(" ");
 
     return(
         <div className="w-full lg:w-1/2 flex flex-col gap-2">
             <div className="flex gap-5 px-5">
-                <span>{direccion + " " + codigo_postal}</span>
+                <span>{direccion + ", " + " " + codigoPostal}</span>
                 <span>|</span>
                 <span>{provincia}</span>
             </div>

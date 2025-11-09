@@ -128,6 +128,22 @@ export default function Dashboard() {
     }
   };
 
+  const fetchPetLocation = async (petId) => {
+    const { data: location, error } = await supabase
+      .from("localizacion")
+      .select("*")
+      .eq("mascota_id", petId)
+      .single();
+    if (!error) setLocation(location || null);
+  };
+
+  const handlePetAdd = (newPet) => {
+    setMascotas((prev) => [...prev, newPet]);
+    setSelectedPet(newPet);
+    // Busca ubicacion recién asociado al pet como ultima_ubicacion
+    fetchPetLocation(newPet.id);
+  }
+
   const calculateAge = (fecha_nacimiento) => {
     const birth = new Date(fecha_nacimiento);
     const diff = Date.now() - birth.getTime();
@@ -146,7 +162,7 @@ export default function Dashboard() {
     const { data: location, error } = await supabase
       .from("localizacion")
       .select("*")
-      .eq("mascota_id", pet.id) // ✅ Aqui estava o bug
+      .eq("mascota_id", pet.id) 
       .single();
 
     if (error) {
@@ -176,7 +192,7 @@ export default function Dashboard() {
           pets={mascotas}
           selectedPet={selectedPet}
           setSelectedPet={handleSelectPet}
-          onPetAdded={(newPet) => setMascotas((prev) => [...prev, newPet])}
+          onPetAdded={handlePetAdd}
         />
         <Maps selectedPet={selectedPet} location={location} />
       </section>

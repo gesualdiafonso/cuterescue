@@ -3,12 +3,12 @@ import React from "react";
 export default function EditPetForm({ selectedPet, onEditClick, onDeleteClick  }) {
   if (!selectedPet) return <div className="felx justify-center items-center"><h2 className="text-3xl font-black text-center my-10">Todavía el Pet no ha sido agregado</h2></div>;
 
-  const { nombre, especie, raza, fecha_nacimiento, edad, sexo, color, estado_salud, activo } = selectedPet;
+  const { nombre, especie, raza, fecha_nacimiento, edad, sexo, color, estado_salud, activo, foto_url } = selectedPet;
 
   return (
     <div className="flex gap-20 justify-center items-center w-full mb-10">
       <div className="w-60 h-80 bg-gray-200 rounded-2xl">
-        <img src="#" alt={nombre} className="w-full h-full" />
+        <img src={foto_url} alt={nombre} className="w-full h-full object-cover" />
       </div>
 
       <form className="flex flex-col gap-10 w-2/3">

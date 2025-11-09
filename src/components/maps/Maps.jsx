@@ -16,7 +16,7 @@ export default function Maps({ selectedPet, location }) {
 
   const { nombre, activo } = selectedPet;
   const status = activo ? "Activo" : "Inactivo";
-  const { address, lat, lng } = location;
+  const { direccion, codigoPostal, provincia, lat, lng } = location;
 
   return (
     <div className="w-1/2 h-auto">
@@ -25,7 +25,7 @@ export default function Maps({ selectedPet, location }) {
           <div className="w-full flex flex-col">
             <h4>{nombre}</h4>
             <span>Última Localización: </span>
-            <span>{address}</span>
+            <span>{direccion}</span>
           </div>
           <div className="">
             <span className="bg-[#71dd5b] text-white px-2 text-center rounded-lg font-light">{status}</span>
