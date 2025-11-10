@@ -4,6 +4,8 @@ import LogoNombre from "../assets/logo-2.png";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
 import { FiBell } from "react-icons/fi";
+import PetLink from "./ui/PetLink";
+import { useSavedData } from "../context/SavedDataContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [alerts, setAlerts] = useState([]);
+  const { selectedPet } = useSavedData();
 
   const menuItems = [
     { name: "Home", path: "/" },
@@ -118,10 +121,10 @@ const fetchAlerts = async (userId) => {
               </li>
             ))}
           </ul>
-
+            
           {!user ? (
             <>
-              <Link to="/ingresar">
+              <Link to="/login">
                 <button className="btn-outline">Ingresar</button>
               </Link>
               <Link to="/registrar">
@@ -130,6 +133,7 @@ const fetchAlerts = async (userId) => {
             </>
           ) : (
             <div className="ml-6 relative flex items-center space-x-4">
+              <PetLink pet={selectedPet} />
               <div className="relative">
                 <button
                   onClick={handleNotificationsClick}

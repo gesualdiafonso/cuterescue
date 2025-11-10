@@ -8,11 +8,13 @@ import { ThemeProvider } from "@material-tailwind/react";
 import { SavedDataProvider } from "./context/SavedDataContext.jsx";
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode> <SavedDataProvider>
-    <BrowserRouter>
-         <ThemeProvider>
-      <App />
-    </ThemeProvider>
-    </BrowserRouter></SavedDataProvider>
+  <StrictMode> 
+    <SavedDataProvider>
+      <BrowserRouter>
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
+      </BrowserRouter>
+    </SavedDataProvider>
   </StrictMode>,
 )

@@ -36,26 +36,31 @@ export default function LogIn() {
   };
 
   return (
-    <div className="m-10 flex items-center justify-center">
+    <div className="w-full h-screen flex flex-col justify-center items-center relative overflow-hidden">
+      <img
+        src="src/assets/vetorpatas_trama.png"
+        alt=""
+        className="absolute w-full h-full object-cover -z-10 opacity-30"
+      />
       <form
         onSubmit={handleLogin}
-        className="rounded-2xl shadow-lg p-8 w-full max-w-md bg-[#22687B]/90 backdrop-blur-md"
+        className="bg-gray-500/50 backdrop-blur-md w-[450px] h-auto rounded-2xl flex flex-col justify-center items-center gap-10 px-10 py-12 shadow-xl"
       >
-        <h2 className="text-2xl font-semibold text-white mb-6 text-center">
-          Cute Rescue
-        </h2>
-        <p className="text-white text-center mb-6">
+       <div className="m-0">
+          <img src="src/assets/logo-2.png" alt="" className="h-40 w-full m-0"/>
+       </div>
+        <p className="text-white text-xl text-center mb-2">
           Ingresa tu correo y contraseña
         </p>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 w-full">
           <input
             type="email"
             name="email"
             placeholder="nombre@mail.com"
             value={formData.email}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white p-2 mt-2 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-600"
             required
           />
           <input
@@ -64,7 +69,7 @@ export default function LogIn() {
             placeholder="********"
             value={formData.password}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white p-2 mt-2 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-600"
             required
           />
         </div>
@@ -76,12 +81,12 @@ export default function LogIn() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#1e88e5] text-white mt-6 py-2 px-6 rounded-lg hover:bg-[#1976d2] w-full transition-all"
+          className="bg-cyan-700 text-center px-10 py-2 text-white font-semibold rounded-md hover:bg-cyan-800 transition-all w-full"
         >
           {loading ? "Ingresando..." : "Ingresar"}
         </button>
 
-        <p className="text-white text-center mt-4">
+        <p className="text-sm text-cyan-100 hover:text-white mt-2 text-center">
           <a href="#" className="underline hover:text-gray-200">
             Olvidaste tu contraseña?
           </a>

@@ -5,6 +5,7 @@ const SavedDataContext = createContext();
 
 export function SavedDataProvider({ children }) {
   const [location, setLocation] = useState(null);
+  const [selectedPet, setSelectedPet] = useState(null); // 🟣 <-- nuevo estado
   const MASCOTA_ID = "dd1e7afc-c65c-4914-bde2-247b01ba0a85"; // igual al del simulador
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export function SavedDataProvider({ children }) {
   }, []);
 
   return (
-    <SavedDataContext.Provider value={{ location }}>
+    <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet }}>
       {children}
     </SavedDataContext.Provider>
   );
