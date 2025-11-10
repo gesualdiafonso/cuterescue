@@ -11,8 +11,13 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function Maps({ selectedPet, location }) {
+<<<<<<< HEAD
   if (!selectedPet) return <div className="bg-amber-400 rounded-2xl w-full max-w-56 flex justify-center items-center p-10 mx-auto text-shadow-indigo-50 text-center"><h2 className="text-white text-3xl font-black">Todavía no Hay pet en sus informes</h2></div>;
   if (!location) return <div>Carregando localização...</div>;
+=======
+  if (!selectedPet) return <div className="bg-amber-400 rounded-2xl w-full max-w-56 flex justify-center items-center p-10 mx-auto text-shadow-indigo-50 text-center"><h2 className="text-white text-3xl font-black">Todavía no registró una mascota</h2></div>;
+  if (!location) return <div>Cargando ubicación...</div>;
+>>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
 
   const { nombre, activo } = selectedPet;
   const status = activo ? "Activo" : "Inactivo";

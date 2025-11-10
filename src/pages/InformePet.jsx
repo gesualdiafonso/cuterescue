@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from "react";
 import PetCards from "../components/ui/PetsCard";
+<<<<<<< HEAD
 import MapsViwer from "../components/maps/MapsViwer";
+=======
+import MapsViewer from "../components/maps/MapsViewer";
+>>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
 import Maps from "../components/maps/Maps"
 import EditPetForm from "../components/ui/EditPetForm";
 import BtnViaje from "../components/ui/BtnViaje"
@@ -85,7 +89,11 @@ export default function InformePet(){
                     onEditClick={() => setIsEditModalOpen(true)} 
                     onDeleteClick={() => setIsDeleteModalOpen(true)} 
                 />
+<<<<<<< HEAD
                 <MapsViwer selectedPet={selectedPet} location={location} />
+=======
+                <MapsViewer selectedPet={selectedPet} location={location} />
+>>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
                 <div className="flex gap-10 justify-center items-center">
                     <BtnViaje/>
                     <BtnPetMove/>

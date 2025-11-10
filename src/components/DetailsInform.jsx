@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 import React from "react"; 
 import { Link } from "react-router-dom";
 import BtnEditProfile from "./ui/BtnEditProfile";
+=======
+import React, { useState } from "react"; 
+import { Link } from "react-router-dom";
+import BtnEditProfile from "./ui/BtnEditProfile";
+import ModalEdicionUsuario from "./modals/ModalEdicionUsuario";
+import { supabase } from "../services/supabase";
+
+>>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
 
 export default function DetailsInform( {details, ubicacion}){
 
@@ -24,10 +33,43 @@ export default function DetailsInform( {details, ubicacion}){
   const estadoSeguridad = esSegura ? "Sí" : "No";
   const colorSeguridad = esSegura ? "bg-green-500" : "bg-red-500";
 
+<<<<<<< HEAD
   return (
     <div className="flex gap-10 justify-center items-center">
       <div className="bg-gray-200 w-72 h-80 rounded-2xl">
         <img src="#" alt="#" className="w-full h-full" />
+=======
+const [openModal, setOpenModal] = useState(false);
+const [userData, setUserData] = useState(details);
+
+const handleSave = async () => {
+  // Trae los datos actualizados desde Supabase
+  const { data, error } = await supabase
+    .from("usuarios")
+    .select("*")
+    .eq("id", details.id)
+    .single();
+
+  if (!error) setUserData(data);
+};
+
+  return (
+    <div className="flex gap-10 justify-center items-center">
+      <div className="bg-gray-200 w-72 h-80 rounded-2xl">
+             <div className="relative bg-gray-200 w-72 h-80 rounded-2xl overflow-hidden">
+  <img
+    src={userData.foto_url || "/default-avatar.png"}
+    alt="Foto de perfil"
+    className="object-cover w-full h-full"
+  />
+  <button
+    onClick={() => setOpenModal(true)}
+    className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#22687b] text-white px-4 py-1 rounded-lg text-sm hover:bg-[#1d5663]"
+  >
+    Editar foto
+  </button>
+</div>
+>>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
       </div>
 
       <div className="flex flex-col gap-4">
@@ -58,9 +100,22 @@ export default function DetailsInform( {details, ubicacion}){
           </p>
         </div>
         <div>
+<<<<<<< HEAD
           <BtnEditProfile />
         </div>
       </div>
+=======
+  
+
+        </div>
+      </div> <ModalEdicionUsuario
+  isOpen={openModal}
+  onClose={() => setOpenModal(false)}
+  currentUser={userData}
+  onSave={handleSave}
+/>
+
+>>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
     </div>
   );
 }

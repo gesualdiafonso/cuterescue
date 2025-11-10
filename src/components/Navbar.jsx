@@ -124,7 +124,7 @@ const fetchAlerts = async (userId) => {
             
           {!user ? (
             <>
-              <Link to="/ingresar">
+              <Link to="/login">
                 <button className="btn-outline">Ingresar</button>
               </Link>
               <Link to="/registrar">

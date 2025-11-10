@@ -35,7 +35,7 @@ function App() {
          <Route path="/veterinarias-24-hrs" element={<Veterinarias />} />
         <Route path="/documentacion" element={<Documentacion />} />
         <Route path="/registrar" element={<Register />} />
-        <Route path="/ingresar" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path='/detalles' element={<UserProfile />}/>
         <Route path="/maps" element={<Maps />} />

@@ -75,14 +75,22 @@ export default function Maps() {
   if (!selectedPet)
     return (
       <div className="flex items-center justify-center h-screen text-gray-500">
+<<<<<<< HEAD
         Selecione um pet para ver no mapa
+=======
+        Selecione una mascota para ver en el mapa
+>>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
       </div>
     );
 
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen text-gray-500">
+<<<<<<< HEAD
         Carregando localização...
+=======
+        cargando localización...
+>>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
       </div>
     );
 
@@ -124,7 +132,11 @@ export default function Maps() {
               <br />
               {address}
               <br />
+<<<<<<< HEAD
               {segura ? "Zona segura ✅" : "Fora da zona segura ⚠️"}
+=======
+              {segura ? "Zona segura ✅" : "Fueraa de zona segura ⚠️"}
+>>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
             </Popup>
           </Marker>
         </MapContainer>
