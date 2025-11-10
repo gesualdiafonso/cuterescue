@@ -19,6 +19,8 @@ import ModalAlert from './components/modals/ModalAlert';
 import { useSavedData } from './context/SavedDataContext';
 import Maps from './pages/Maps';
 import AgregarMascota from './pages/AgregarMascota';
+import Planes from './pages/Planes';
+
 
 function App() {
 
@@ -42,7 +44,8 @@ function App() {
         <Route path="/eventos" element={<Eventos />} />
         <Route path="/informe" element={<InformePet />} />
         <Route path="/informe" element={<Informe />} />
-        <Route path="/agregarmascota" element={<AgregarMascota />} />
+        <Route path="/agregarmascota" element={<AgregarMascota />} /> 
+           <Route path="/planes" element={<Planes />} />
       </Routes>  
       <Footer/>
       

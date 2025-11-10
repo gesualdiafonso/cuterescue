@@ -76,7 +76,7 @@ const handleSave = async () => {
           <p><strong>Documento:</strong> {tipo_documento}: {documento}</p>
           <p><strong>Género:</strong> {genero}</p>
           <p><strong>Plan:</strong> Premium 
-            <Link to="/planos" className="ml-3 px-5 bg-[#f7a82a] text-white font-light rounded-2xl">
+            <Link to="/planes" className="ml-3 px-5 bg-[#f7a82a] text-white font-light rounded-2xl">
               Cambiar
             </Link>
           </p>
