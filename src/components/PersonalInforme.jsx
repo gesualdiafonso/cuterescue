@@ -4,15 +4,18 @@ import BtnEmergency from "./ui/BtnEmergency";
 
 export default function PersonalInform({ details, locations }) {
   if (!details || !locations) {
-    return <div className="text-center py-10">Loading...</div>;
+    return <div className="text-center py-10">Cargando...</div>;
   }
 
   const { nombre = "", apellido = "", foto_url = "" } = details || {};
   const { direccion = "", codigoPostal = "", provincia = "" } = locations || {};
-  const [firstName] = nombre ? nombre.split(" ") : [""];
 
-  const capitalize = (text = "") =>
-    text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  // capitaliza todas las palabras de un texto
+  const capitalizeAll = (text = "") =>
+    text
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
 
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-0">
@@ -26,8 +29,22 @@ export default function PersonalInform({ details, locations }) {
 
       {/* Avatar y nombre */}
       <div className="flex items-center gap-4 mt-4">
+<<<<<<< HEAD
           <h2 className="font-black text-6xl sm:text-5xl">
             {`${capitalize(nombre)} ${capitalize(apellido)}`}
+=======
+        <div className="bg-gray-300 rounded-full w-20 h-20 sm:w-24 sm:h-24 overflow-hidden">
+          <img
+            src={foto_url || "/default-avatar.png"}
+            alt={`Foto de ${nombre || "usuario"}`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <h2 className="font-bold text-2xl sm:text-3xl">
+            {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
+>>>>>>> 3248fce (capitalizeAll > implemento mayusculas en todos los nombres y apellidos)
           </h2>
       </div>
 

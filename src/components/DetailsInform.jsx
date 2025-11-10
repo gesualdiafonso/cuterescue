@@ -52,8 +52,8 @@ export default function DetailsInform( {details, ubicacion}){
   />
   <button
     onClick={() => setOpenModal(true)}
-    className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#22687b] text-white px-4 py-1 rounded-lg text-sm hover:bg-[#1d5663]"
-  >
+    className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-[#22687b] text-white px-4 py-1 font-medium rounded-md hover:bg-[#1b5056] transition"
+  > 
     Editar foto
   </button>
 </div>
@@ -76,12 +76,16 @@ export default function DetailsInform( {details, ubicacion}){
           <p><strong>Documento:</strong> {tipo_documento}: {documento}</p>
           <p><strong>Género:</strong> {genero}</p>
           <p><strong>Plan:</strong> Premium 
+<<<<<<< HEAD
             <Link to="/planos" className="ml-3 px-5 bg-[#f7a82a] text-white font-light rounded-2xl">
+=======
+            <Link to="/planes" className="ml-3 px-4 py-1 bg-[#FF8C09] text-white font-medium rounded-md hover:bg-[#e07e07] transition">
+>>>>>>> 3248fce (capitalizeAll > implemento mayusculas en todos los nombres y apellidos)
               Cambiar
             </Link>
           </p>
           <p><strong>GPS Activo:</strong> gps  
-            <Link to="/gps-pets" className="ml-3 px-5 bg-[#22687b] text-white font-light rounded-2xl">
+            <Link to="/gps-pets" className="ml-3 px-4 py-1 bg-[#22687B] text-white font-medium rounded-md hover:bg-[#1b5056] transition">
               Acceder
             </Link>
           </p>
