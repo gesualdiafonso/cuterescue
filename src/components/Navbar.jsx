@@ -172,50 +172,51 @@ const fetchAlerts = async (userId) => {
                 )}
               </div>
 
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setProfileOpen(!profileOpen);
-                    setNotificationsOpen(false);
-                  }}
-                  className="btn bg-white text-[#22687B]"
-                >
-                  Mi Perfil
-                </button>
+          <div className="relative">
+  <button
+    onClick={() => {
+      setProfileOpen(!profileOpen);
+      setNotificationsOpen(false);
+    }}
+    className="px-4 py-2 bg-white text-[#22687B] font-semibold rounded-md shadow hover:bg-[#f0fafa] transition"
+  >
+    Mi Perfil
+  </button>
 
-                {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
-                    <ul className="flex flex-col">
-                      <li>
-                        <button
-                          onClick={() => navigate("/dashboard")}
-                          className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                        >
-                          Mi Cuenta
-                        </button>
-                      </li>
-                      <li>
-                        <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                          Mi Plan
-                        </button>
-                      </li>
-                      <li>
-                        <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                          Agregar Mascota
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          onClick={handleSignOut}
-                          className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
-                        >
-                          Cerrar Sesión
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </div>
+  {profileOpen && (
+    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 border border-gray-200">
+      <ul className="flex flex-col">
+        <li>
+          <button
+            onClick={() => navigate("/detalles")}
+            className="block w-full text-left px-4 py-2 hover:bg-[#e6f2f2] transition text-[#22687B] font-medium"
+          >
+            Mi Cuenta
+          </button>
+        </li>
+        <li>
+               <Link to="/planes"> <button className="block w-full text-left px-4 py-2 hover:bg-[#e6f2f2] transition text-[#22687B] font-medium">
+            Mi Plan
+          </button></Link>
+        </li>
+        <li>
+          <button className="block w-full text-left px-4 py-2 hover:bg-[#e6f2f2] transition text-[#22687B] font-medium">
+            Agregar Mascota
+          </button>
+        </li>
+        <li>
+          <button
+            onClick={handleSignOut}
+            className="block w-full text-left px-4 py-2 text-red-500 hover:bg-[#ffe5e5] font-medium transition"
+          >
+            Cerrar Sesión
+          </button>
+        </li>
+      </ul>
+    </div>
+  )}
+</div>
+
             </div>
           )}
         </div>

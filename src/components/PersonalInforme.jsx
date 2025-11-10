@@ -4,15 +4,18 @@ import BtnEmergency from "./ui/BtnEmergency";
 
 export default function PersonalInform({ details, locations }) {
   if (!details || !locations) {
-    return <div className="text-center py-10">Loading...</div>;
+    return <div className="text-center py-10">Cargando...</div>;
   }
 
   const { nombre = "", apellido = "", foto_url = "" } = details || {};
   const { direccion = "", codigoPostal = "", provincia = "" } = locations || {};
-  const [firstName] = nombre ? nombre.split(" ") : [""];
 
-  const capitalize = (text = "") =>
-    text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  // capitaliza todas las palabras de un texto
+  const capitalizeAll = (text = "") =>
+    text
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
 
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-0">
@@ -36,7 +39,7 @@ export default function PersonalInform({ details, locations }) {
 
         <div className="flex flex-col">
           <h2 className="font-bold text-2xl sm:text-3xl">
-            {`${capitalize(nombre)} ${capitalize(apellido)}`}
+            {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
           </h2>
           <Link
             to="/detalles"
