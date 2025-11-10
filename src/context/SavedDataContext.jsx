@@ -71,7 +71,7 @@ export function SavedDataProvider({ children }) {
     setShowAlert(false);
   }
   return (
-    <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet, showAlert, closeAlert }}>
+    <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet, showAlert, closeAlert, setAlert }}>
       {children}
     </SavedDataContext.Provider>
   );

@@ -1,14 +1,14 @@
 import React from "react";
 import AddPets from "../modals/AddPets";
 
-export default function PetCards({ pets = [], selectedPet, setSelectedPet, onPetAdded }) {
+export default function PetCards({ pets = [], selectedPet, setSelectedPet, onPetAdded, location }) {
   return (
     <div className="w-full h-full flex flex-row gap-10 items-center max-w-3xl overflow-x-scroll overflow-y-hidden">
       {pets && pets.length > 0 ? (
         <>
           {pets.map((pet) => {
-            const { nombre, activo, location } = pet;
-            const ubicacion = location ? location.direccion : "Ubicación no disponible";
+            const { nombre, activo } = pet;
+            const direccion = location?.direccion || "Ubicación no disponible";
             const status = activo ? "Activo" : "Inactivo";
             const isSelected = selectedPet?.id === pet.id;
 
@@ -35,7 +35,7 @@ export default function PetCards({ pets = [], selectedPet, setSelectedPet, onPet
                     </span>
                   </span>
                   <strong className="text-orange-300">Ubicación:</strong>
-                  <span>{ubicacion}</span>
+                  <span>{direccion}</span>
                 </div>
               </article>
             );

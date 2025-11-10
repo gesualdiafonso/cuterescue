@@ -2,11 +2,16 @@ import { simulateEmergency } from "../../services/MovimentPet.js";
 import { useSavedData } from "../../context/SavedDataContext";
 
 export default function BtnEmergency() {
-  const { selectedPet, ubicacion, setAlert } = useSavedData();
+  const { selectedPet, location, setAlert } = useSavedData();
 
   async function handleClick() {
-    if (!selectedPet || !ubicacion) return;
-    await simulateEmergency(selectedPet, ubicacion, setAlert);
+    if (!selectedPet || !location) {
+    console.log("❌ Faltan datos:", { selectedPet, location });
+    return;
+  }
+  console.log("🚀 Emergencia disparada:", selectedPet.id);
+  await simulateEmergency(selectedPet, location, setAlert);
+  console.log("✅ Simulação completa");
   }
 
   return (

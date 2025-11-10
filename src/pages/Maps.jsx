@@ -37,7 +37,7 @@ export default function Maps() {
       const { data, error } = await supabase
         .from("localizacion")
         .select("*")
-        .eq("pet_id", selectedPet.id)
+        .eq("mascota_id", selectedPet.id)
         .order("created_at", { ascending: false })
         .limit(1)
         .single();

@@ -1,3 +1,4 @@
+import { getAddressFromCoordinates } from "./GeoAPI";
 import { supabase } from "./supabase";
 
 // Funcion auxiliar: genera coordenadas radom adentro de un rayo km
@@ -28,7 +29,7 @@ async function updatePetLocation(petId, newLocation){
             direccion,
             codigoPostal,
             provincia,
-            update_at: new Date(),
+            updated_at: new Date(),
         })
         .eq("mascota_id", petId);
 
@@ -36,14 +37,37 @@ async function updatePetLocation(petId, newLocation){
 
 }
 
+// Función para pegar ubicación completo
+async function locationData(lat, lng){
+    const fullAddress = await getAddressFromCoordinates(lat, lng);
+
+    if(!fullAddress) throw Error("Erro de cargar informaciones");
+
+    const parts = fullAddress.split(", ").map(p => p.trim());
+
+    const provincia = parts[parts.length - 3];
+
+    const codigoPostal = parts.find(p => /\d{4,5}/.test(p));
+
+    return {
+        direccion: parts.slice(0, parts.length - 3).join(", "),
+        codigoPostal,
+        provincia,
+    };
+}
+
+
 // Simulación normal de hasta 8km de rayo del dueno
 export async function simulateNormalMove(pet, userLocation, onAlert){
-    const { lat, lng } = generateRandomCoords(userLocation.lat, userLocation.lng, 8);
+    const { lat, lng } = generateRandomCoords(userLocation.lat, userLocation.lng, 1);
+
+    const addressData = await locationData(lat, lng);
 
     const simulated = {
         ...userLocation,
         lat,
         lng,
+        ...addressData
     };
 
     await updatePetLocation(pet.id, simulated);
@@ -53,7 +77,7 @@ export async function simulateNormalMove(pet, userLocation, onAlert){
             type: "normal",
             color: "#22687c",
             title: `${pet.nombre} se está moviendo`,
-            message: "Movimiento dentro de la zona de sus 8km",
+            message: `Movimiento dentro de la zona de sus 8km.\n\n📍 Dirección actual:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
             button: `Ubique donde está ${pet.nombre}`,
             redirect: "/maps"
         })
@@ -65,12 +89,15 @@ export async function simulateNormalMove(pet, userLocation, onAlert){
 // Simulación de emergencia > a 8km
 
 export async function simulateEmergency(pet, userLocation, onAlert){
-    const { lat, lng } = generateRandomCoords(userLocation.lat, userLocation.lng, 15);
+    const { lat, lng } = generateRandomCoords(userLocation.lat, userLocation.lng, 4);
+
+    const addressData = await locationData(lat, lng);
 
     const simulated = {
         ...userLocation,
         lat, 
-        lng
+        lng,
+        ...addressData
     };
 
     await updatePetLocation(pet.id, simulated);
@@ -80,7 +107,7 @@ export async function simulateEmergency(pet, userLocation, onAlert){
             type: "emergency",
             color: "#f7612a",
             title: `Estamos Alertando que su mascota ${pet.nombre} está afuera de su ubicación`,
-            message: "El pet ha salido de la zona de seguridad estipulado por usted, por favor verifique y siga sus pasitos.",
+            message: `El pet ha salido de la zona de seguridad estipulada.\n\n📍 Nueva ubicación:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
             button: `Vea su pet ${pet.nombre}`,
             redirect: "/maps",
         });
@@ -93,10 +120,13 @@ export async function simulateEmergency(pet, userLocation, onAlert){
 export async function simulatedPaseo(pet, userLocation, onAlert){
     const { lat, lng } = generateRandomCoords(userLocation.lat, userLocation.lng, 2);
 
+    const addressData = await locationData(lat, lng);
+
     const simulated = {
         ...userLocation,
         lat,
         lng,
+        ...addressData
     };
 
     await updatePetLocation(pet.id, simulated);
@@ -106,7 +136,7 @@ export async function simulatedPaseo(pet, userLocation, onAlert){
             type: "paseo",
             color: "#22687C",
             title: `Paseo de ${pet.nombre}`,
-            message: "El pet está disfrutando su paseo cerca de casa.",
+            message: `El pet está disfrutando su paseo cerca de casa.\n\n📍 Dirección:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
             button: `Mascote ${pet.nombre} está seguro`,
             redirect: "/maps",
         })

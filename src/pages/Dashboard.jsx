@@ -198,6 +198,7 @@ export default function Dashboard() {
         <PetCards
           pets={mascotas}
           selectedPet={selectedPet}
+          location={location}
           setSelectedPet={handleSelectPet}
           onPetAdded={handlePetAdd}
         />

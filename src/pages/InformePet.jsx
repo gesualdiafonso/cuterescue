@@ -67,6 +67,7 @@ export default function InformePet(){
             <section className="flex gap-20 mb-10">
                 <PetCards
                     pets={mascotas}
+                    location={location}
                     selectedPet={selectedPet}
                     setSelectedPet={handleSelectPet}
                     onPetAdded={(newPet) => setMascotas((prev) => [...prev, newPet])}

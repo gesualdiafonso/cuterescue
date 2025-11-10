@@ -14,24 +14,21 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import Eventos from './pages/Eventos';
 import Informe from './pages/Informe';
-<<<<<<< HEAD
 import InformePet from './pages/InformePet';
 import ModalAlert from './components/modals/ModalAlert';
 import { useSavedData } from './context/SavedDataContext';
 import Maps from './pages/Maps';
-=======
 import AgregarMascota from './pages/AgregarMascota';
->>>>>>> 5a9ca2a (formulario agregar mascota)
 
 function App() {
 
-  const { showAlert, closeAlert } = useSavedData() 
+  const { showAlert, closeAlert, setAlert } = useSavedData() 
 
   return (
     <>
 
     <Navbar />
-        <ModalAlert show={showAlert} alert={alert} onClose={closeAlert} />
+        <ModalAlert show={showAlert} alert={setAlert} onClose={closeAlert} />
          <Routes>
        <Route path="/" element={<Dashboard />} />
           
@@ -43,12 +40,9 @@ function App() {
         <Route path='/detalles' element={<UserProfile />}/>
         <Route path="/maps" element={<Maps />} />
         <Route path="/eventos" element={<Eventos />} />
-<<<<<<< HEAD
         <Route path="/informe" element={<InformePet />} />
-=======
         <Route path="/informe" element={<Informe />} />
         <Route path="/agregarmascota" element={<AgregarMascota />} />
->>>>>>> 5a9ca2a (formulario agregar mascota)
       </Routes>  
       <Footer/>
       
