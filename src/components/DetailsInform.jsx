@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-import React from "react"; 
-import { Link } from "react-router-dom";
-import BtnEditProfile from "./ui/BtnEditProfile";
-=======
 import React, { useState } from "react"; 
 import { Link } from "react-router-dom";
 import BtnEditProfile from "./ui/BtnEditProfile";
 import ModalEdicionUsuario from "./modals/ModalEdicionUsuario";
 import { supabase } from "../services/supabase";
 
->>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
 
 export default function DetailsInform( {details, ubicacion}){
 
@@ -29,29 +23,23 @@ export default function DetailsInform( {details, ubicacion}){
   const { direccion, codigoPostal, provincia, direccion_segura } = ubicacion || {}
 
   // ✅ Conversão lógica e cor condicional
- const esSegura = direccion_segura === true || direccion_segura === "true";
+  const esSegura = direccion_segura === true || direccion_segura === "true";
   const estadoSeguridad = esSegura ? "Sí" : "No";
   const colorSeguridad = esSegura ? "bg-green-500" : "bg-red-500";
 
-<<<<<<< HEAD
-  return (
-    <div className="flex gap-10 justify-center items-center">
-      <div className="bg-gray-200 w-72 h-80 rounded-2xl">
-        <img src="#" alt="#" className="w-full h-full" />
-=======
-const [openModal, setOpenModal] = useState(false);
-const [userData, setUserData] = useState(details);
+  const [openModal, setOpenModal] = useState(false);
+  const [userData, setUserData] = useState(details);
 
-const handleSave = async () => {
-  // Trae los datos actualizados desde Supabase
-  const { data, error } = await supabase
-    .from("usuarios")
-    .select("*")
-    .eq("id", details.id)
-    .single();
+  const handleSave = async () => {
+    // Trae los datos actualizados desde Supabase
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("*")
+      .eq("id", details.id)
+      .single();
 
-  if (!error) setUserData(data);
-};
+    if (!error) setUserData(data);
+  };
 
   return (
     <div className="flex gap-10 justify-center items-center">
@@ -69,7 +57,6 @@ const handleSave = async () => {
     Editar foto
   </button>
 </div>
->>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
       </div>
 
       <div className="flex flex-col gap-4">
@@ -100,22 +87,16 @@ const handleSave = async () => {
           </p>
         </div>
         <div>
-<<<<<<< HEAD
-          <BtnEditProfile />
-        </div>
-      </div>
-=======
   
 
         </div>
       </div> <ModalEdicionUsuario
-  isOpen={openModal}
-  onClose={() => setOpenModal(false)}
-  currentUser={userData}
-  onSave={handleSave}
-/>
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        currentUser={userData}
+        onSave={handleSave}
+      />
 
->>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
     </div>
   );
 }

@@ -11,12 +11,7 @@ const SavedDataContext = createContext();
 
 export function SavedDataProvider({ children }) {
   const [location, setLocation] = useState(null);
-<<<<<<< HEAD
   const [selectedPet, setSelectedPetState] = useState(null);
-=======
-  const [selectedPet, setSelectedPet] = useState(null); // 🟣 <-- nuevo estado
-  const MASCOTA_ID = "dd1e7afc-c65c-4914-bde2-247b01ba0a85"; // igual al del simulador
->>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
 
   const [alert, setAlert] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -76,11 +71,7 @@ export function SavedDataProvider({ children }) {
     setShowAlert(false);
   }
   return (
-<<<<<<< HEAD
     <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet, showAlert, closeAlert, setAlert }}>
-=======
-    <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet }}>
->>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
       {children}
     </SavedDataContext.Provider>
   );

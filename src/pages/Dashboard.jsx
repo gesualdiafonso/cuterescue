@@ -5,18 +5,11 @@ import { Card, Typography } from "@material-tailwind/react";
 import ModalMascota from "../components/ModalMascota";
 import PersonalInform from "../components/PersonalInforme";
 import Maps from "../components/maps/Maps";
-<<<<<<< HEAD
-import MapsViwer from "../components/maps/MapsViwer"
 import PetCards from "../components/ui/PetsCard";
 import BtnPetMove from "../components/ui/BtnPetMove"
 import { useSavedData } from "../context/SavedDataContext";
-=======
 import MapsViewer from "../components/maps/MapsViewer"
-import PetCards from "../components/ui/PetsCard";
-import BtnPetMove from "../components/ui/BtnPetMove"
-import { useSavedData } from "../context/SavedDataContext";
 
->>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -192,50 +185,39 @@ export default function Dashboard() {
   return (
     <>
       <div className="max-w-7xl mx-auto p-0">
-<<<<<<< HEAD
-      <section className="flex gap-20 mb-10 w-full">
-        <PersonalInform details={userData} locations={ubicacion}/>
-        <div className="flex flex-col gap-5 w-1/2">
-          <MapsViwer selectedPet={selectedPet} location={location} />
-          <BtnPetMove />
-        </div>
-      </section>
+        <section className="flex gap-20 mb-10 w-full">
+          <PersonalInform details={userData} locations={ubicacion}/>
+          <div className="flex flex-col gap-5 w-1/2">
+            <MapsViewer selectedPet={selectedPet} location={location} />
+            <BtnPetMove pet={selectedPet} userLocation={location} />
+          </div>
+        </section>
 
-      <div className="bg-black w-full h-0.5 my-10" />
+        <div className="bg-black w-full h-0.5 my-10" />
 
-      <section className="flex gap-20 mb-10 w-full justify-center items-center">
-        <PetCards
-          pets={mascotas}
-          selectedPet={selectedPet}
-          location={location}
-          setSelectedPet={handleSelectPet}
-          onPetAdded={handlePetAdd}
-        />
-        <Maps selectedPet={selectedPet} location={location} />
-      </section>
-    </div>
+        <section className="flex gap-20 mb-10 w-full justify-center items-center">
+          <PetCards
+            pets={mascotas}
+            selectedPet={selectedPet}
+            location={location}
+            setSelectedPet={handleSelectPet}
+            onPetAdded={handlePetAdd}
+          />
+          <Maps selectedPet={selectedPet} location={location} />
+        </section>
 
-    <div className="min-h-screen p-8 bg-[#f0f4f8]">
-      <Card className="max-w-4xl mx-auto p-6 shadow-lg rounded-2xl">
-        <Typography variant="h4" className="mb-4">
-          Bienvenido, {userData?.nombre || "Usuario"}!
-        </Typography>
-        <Typography>Email: {userData?.email}</Typography>
-        <Typography>Plan: {userData?.plan || "Freemium"}</Typography>
-=======
-<section className="flex flex-col lg:flex-row gap-10 lg:gap-20 mb-10 w-full">
-  {/* Columna izquierda: información del usuario */}
-  <div className="w-full lg:w-1/2">
-    <PersonalInform details={userData} locations={ubicacion} />
-  </div>
->>>>>>> b0096ff (implementación de nuevas pages, componentes y services de otro repo cuterescue, edit/borrar mascota, user foto_url, dashboard responsive)
+        <section className="flex flex-col lg:flex-row gap-10 lg:gap-20 mb-10 w-full">
+      {/* Columna izquierda: información del usuario */}
+      <div className="w-full lg:w-1/2">
+        <PersonalInform details={userData} locations={ubicacion} />
+      </div>
 
-  {/* Columna derecha: mapa y botones */}
-  <div className="w-full lg:w-1/2 flex flex-col gap-5">
-    <MapsViewer selectedPet={selectedPet} location={location} />
-    <BtnPetMove />
-  </div>
-</section>
+      {/* Columna derecha: mapa y botones */}
+      <div className="w-full lg:w-1/2 flex flex-col gap-5">
+        <MapsViewer selectedPet={selectedPet} location={location} />
+        <BtnPetMove />
+      </div>
+    </section>
 
 
       <div className="bg-black w-full h-0.5 my-10" />

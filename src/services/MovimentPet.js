@@ -144,3 +144,56 @@ export async function simulatedPaseo(pet, userLocation, onAlert){
 
     return simulated;
 }
+
+// 🛰️ Simulação de movimento contínuo
+export async function startRealTimeSimulation(pet, userLocation, type = "normal", onAlert) {
+  let interval;
+  const radiusMap = {
+    normal: 1, // km
+    paseo: 2,
+    emergency: 4,
+  };
+
+  const colorMap = {
+    normal: "#22687c",
+    paseo: "#22687C",
+    emergency: "#f7612a",
+  };
+
+  const messageMap = {
+    normal: "Movimiento dentro de la zona de sus 8km.",
+    paseo: "El pet está disfrutando su paseo cerca de casa.",
+    emergency: "El pet ha salido de la zona de seguridad estipulada.",
+  };
+
+  const radius = radiusMap[type] || 1;
+  const color = colorMap[type];
+  const baseMessage = messageMap[type];
+
+  interval = setInterval(async () => {
+    const { lat, lng } = generateRandomCoords(userLocation.lat, userLocation.lng, radius);
+    const addressData = await locationData(lat, lng);
+
+    const simulated = {
+      ...userLocation,
+      lat,
+      lng,
+      ...addressData,
+    };
+
+    await updatePetLocation(pet.id, simulated);
+
+    if (onAlert) {
+      onAlert({
+        type,
+        color,
+        title: `${pet.nombre} se está moviendo (${type})`,
+        message: `${baseMessage}\n\n📍 Dirección actual:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+        button: `Ver ${pet.nombre}`,
+        redirect: "/maps",
+      });
+    }
+  }, 4000); // 🔁 atualiza a cada 4 segundos
+
+  return () => clearInterval(interval); // função para parar a simulação
+}
