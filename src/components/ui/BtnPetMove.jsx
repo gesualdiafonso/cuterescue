@@ -7,22 +7,22 @@ export default function BtnPetMove({ pet, userLocation }) {
 
   async function handleStartSim() {
     if (!pet || !userLocation) {
-      console.error("🚫 Falta pet ou localização do usuário.");
+      console.error("🚫 Falta mascota o localización del usuario");
       return;
     }
 
-    // Inicia simulação
+    // Inicia simulación
     const stop = await startRealTimeSimulation(pet, userLocation, "normal", (alert) => {
       console.log("📡 ALERT:", alert);
     });
 
-    // Redireciona imediatamente para o mapa
+    // Redireciona imediatamente para el mapa 
     navigate("/maps");
 
-    // Exemplo: parar a simulação depois de 1 minuto
+    // Simula nuevamente despues de 1min
     setTimeout(() => {
       stop();
-      console.log("🛑 Simulação finalizada");
+      console.log("Simulación finalizada");
     }, 60000);
   }
 

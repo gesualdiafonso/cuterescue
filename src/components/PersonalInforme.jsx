@@ -29,10 +29,6 @@ export default function PersonalInform({ details, locations }) {
 
       {/* Avatar y nombre */}
       <div className="flex items-center gap-4 mt-4">
-<<<<<<< HEAD
-          <h2 className="font-black text-6xl sm:text-5xl">
-            {`${capitalize(nombre)} ${capitalize(apellido)}`}
-=======
         <div className="bg-gray-300 rounded-full w-20 h-20 sm:w-24 sm:h-24 overflow-hidden">
           <img
             src={foto_url || "/default-avatar.png"}
@@ -44,8 +40,8 @@ export default function PersonalInform({ details, locations }) {
         <div className="flex flex-col">
           <h2 className="font-bold text-2xl sm:text-3xl">
             {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
->>>>>>> 3248fce (capitalizeAll > implemento mayusculas en todos los nombres y apellidos)
           </h2>
+        </div>
       </div>
 
       {/* Botones */}

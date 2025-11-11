@@ -77,7 +77,7 @@ export async function simulateNormalMove(pet, userLocation, onAlert){
             type: "normal",
             color: "#22687c",
             title: `${pet.nombre} se está moviendo`,
-            message: `Movimiento dentro de la zona de sus 8km.\n\n📍 Dirección actual:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+            message: `Movimiento dentro de la zona de sus 8km.\n\n --> Dirección actual:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
             button: `Ubique donde está ${pet.nombre}`,
             redirect: "/maps"
         })
@@ -107,7 +107,7 @@ export async function simulateEmergency(pet, userLocation, onAlert){
             type: "emergency",
             color: "#f7612a",
             title: `Estamos Alertando que su mascota ${pet.nombre} está afuera de su ubicación`,
-            message: `El pet ha salido de la zona de seguridad estipulada.\n\n📍 Nueva ubicación:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+            message: `El pet ha salido de la zona de seguridad estipulada.\n\n --> Nueva ubicación:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
             button: `Vea su pet ${pet.nombre}`,
             redirect: "/maps",
         });
@@ -136,7 +136,7 @@ export async function simulatedPaseo(pet, userLocation, onAlert){
             type: "paseo",
             color: "#22687C",
             title: `Paseo de ${pet.nombre}`,
-            message: `El pet está disfrutando su paseo cerca de casa.\n\n📍 Dirección:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+            message: `El pet está disfrutando su paseo cerca de casa.\n\n --> Dirección:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
             button: `Mascote ${pet.nombre} está seguro`,
             redirect: "/maps",
         })
@@ -188,12 +188,12 @@ export async function startRealTimeSimulation(pet, userLocation, type = "normal"
         type,
         color,
         title: `${pet.nombre} se está moviendo (${type})`,
-        message: `${baseMessage}\n\n📍 Dirección actual:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+        message: `${baseMessage}\n\n --> Dirección actual:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
         button: `Ver ${pet.nombre}`,
         redirect: "/maps",
       });
     }
-  }, 4000); // 🔁 atualiza a cada 4 segundos
+  }, 4000); // atualiza a cada 4 segundos
 
   return () => clearInterval(interval); // função para parar a simulação
 }
