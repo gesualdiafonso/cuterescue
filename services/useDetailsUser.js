@@ -83,46 +83,80 @@ class DetailsUserService
                 "El campo 'ubicacion' debe ser una cadena de texto (enderezo) o un objeto con el campo 'address'."
             );
         }
-        // if(ubicacion && ubicacion.address){
-            
-        //     // 1. llamamos la función de geocodificación 
-        //     const geocodeData = await geo.getCoordinatesFromAddress(ubicacion.address);
-
-        //     if (geocodeData){
-        //         // 2. Inserimos las coordenas reales en la ubicación
-        //         ubicacion = {
-        //             ...ubicacion,
-        //             lat: geocodeData.lat,
-        //             lng: geocodeData.lng,
-        //             source: 'geocoding_osm',
-        //             is_safe_location: true
-        //         };
-        //     } else{
-        //         // 3 Tratar caso el enderezo no se pudo geocodificar
-        //         console.warn('No se pudo geocodificar el enderezo proporcionado. Se usará la ubicación sin coordenadas.');
-        //         // Lanzo un error para el usuario tenga que corregir el enderezo
-        //         throw new Error('No se pudo geocodificar el enderezo proporcionado. Por favor, verifique y corrija el enderezo.');
-        //     }
-        // }
 
         const details = await this.detailsUserModel.create(userId, { ...fields, ubicacion });
         return details;
     }
 
-    async update(userId, updateFields){
-        const user = await this.userService.getUserById(userId);
-        if(!user){
-            throw new Error('Usuario no existe');
+    async update(userId, updateFields) {
+    const user = await this.userService.getUserById(userId);
+    if (!user) throw new Error("Usuario no existe");
+
+    const existingDetails = await this.detailsUserModel.getByUserId(userId);
+    if (!existingDetails) throw new Error("Los detalles del usuario no existen");
+
+    // --- Lógica especial para 'ubicacion' ---
+    let ubicacion = updateFields.ubicacion;
+
+    if (ubicacion !== undefined) {
+        // 🔹 Caso venha como string (novo endereço digitado)
+        if (typeof ubicacion === "string" && ubicacion.trim() !== "") {
+        const address = ubicacion.trim();
+        const geocodeData = await geo.getCoordinatesFromAddress(address);
+
+        if (geocodeData) {
+            ubicacion = {
+            address,
+            lat: geocodeData.lat,
+            lng: geocodeData.lng,
+            source: "geocoding_osm",
+            is_safe_location: true,
+            };
+        } else {
+            throw new Error("No se pudo geocodificar el enderezo proporcionado.");
+        }
         }
 
-        const existingDetails = await this.detailsUserModel.getByUserId(userId);
-        if(!existingDetails){
-            throw new Error('Los detalles del usuario no existen');
+        // 🔹 Caso venha como objeto com address novo
+        else if (typeof ubicacion === "object" && ubicacion.address) {
+        const geocodeData = await geo.getCoordinatesFromAddress(ubicacion.address);
+        if (geocodeData) {
+            ubicacion = {
+            ...ubicacion,
+            lat: geocodeData.lat,
+            lng: geocodeData.lng,
+            source: "geocoding_osm",
+            is_safe_location: true,
+            };
+        } else {
+            throw new Error("No se pudo geocodificar el enderezo proporcionado.");
+        }
         }
 
-        const updatedDetails = await this.detailsUserModel.update(userId, updateFields);
-        return updatedDetails;
+        // 🔹 Caso venha vazio ou sem alteração → mantém a atual
+        else if (!ubicacion || ubicacion === "" || ubicacion === null) {
+        ubicacion = existingDetails.ubicacion;
+        }
+
+        // 🔹 Caso o formato não seja válido
+        else if (typeof ubicacion !== "object") {
+        throw new Error(
+            "El campo 'ubicacion' debe ser una cadena de texto o un objeto válido con 'address'."
+        );
+        }
+
+        updateFields.ubicacion = ubicacion;
+    } else {
+        // 🔹 Caso não envie 'ubicacion' → mantém a atual
+        updateFields.ubicacion = existingDetails.ubicacion;
     }
+
+
+
+    const updatedDetails = await this.detailsUserModel.update(userId, updateFields);
+    return updatedDetails;
+    }
+
 
     async delete(userId){
         const user = await this.userService.getUserById(userId);

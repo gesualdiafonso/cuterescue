@@ -1,18 +1,15 @@
 import express from "express";
 import UploadController from "../controllers/UploadController.js";
-import { getUploadMiddleware } from "../middleware/upload.js";
+import { upload } from "../middleware/upload.js";
 
 const router = express.Router();
 
-router.post('/api/upload', async (req, resizeBy, next) =>{
-    const upload = await getUploadMiddleware();
+router.post("/api/upload", upload.single("file"), (req, res) => {
+  UploadController.uploadFile(req, res);
+});
 
-    upload.single("file")(req, res, (err) => {
-        if(err) return res.status(500).json({ error: err.message });
-        next();
-    });
-}, UploadController.uploadFile);
-
-router.get("/api/upload/:filename", UploadController.getFile);
+router.get("/api/upload/:filename", (req, res) => {
+  UploadController.getFile(req, res);
+});
 
 export default router;
