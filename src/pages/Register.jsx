@@ -81,6 +81,7 @@ export default function Register() {
         .insert({
           direccion: `${userData.direccion}`,
           provincia: userData.provincia,
+          codigoPostal: userData.codigoPostal,
           lat,
           lng,
           source,
@@ -215,6 +216,7 @@ export default function Register() {
           >
             <option value="">Seleccionar provincia</option>
             <option value="Buenos Aires">Buenos Aires</option>
+            <option value="CABA">Ciudad Autónoma de Buenos Aires (CABA)</option>
             <option value="Córdoba">Córdoba</option>
             <option value="Santa Fe">Santa Fe</option>
             <option value="Mendoza">Mendoza</option>

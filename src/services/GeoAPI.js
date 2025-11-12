@@ -1,66 +1,86 @@
 /**
- * Servicios para geocodificacion y reversion de geocoding usando OpenStreetMap
- * Baseado en la API publica de: https://nominatim.openstreetmap.org
+ * 🌎 Servicios para geocodificación y reversa de geocodificación
+ * usando OpenStreetMap (Nominatim API).
+ * 
+ * Mejora:
+ * - Normaliza "CABA" a "Ciudad Autónoma de Buenos Aires"
+ * - Reintenta búsqueda sin código postal si la primera falla
+ * - Devuelve fuente y control de errores más claros
  */
 
 export async function getCoordinatesFromAddress({
-    direccion,
-    codigo_postal,
-    provincia,
-}){
-    try{
-        // monto una query completa del enderezo que va a ser en Argentina PAIS FIJO
-        const query = `${direccion}, ${codigo_postal}, ${provincia}, Argentina`;
+  direccion,
+  codigo_postal,
+  provincia,
+}) {
+  try {
+    // 🧩 Normalización de provincia para que OSM entienda correctamente
+    const provinciaNormalizada =
+      provincia === "CABA" ? "Ciudad Autónoma de Buenos Aires" : provincia;
 
-        // codifico la URL para evitar el problema con espacio o acentos
-        const encodedQuery = encodeURIComponent(query);
+    // 1️⃣ Intento principal: con código postal
+    let query = `${direccion}, ${codigo_postal}, ${provinciaNormalizada}, Argentina`;
+    let encodedQuery = encodeURIComponent(query);
 
-        // Hago el request para endpoint de geocode de OSM
-        const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}`
-        );
+    let response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}`
+    );
 
-        if (!response.ok){
-            throw new Error("Eita poha, falhou aqui o OSM querido")
-        }
-
-        const data = await response.json();
-
-        // Caso no encontre el resultado boludo
-        if(!data || data.length === 0){
-            return{ lat:null, lng:null, source: "OSM:no_result"};
-        }
-
-        // Pego el primer resultado (o mas relevante)
-        const { lat, lon } = data[0];
-
-        return{
-            lat:parseFloat(lat),
-            lng: parseFloat(lon),
-            source: "OSM: geocodificado"
-        }
-    } catch(err){
-        console.error("Erro na geocodificacao carinho: ", err);
-        return
+    if (!response.ok) {
+      throw new Error("Error al comunicarse con OpenStreetMap");
     }
+
+    let data = await response.json();
+
+    // 2️⃣ Si no se encuentra resultado, reintenta sin código postal
+    if (!data || data.length === 0) {
+      console.warn("No se encontró con código postal. Reintentando sin él...");
+      query = `${direccion}, ${provinciaNormalizada}, Argentina`;
+      encodedQuery = encodeURIComponent(query);
+
+      response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}`
+      );
+
+      data = await response.json();
+    }
+
+    // 3️⃣ Si sigue sin resultados, devolvemos nulos
+    if (!data || data.length === 0) {
+      console.warn("Sin resultados para la dirección proporcionada.");
+      return { lat: null, lng: null, source: "OSM:no_result" };
+    }
+
+    // 4️⃣ Tomamos el resultado más relevante (primero)
+    const { lat, lon } = data[0];
+
+    return {
+      lat: parseFloat(lat),
+      lng: parseFloat(lon),
+      source: "OSM:geocodificado",
+    };
+  } catch (err) {
+    console.error("Error en la geocodificación:", err);
+    return { lat: null, lng: null, source: "OSM:error" };
+  }
 }
 
 /**
- * Reverse Geocodification - algo opcional (caso queria buscar ubicación por mapa)
+ * 📍 Reverse Geocoding: obtiene dirección textual a partir de coordenadas.
+ * Útil para mostrar la dirección estimada del chip o simulador.
  */
+export async function getAddressFromCoordinates(lat, lng) {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+    );
 
-export async function getAddressFromCoordinates(lat, lng){
-    try {
-        const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-        );
+    if (!response.ok) throw new Error("Falla al buscar dirección en OSM");
 
-        if (!response.ok) throw new Error("Falha ao buscar endereço no OSM");
-
-        const data = await response.json();
-        return data.display_name || "Endereço não encontrado";
-    } catch (err) {
-        console.error("Erro no reverse geocoding:", err);
-        return null;
-    }
+    const data = await response.json();
+    return data.display_name || "Dirección no encontrada";
+  } catch (err) {
+    console.error("Error en la búsqueda inversa:", err);
+    return null;
+  }
 }
