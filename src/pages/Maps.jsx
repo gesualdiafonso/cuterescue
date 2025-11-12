@@ -75,6 +75,7 @@ export default function Maps() {
   if (!selectedPet)
     return (
       <div className="flex items-center justify-center h-screen text-gray-500">
+        Selecione um pet para ver no mapa
         Selecione una mascota para ver en el mapa
       </div>
     );
@@ -82,6 +83,7 @@ export default function Maps() {
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen text-gray-500">
+        Carregando localização...
         cargando localización...
       </div>
     );
@@ -124,6 +126,7 @@ export default function Maps() {
               <br />
               {address}
               <br />
+              {segura ? "Zona segura ✅" : "Fora da zona segura ⚠️"}
               {segura ? "Zona segura ✅" : "Fueraa de zona segura ⚠️"}
             </Popup>
           </Marker>

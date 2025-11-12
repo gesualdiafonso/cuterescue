@@ -77,7 +77,7 @@ export async function simulateNormalMove(pet, userLocation, onAlert){
             type: "normal",
             color: "#22687c",
             title: `${pet.nombre} se está moviendo`,
-            message: `Movimiento dentro de la zona de sus 8km.\n\n📍 Dirección actual:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+            message: `Movimiento dentro de la zona de sus 8km.\n\n --> Dirección actual:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
             button: `Ubique donde está ${pet.nombre}`,
             redirect: "/maps"
         })
@@ -107,7 +107,7 @@ export async function simulateEmergency(pet, userLocation, onAlert){
             type: "emergency",
             color: "#f7612a",
             title: `Estamos Alertando que su mascota ${pet.nombre} está afuera de su ubicación`,
-            message: `El pet ha salido de la zona de seguridad estipulada.\n\n📍 Nueva ubicación:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+            message: `El pet ha salido de la zona de seguridad estipulada.\n\n --> Nueva ubicación:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
             button: `Vea su pet ${pet.nombre}`,
             redirect: "/maps",
         });
@@ -136,11 +136,64 @@ export async function simulatedPaseo(pet, userLocation, onAlert){
             type: "paseo",
             color: "#22687C",
             title: `Paseo de ${pet.nombre}`,
-            message: `El pet está disfrutando su paseo cerca de casa.\n\n📍 Dirección:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+            message: `El pet está disfrutando su paseo cerca de casa.\n\n --> Dirección:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
             button: `Mascote ${pet.nombre} está seguro`,
             redirect: "/maps",
         })
     }
 
     return simulated;
+}
+
+// 🛰️ Simulação de movimento contínuo
+export async function startRealTimeSimulation(pet, userLocation, type = "normal", onAlert) {
+  let interval;
+  const radiusMap = {
+    normal: 1, // km
+    paseo: 2,
+    emergency: 4,
+  };
+
+  const colorMap = {
+    normal: "#22687c",
+    paseo: "#22687C",
+    emergency: "#f7612a",
+  };
+
+  const messageMap = {
+    normal: "Movimiento dentro de la zona de sus 8km.",
+    paseo: "El pet está disfrutando su paseo cerca de casa.",
+    emergency: "El pet ha salido de la zona de seguridad estipulada.",
+  };
+
+  const radius = radiusMap[type] || 1;
+  const color = colorMap[type];
+  const baseMessage = messageMap[type];
+
+  interval = setInterval(async () => {
+    const { lat, lng } = generateRandomCoords(userLocation.lat, userLocation.lng, radius);
+    const addressData = await locationData(lat, lng);
+
+    const simulated = {
+      ...userLocation,
+      lat,
+      lng,
+      ...addressData,
+    };
+
+    await updatePetLocation(pet.id, simulated);
+
+    if (onAlert) {
+      onAlert({
+        type,
+        color,
+        title: `${pet.nombre} se está moviendo (${type})`,
+        message: `${baseMessage}\n\n --> Dirección actual:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+        button: `Ver ${pet.nombre}`,
+        redirect: "/maps",
+      });
+    }
+  }, 4000); // atualiza a cada 4 segundos
+
+  return () => clearInterval(interval); // função para parar a simulação
 }
