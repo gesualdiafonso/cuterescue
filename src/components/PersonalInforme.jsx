@@ -49,7 +49,6 @@ export default function PersonalInform({ details, locations }) {
           </Link>
         </div>
       </div>
-
       {/* Botones */}
       <div className="flex gap-3 flex-wrap mt-4">
         <BtnViaje />
