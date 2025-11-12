@@ -117,12 +117,12 @@ export default function ModalEdicionUsuario({ isOpen, onClose, currentUser, onSa
         <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
           <div className="form-group">
             <label>Nombre</label>
-            <input type="text" name="nombre" value={form.nombre} onChange={handleChange} />
+            <input type="text" name="nombre" className="input-field" value={form.nombre} onChange={handleChange} />
           </div>
 
           <div className="form-group">
             <label>Apellido</label>
-            <input type="text" name="apellido" value={form.apellido} onChange={handleChange} />
+            <input type="text" name="apellido" className="input-field" value={form.apellido} onChange={handleChange} />
           </div>
 
           <div className="form-group">
