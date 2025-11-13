@@ -4,7 +4,7 @@ import { supabase } from "../services/supabase";
 import {
   getSelectedPetService,
   setSelectedPet as setSelectedPetService,
-  subscribeSelectedPet
+  subscribeSelectedPet,
 } from "../services/SelectedPet";
 
 const SavedDataContext = createContext();
@@ -16,9 +16,10 @@ export function SavedDataProvider({ children }) {
   const [alert, setAlert] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
 
+  // nuevo estado para manejar el color del navbar
+  const [navbarColor, setNavbarColor] = useState("#ffffff"); // blanco por defecto
 
-
-  // 🧩 Etapa 1: Carrega imediatamente o pet salvo no localStorage
+  // 🧩 Etapa 1: Carga inmediata del pet guardado
   useEffect(() => {
     const saved = getSelectedPetService();
     if (saved) {
@@ -26,7 +27,7 @@ export function SavedDataProvider({ children }) {
     }
   }, []);
 
-  // 🧩 Etapa 2: Subscreve às mudanças do service
+  // 🧩 Etapa 2: Suscripción a cambios del service
   useEffect(() => {
     const unsubscribe = subscribeSelectedPet((newPet) => {
       setSelectedPetState(newPet);
@@ -36,7 +37,7 @@ export function SavedDataProvider({ children }) {
 
   const MASCOTA_ID = selectedPet?.id || null;
 
-  // 🧩 Etapa 3: Atualiza a localização do pet ativo
+  // 🧩 Etapa 3: Actualiza ubicación del pet activo
   useEffect(() => {
     if (!MASCOTA_ID) return;
 
@@ -56,22 +57,34 @@ export function SavedDataProvider({ children }) {
     return () => clearInterval(interval);
   }, [MASCOTA_ID]);
 
-  // 🧩 Etapa 4: Sincroniza bidirecionalmente
+  // 🧩 Etapa 4: Sincronización bidireccional
   const setSelectedPet = (pet) => {
     setSelectedPetState(pet);
     setSelectedPetService(pet);
   };
 
-  // Informo los alerts a usuario
+  // 🧩 Mostrar alertas
   useEffect(() => {
-    if(alert) setShowAlert(true);
-  }, [alert])
+    if (alert) setShowAlert(true);
+  }, [alert]);
 
-  function closeAlert(){
+  function closeAlert() {
     setShowAlert(false);
   }
+
   return (
-    <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet, showAlert, closeAlert, setAlert }}>
+    <SavedDataContext.Provider
+      value={{
+        location,
+        selectedPet,
+        setSelectedPet,
+        showAlert,
+        closeAlert,
+        setAlert,
+        navbarColor,
+        setNavbarColor, 
+      }}
+    >
       {children}
     </SavedDataContext.Provider>
   );

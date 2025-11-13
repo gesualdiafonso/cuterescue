@@ -106,9 +106,9 @@ export async function simulateEmergency(pet, userLocation, onAlert){
         onAlert({
             type: "emergency",
             color: "#f7612a",
-            title: `Estamos Alertando que su mascota ${pet.nombre} está afuera de su ubicación`,
-            message: `El pet ha salido de la zona de seguridad estipulada.\n\n --> Nueva ubicación:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
-            button: `Vea su pet ${pet.nombre}`,
+            title: `Estamos alertando que su mascota ${pet.nombre} está afuera de su ubicación`,
+            message: `La mascota ha salido de la zona de seguridad estipulada.\n\n --> Nueva ubicación:\n${simulated.direccion}\n${simulated.codigoPostal} - ${simulated.provincia}`,
+            button: `Vea a su mascota ${pet.nombre}`,
             redirect: "/maps",
         });
     }

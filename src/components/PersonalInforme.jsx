@@ -40,7 +40,7 @@ export default function PersonalInform({ details, locations }) {
 
       {/* Botones */}
       <div className="flex gap-3 flex-wrap mt-4">
-        <BtnViaje onClick={() => setShowModal(true)} /> {/* 👈 abre el modal */}
+        <BtnViaje onClick={() => setShowModal(true)} /> 
         <BtnEmergency />
       </div>
 
