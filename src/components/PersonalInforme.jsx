@@ -1,8 +1,12 @@
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom"; 
 import BtnViaje from "./ui/BtnViaje";
 import BtnEmergency from "./ui/BtnEmergency";
+import ModalViajeCard from "./modals/ModalViajeCard"; 
 
 export default function PersonalInform({ details, locations }) {
+  const [showModal, setShowModal] = useState(false); // controla visibilidad del modal
+
   if (!details || !locations) {
     return <div className="text-center py-10">Cargando...</div>;
   }
@@ -10,7 +14,6 @@ export default function PersonalInform({ details, locations }) {
   const { nombre = "", apellido = "", foto_url = "" } = details || {};
   const { direccion = "", codigoPostal = "", provincia = "" } = locations || {};
 
-  // capitaliza todas las palabras de un texto
   const capitalizeAll = (text = "") =>
     text
       .split(" ")
@@ -19,7 +22,6 @@ export default function PersonalInform({ details, locations }) {
 
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-0">
-      
       {/* Dirección y provincia */}
       <div className="flex flex-wrap gap-3 text-gray-700 text-sm sm:text-base">
         <span>{`${direccion}, ${codigoPostal}`}</span>
@@ -27,12 +29,10 @@ export default function PersonalInform({ details, locations }) {
         <span>{provincia}</span>
       </div>
 
-      {/* Avatar y nombre */}
+      {/* Nombre */}
       <div className="flex items-center gap-4 mt-4">
-
-
         <div className="flex flex-col">
-          <h2 className="font-bold text-2xl text-6xl sm:text-6xl">
+          <h2 className="font-bold text-2xl sm:text-6xl">
             {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
           </h2>
         </div>
@@ -40,11 +40,12 @@ export default function PersonalInform({ details, locations }) {
 
       {/* Botones */}
       <div className="flex gap-3 flex-wrap mt-4">
-        <BtnViaje />
+        <BtnViaje onClick={() => setShowModal(true)} /> {/* 👈 abre el modal */}
         <BtnEmergency />
-         
       </div>
-      <div className="flex flex-row justify-end-safe items-center gap-5">
+
+      {/* Avatar + Link */}
+      <div className="flex flex-row justify-end items-center gap-5">
         <div className="bg-gray-300 rounded-full w-16 h-16 sm:w-15 sm:h-15 overflow-hidden">
           <img
             src={foto_url || "/default-avatar.png"}
@@ -59,6 +60,11 @@ export default function PersonalInform({ details, locations }) {
           Visualizar perfil
         </Link>
       </div>
+
+      {/* Modal de viaje */}
+      {showModal && (
+        <ModalViajeCard onClose={() => setShowModal(false)} /> // 👈 lo mostramos solo si está activo
+      )}
     </div>
   );
 }

@@ -9,6 +9,8 @@ import BtnPetMove from "../components/ui/BtnPetMove"
 import ModalEditPet from "../components/modals/ModalEditPet";
 import { supabase } from "../services/supabase";
 import { useSavedData } from "../context/SavedDataContext";
+import ModalViajeCard from "../components/modals/ModalViajeCard";
+
 
 
 export default function InformePet(){
@@ -19,6 +21,7 @@ export default function InformePet(){
     const [ ubicacion, setUbicacion] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+const [isViajeModalOpen, setIsViajeModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchPets = async () =>{
@@ -86,13 +89,14 @@ export default function InformePet(){
                     setSelectedPet={(pet) => handleSelectPet(pet.id)} 
                     onEditClick={() => setIsEditModalOpen(true)} 
                     onDeleteClick={() => setIsDeleteModalOpen(true)} 
-                />      {/* descomentar para re renderizar maps en perfil de mascota
+                />     
                 <MapsViewer selectedPet={selectedPet} location={location} />
                 <div className="flex gap-10 justify-center items-center">
-                    <BtnViaje/>
+                    <BtnViaje onClick={() => setIsViajeModalOpen(true)} />
+
                     <BtnPetMove/>
                     <BtnEmergency/>
-                </div> */}
+                </div> 
             </section>
 
            {/* Modal de edicion */}
@@ -110,7 +114,12 @@ export default function InformePet(){
                 onClose={() => setIsDeleteModalOpen(false)}
                 onDelete={() => handleDeletPet(selectedPet)}
                 />
-            )}
+            )} 
+
+            {isViajeModalOpen && (
+  <ModalViajeCard onClose={() => setIsViajeModalOpen(false)} />
+)}
+
         </div>
     )
 }
