@@ -29,16 +29,10 @@ export default function PersonalInform({ details, locations }) {
 
       {/* Avatar y nombre */}
       <div className="flex items-center gap-4 mt-4">
-        <div className="bg-gray-300 rounded-full w-20 h-20 sm:w-24 sm:h-24 overflow-hidden">
-          <img
-            src={foto_url || "/default-avatar.png"}
-            alt={`Foto de ${nombre || "usuario"}`}
-            className="w-full h-full object-cover"
-          />
-        </div>
+
 
         <div className="flex flex-col">
-          <h2 className="font-bold text-2xl sm:text-3xl">
+          <h2 className="font-bold text-2xl text-6xl sm:text-6xl">
             {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
           </h2>
         </div>

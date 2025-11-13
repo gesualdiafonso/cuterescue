@@ -226,3 +226,22 @@ body {
 .modal-footer {
   @apply text-center text-xs mt-4 text-white/80;
 }
+/* Scrollbar  */
+::-webkit-scrollbar {
+  width: 15px;               
+  height: 15px;       
+}
+
+/* Fondo del track (canal) */
+::-webkit-scrollbar-track {
+  background: transparent;  
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(34, 104, 123, 0.6); /* #22687b con  */
+  border-radius: 4px;                    
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(34, 104, 123, 0.8);
+}

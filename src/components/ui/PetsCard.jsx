@@ -3,7 +3,7 @@ import AddPets from "../modals/AddPets";
 
 export default function PetCards({ pets = [], selectedPet, setSelectedPet, onPetAdded, location }) {
   return (
-    <div className="w-full h-full flex flex-row gap-10 items-center max-w-3xl overflow-x-scroll overflow-y-hidden">
+    <div className="w-full h-full flex flex-row gap-10 items-center max-w-3xl overflow-x-scroll overflow-y-hidden pb-5">
       {pets && pets.length > 0 ? (
         <>
           {pets.map((pet) => {
@@ -16,7 +16,7 @@ export default function PetCards({ pets = [], selectedPet, setSelectedPet, onPet
               <article
                 key={pet.id}
                 onClick={() => setSelectedPet(pet.id)}
-                className={`bg-[#22687b] w-[256px] flex-shrink-0 rounded-3xl h-auto p-5 flex justify-center flex-col cursor-pointer hover:scale-105 transition-transform
+                className={`bg-[#22687b] w-[256px] flex-shrink-0 rounded-2xl h-auto p-5 flex justify-center flex-col cursor-pointer hover:scale-105 transition-transform
                   ${isSelected ? "ring-4 ring-[#71dd5b]/40" : ""}`}
               >
                 <div className="w-full h-52 mb-5 bg-gray-50 rounded-xl overflow-hidden">

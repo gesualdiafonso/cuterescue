@@ -12,7 +12,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function Maps({ selectedPet, location }) {
   if (!selectedPet) return <div className="bg-amber-400 rounded-2xl w-full max-w-56 flex justify-center items-center p-10 mx-auto text-shadow-indigo-50 text-center"><h2 className="text-white text-3xl font-black">Todavía no registró una mascota</h2></div>;
-  if (!location) return <div>Cargando ubicación...</div>;
+  if (!location) return <div className="w-full bg-amber-100 h-86 mb-5 rounded-2xl flex items-center justify-center text-gray-500">Cargando ubicación...</div>;
 
   const { nombre, activo } = selectedPet;
   const status = activo ? "Activo" : "Inactivo";

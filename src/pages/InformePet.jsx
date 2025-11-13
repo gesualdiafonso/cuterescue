@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import PetCards from "../components/ui/PetsCard";
-import MapsViewer from "../components/maps/MapsViewer";
+import MapsViewer from "../components/maps/MapsViewer";      {/* borrar a futuro */}
 import Maps from "../components/maps/Maps"
 import EditPetForm from "../components/ui/EditPetForm";
 import BtnViaje from "../components/ui/BtnViaje"
@@ -74,7 +74,9 @@ export default function InformePet(){
                 />
                 <Maps selectedPet={selectedPet} location={location} />
             </section>
-            <div className="bg-black w-full h-0.5 my-10"/>
+           <div className="bg-gray-300/50 w-full h-px my-10" />
+
+
             <section className="mb-5 mt-5">
                 <EditPetForm 
                     pets={mascotas} 
@@ -84,16 +86,16 @@ export default function InformePet(){
                     setSelectedPet={(pet) => handleSelectPet(pet.id)} 
                     onEditClick={() => setIsEditModalOpen(true)} 
                     onDeleteClick={() => setIsDeleteModalOpen(true)} 
-                />
+                />      {/* descomentar para re renderizar maps en perfil de mascota
                 <MapsViewer selectedPet={selectedPet} location={location} />
                 <div className="flex gap-10 justify-center items-center">
                     <BtnViaje/>
                     <BtnPetMove/>
                     <BtnEmergency/>
-                </div>
+                </div> */}
             </section>
 
-           {/* Modal de edição */}
+           {/* Modal de edicion */}
             {isEditModalOpen && (
                 <ModalEditPet
                 pet={selectedPet}
@@ -101,7 +103,7 @@ export default function InformePet(){
                 />
             )}
 
-            {/* Modal de exclusão */}
+            {/* Modal de delete */}
             {isDeleteModalOpen && (
                 <ModalDeletePet
                 pet={selectedPet}

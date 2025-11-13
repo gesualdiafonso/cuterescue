@@ -22,7 +22,7 @@ function ChangeView({ center }) {
 export default function MapsViewer({ selectedPet, location }) {
   const [mapReady, setMapReady] = useState(false);
 
-  // Se não houver pet selecionado
+  // si no hay mascota selected
   if (!selectedPet)
     return (
       <div className="w-full bg-amber-400 h-96 mb-5 rounded-2xl flex items-center justify-center text-white text-5xl font-black">
@@ -30,7 +30,6 @@ export default function MapsViewer({ selectedPet, location }) {
       </div>
     );
 
-  // Se ainda não carregou localização
   if (!location || !location.lat || !location.lng)
     return (
       <div className="w-full bg-gray-100 h-96 mb-5 rounded-2xl flex items-center justify-center text-gray-500">

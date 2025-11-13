@@ -51,7 +51,7 @@ export default function DetailsUser(){
             <section>
                 <DetailsInform details={userData} ubicacion={ubicacion}/>
             </section>
-            <div className="bg-black w-full h-0.5 my-10"/>
+            <div className="bg-gray-300/50 w-full h-px my-10" />
             <section>
                 <PetCards
                     pets={mascotas}

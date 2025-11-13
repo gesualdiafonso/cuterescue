@@ -150,13 +150,15 @@ export default function AddPets({ onPetAdded }) {
   return (
     <>
       {/* Card que abre el modal */}
-      <article
-        className="mx-auto bg-[#f5f5dc]/50 w-[256px] flex-shrink-0 rounded-3xl h-[250px] p-5 flex justify-center items-center flex-col cursor-pointer hover:scale-105 transition-transform"
-        onClick={() => setShowModal(true)}
-      >
-        <span className="text-3xl font-bold text-[#22687b]">+</span>
-        <p className="text-[#22687b] mt-2">Agregar más pet</p>
-      </article>
+<article
+  className="mx-auto bg-[#f5f5dc]/50 w-[256px] flex-shrink-0 rounded-3xl h-[250px] p-5 flex justify-center items-center flex-col cursor-pointer
+             shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
+  onClick={() => setShowModal(true)}
+>
+  <span className="text-3xl font-bold text-[#22687b]">+</span>
+  <p className="text-[#22687b] mt-2">Agregar mascota</p>
+</article>
+
 
       {/* Modal */}
       {showModal && (

@@ -185,15 +185,15 @@ export default function Dashboard() {
   return (
     <>
       <div className="max-w-7xl mx-auto p-0">
-        <section className="flex gap-20 mb-10 w-full">
+        <section className="flex gap-20 justify-between mb-10 w-full">
           <PersonalInform details={userData} locations={ubicacion}/>
-          <div className="flex flex-col gap-5 w-1/2">
+          <div className="flex flex-col gap-2 w-1/2">
             <MapsViewer selectedPet={selectedPet} location={location} />
             <BtnPetMove pet={selectedPet} userLocation={location} />
           </div>
         </section>
 
-        <div className="bg-black w-full h-0.5 my-10" />
+        <div className="bg-gray-300/50 w-full h-px my-10" />
 
         <section className="flex gap-20 mb-10 w-full justify-center items-center">
           <PetCards
@@ -205,33 +205,7 @@ export default function Dashboard() {
           />
           <Maps selectedPet={selectedPet} location={location} />
         </section>
-
-        <section className="flex flex-col lg:flex-row gap-10 lg:gap-20 mb-10 w-full">
-      {/* Columna izquierda: información del usuario */}
-      <div className="w-full lg:w-1/2">
-        <PersonalInform details={userData} locations={ubicacion} />
-      </div>
-
-      {/* Columna derecha: mapa y botones */}
-      <div className="w-full lg:w-1/2 flex flex-col gap-5">
-        <MapsViewer selectedPet={selectedPet} location={location} />
-        <BtnPetMove />
-      </div>
-    </section>
-
-
-      <div className="bg-black w-full h-0.5 my-10" />
-
-      <section className="flex gap-20 mb-10 w-full justify-center items-center">
-        <PetCards
-          pets={mascotas}
-          selectedPet={selectedPet}
-          location={location}
-          setSelectedPet={handleSelectPet}
-          onPetAdded={handlePetAdd}
-        />
-        <Maps selectedPet={selectedPet} location={location} />
-      </section>
+   
     </div>
     </>
   );
