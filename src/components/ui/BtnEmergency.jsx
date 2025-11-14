@@ -2,7 +2,7 @@ import { simulateEmergency } from "../../services/MovimentPet.js";
 import { useSavedData } from "../../context/SavedDataContext";
 
 export default function BtnEmergency() {
-  const { selectedPet, location, setAlert, setNavbarColor } = useSavedData();
+  const { selectedPet, location, setAlert } = useSavedData();
 
   async function handleClick() {
     if (!selectedPet || !location) {
@@ -12,8 +12,7 @@ export default function BtnEmergency() {
 
     console.log("🚨 Emergencia activada:", selectedPet.id);
 
-    //  cambia el color del navbar
-    setNavbarColor("#FBC68F");
+   
 
     await simulateEmergency(selectedPet, location, setAlert);
   }

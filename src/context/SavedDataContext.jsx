@@ -16,8 +16,10 @@ export function SavedDataProvider({ children }) {
   const [alert, setAlert] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
 
-  // nuevo estado para manejar el color del navbar
-  const [navbarColor, setNavbarColor] = useState("#ffffff"); // blanco por defecto
+
+  // estado de emergencia (ON/OFF)
+const [alertOn, setAlertOn] = useState(false);
+
 
   // 🧩 Etapa 1: Carga inmediata del pet guardado
   useEffect(() => {
@@ -72,6 +74,8 @@ export function SavedDataProvider({ children }) {
     setShowAlert(false);
   }
 
+  
+
   return (
     <SavedDataContext.Provider
       value={{
@@ -81,8 +85,9 @@ export function SavedDataProvider({ children }) {
         showAlert,
         closeAlert,
         setAlert,
-        navbarColor,
-        setNavbarColor, 
+alertOn,
+setAlertOn,
+
       }}
     >
       {children}

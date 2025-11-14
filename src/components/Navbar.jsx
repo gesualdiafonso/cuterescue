@@ -17,6 +17,7 @@ export default function Navbar() {
 
   //  color del navbar en emergencia
   const { selectedPet, navbarColor } = useSavedData();
+const { alertOn } = useSavedData();
 
   const menuItems = [
     { name: "Home", path: "/" },
@@ -94,10 +95,9 @@ export default function Navbar() {
 
   return (
    
-    <nav
-      className="transition-all duration-500 shadow-sm"
-      style={{ backgroundColor: navbarColor }}
-    >
+    <nav className={` ${
+  alertOn ? "bg-[#FBC68F]" : "bg-white"
+}`}>
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-10">
         <Link to="/">
           <div className="flex">

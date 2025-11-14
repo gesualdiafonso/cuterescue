@@ -145,7 +145,7 @@ export async function simulatedPaseo(pet, userLocation, onAlert){
     return simulated;
 }
 
-// 🛰️ Simulação de movimento contínuo
+// simulacion de  movimiento de mascota en emergencia
 export async function startRealTimeSimulation(pet, userLocation, type = "normal", onAlert) {
   let interval;
   const radiusMap = {
@@ -193,7 +193,7 @@ export async function startRealTimeSimulation(pet, userLocation, type = "normal"
         redirect: "/maps",
       });
     }
-  }, 4000); // atualiza a cada 4 segundos
+  }, 4000); // atualiza  cada 4 segundos
 
-  return () => clearInterval(interval); // função para parar a simulação
+  return () => clearInterval(interval); 
 }

@@ -3,9 +3,19 @@ import { Link } from "react-router-dom";
 import BtnViaje from "./ui/BtnViaje";
 import BtnEmergency from "./ui/BtnEmergency";
 import ModalViajeCard from "./modals/ModalViajeCard"; 
+import ModalAlert from "./modals/ModalAlert";   // 👈 IMPORTANTE
+import { useSavedData } from "../context/SavedDataContext"; // 👈 IMPORTANTE
+
 
 export default function PersonalInform({ details, locations }) {
-  const [showModal, setShowModal] = useState(false); // controla visibilidad del modal
+  const [showModal, setShowModal] = useState(false); 
+
+  const { 
+    showAlert, 
+    alert, 
+    setAlert, 
+    closeAlert 
+  } = useSavedData();  // 👈 TRAEMOS MODAL GLOBAL
 
   if (!details || !locations) {
     return <div className="text-center py-10">Cargando...</div>;
@@ -22,7 +32,8 @@ export default function PersonalInform({ details, locations }) {
 
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-0">
-      {/* Dirección y provincia */}
+      
+      {/* Dirección */}
       <div className="flex flex-wrap gap-3 text-gray-700 text-sm sm:text-base">
         <span>{`${direccion}, ${codigoPostal}`}</span>
         <span>|</span>
@@ -30,21 +41,30 @@ export default function PersonalInform({ details, locations }) {
       </div>
 
       {/* Nombre */}
-      <div className="flex items-center gap-4 mt-4">
-        <div className="flex flex-col">
-          <h2 className="font-bold text-2xl sm:text-6xl">
-            {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
-          </h2>
-        </div>
-      </div>
+      <h2 className="font-bold text-2xl sm:text-6xl mt-4">
+        {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
+      </h2>
 
       {/* Botones */}
       <div className="flex gap-3 flex-wrap mt-4">
-        <BtnViaje onClick={() => setShowModal(true)} /> 
-        <BtnEmergency />
+        <BtnViaje onClick={() => setShowModal(true)} />
+
+        {/* 🔥 ESTE ES EL QUE ABRE EL MODAL DE EMERGENCIA */}
+        <BtnEmergency
+          onClick={() =>
+            setAlert({
+              type: "emergency",
+              color: "#F7612A",
+              title: "Has activado el botón de emergencia",
+              message: "La ubicación en tiempo real está activa.",
+              button: "Seguir mirando",
+              redirect: "/maps",
+            })
+          }
+        />
       </div>
 
-      {/* Avatar + Link */}
+      {/* Avatar */}
       <div className="flex flex-row justify-end items-center gap-5">
         <div className="bg-gray-300 rounded-full w-16 h-16 sm:w-15 sm:h-15 overflow-hidden">
           <img
@@ -61,10 +81,15 @@ export default function PersonalInform({ details, locations }) {
         </Link>
       </div>
 
-      {/* Modal de viaje */}
-      {showModal && (
-        <ModalViajeCard onClose={() => setShowModal(false)} /> // 👈 lo mostramos solo si está activo
-      )}
+      {/* Modal Viaje */}
+      {showModal && <ModalViajeCard onClose={() => setShowModal(false)} />}
+
+      {/* Modal Emergencia */}
+      <ModalAlert 
+        show={showAlert}
+        alert={alert}
+        onClose={closeAlert}
+      />
     </div>
   );
 }
