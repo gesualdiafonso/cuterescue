@@ -29,7 +29,7 @@ export default function Maps() {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Busca a última localização do pet
+  // Busca la ultima ubicacion de la mascota
   useEffect(() => {
     const fetchLocation = async () => {
       if (!selectedPet?.id) return;
@@ -126,8 +126,9 @@ export default function Maps() {
               <br />
               {address}
               <br />
+              {segura ? "Zona segura ✅" : "Fuera de zona segura ⚠️"}
+              {segura ? "Zona segura ✅" : "Outside of safe zone ⚠️"}
               {segura ? "Zona segura ✅" : "Fora da zona segura ⚠️"}
-              {segura ? "Zona segura ✅" : "Fueraa de zona segura ⚠️"}
             </Popup>
           </Marker>
         </MapContainer>
@@ -138,7 +139,7 @@ export default function Maps() {
         <div>
           <h2 className="text-2xl text-white font-semibold">{nombre}</h2>
           <p className="text-xl text-white">
-            Última localização: <span className="font-medium">{address}</span>
+            Última ubicación: <span className="font-medium">{address}</span>
           </p>
         </div>
         <div className="flex gap-5 items-center">

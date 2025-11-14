@@ -16,6 +16,13 @@ export function SavedDataProvider({ children }) {
   const [alert, setAlert] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
 
+<<<<<<< HEAD
+=======
+
+  // estado de emergencia (ON/OFF)
+const [alertOn, setAlertOn] = useState(false);
+
+>>>>>>> 6a12757 (estado de emergencia hacia maps)
 
 
   // 🧩 Etapa 1: Carrega imediatamente o pet salvo no localStorage
@@ -70,8 +77,28 @@ export function SavedDataProvider({ children }) {
   function closeAlert(){
     setShowAlert(false);
   }
+<<<<<<< HEAD
   return (
     <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet, showAlert, closeAlert, setAlert }}>
+=======
+
+  
+
+  return (
+    <SavedDataContext.Provider
+      value={{
+        location,
+        selectedPet,
+        setSelectedPet,
+        showAlert,
+        closeAlert,
+        setAlert,
+alertOn,
+setAlertOn,
+
+      }}
+    >
+>>>>>>> 6a12757 (estado de emergencia hacia maps)
       {children}
     </SavedDataContext.Provider>
   );

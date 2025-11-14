@@ -6,12 +6,24 @@ export default function BtnEmergency() {
 
   async function handleClick() {
     if (!selectedPet || !location) {
+<<<<<<< HEAD
     console.log("Error: Faltan datos:", { selectedPet, location });
     return;
   }
   console.log("Simulación: Emergencia disparada:", selectedPet.id);
   await simulateEmergency(selectedPet, location, setAlert);
   console.log("Correct: Simulación completa");
+=======
+      console.log("❌ Faltan datos:", { selectedPet, location });
+      return;
+    }
+
+    console.log("🚨 Emergencia activada:", selectedPet.id);
+
+   
+
+    await simulateEmergency(selectedPet, location, setAlert);
+>>>>>>> 6a12757 (estado de emergencia hacia maps)
   }
 
   return (

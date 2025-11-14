@@ -14,7 +14,14 @@ export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [alerts, setAlerts] = useState([]);
+<<<<<<< HEAD
   const { selectedPet } = useSavedData();
+=======
+
+  //  color del navbar en emergencia
+  const { selectedPet, navbarColor } = useSavedData();
+const { alertOn } = useSavedData();
+>>>>>>> 6a12757 (estado de emergencia hacia maps)
 
   const menuItems = [
     { name: "Home", path: "/" },
@@ -93,8 +100,16 @@ const fetchAlerts = async (userId) => {
   };
 
   return (
+<<<<<<< HEAD
     <nav className="bg-navbar">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
+=======
+   
+    <nav className={` ${
+  alertOn ? "bg-[#FBC68F]" : "bg-white"
+}`}>
+      <div className="max-w-7xl mx-auto flex justify-between items-center mb-10">
+>>>>>>> 6a12757 (estado de emergencia hacia maps)
         <Link to="/">
           <div className="flex">
             <img className="h-30 w-auto" src={Logo} alt="Logo" />
