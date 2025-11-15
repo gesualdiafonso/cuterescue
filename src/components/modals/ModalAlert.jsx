@@ -4,19 +4,18 @@ import { useSavedData } from "../../context/SavedDataContext";
 
 export default function ModalAlert({ show, alert, onClose }) {
   const navigate = useNavigate();
-  const { setAlertOn } = useSavedData(); //  activa el modo emergencia
+  const { setAlertOn } = useSavedData(); // activa modo emergencia
 
   if (!show || !alert) return null;
 
   const { color, title, message, button, redirect } = alert;
 
   return (
-    <div className="modal-overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+    <div  className="modal-overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
       <div
-        className="rounded-2xl p-6 max-w-md text-center text-white shadow-lg"
+        className="rounded-2xl p-6 max-w-md text-center text-white shadow-lg "
         style={{ backgroundColor: color || "#FBC68F" }}
       >
-        {/* <h2 className="text-2xl font-bold mb-4">{title}</h2> */}
         <h2 className="text-2xl font-bold mb-4">
           Has activado el botón de emergencia
         </h2>
@@ -34,9 +33,9 @@ export default function ModalAlert({ show, alert, onClose }) {
 
         <button
           onClick={() => {
-            setAlertOn(true); //  activa modo emergencia
-            onClose();        //  cierra el modal
-            navigate(redirect || "/maps"); //  redirige
+            setAlertOn(true);
+            onClose();
+            navigate(redirect || "/maps");
           }}
           className="bg-[#F7612A] text-white px-4 py-2 rounded-lg hover:bg-[#e6931f] transition"
         >

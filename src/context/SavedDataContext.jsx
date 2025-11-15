@@ -1,5 +1,4 @@
-// ✅ SavedDataContext.jsx
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { supabase } from "../services/supabase";
 import {
   getSelectedPetService,
@@ -15,66 +14,107 @@ export function SavedDataProvider({ children }) {
 
   const [alert, setAlert] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [alertOn, setAlertOn] = useState(false);
 
+  const [simulationRunning, setSimulationRunning] = useState(false);
 
-  // estado de emergencia (ON/OFF)
-const [alertOn, setAlertOn] = useState(false);
+  // 🆕 Guardamos el canal realtime
+  const realtimeChannelRef = useRef(null);
 
-
-  // 🧩 Etapa 1: Carga inmediata del pet guardado
+  // Cargar mascota seleccionada
   useEffect(() => {
     const saved = getSelectedPetService();
-    if (saved) {
-      setSelectedPetState(saved);
-    }
+    if (saved) setSelectedPetState(saved);
   }, []);
 
-  // 🧩 Etapa 2: Suscripción a cambios del service
+  // Escuchar cambios del pet
   useEffect(() => {
-    const unsubscribe = subscribeSelectedPet((newPet) => {
-      setSelectedPetState(newPet);
-    });
+    const unsubscribe = subscribeSelectedPet(setSelectedPetState);
     return unsubscribe;
   }, []);
 
-  const MASCOTA_ID = selectedPet?.id || null;
+  const MASCOTA_ID = selectedPet?.id ?? null;
 
-  // 🧩 Etapa 3: Actualiza ubicación del pet activo
+  // Obtener ubicación inicial
   useEffect(() => {
     if (!MASCOTA_ID) return;
 
-    async function fetchLocation() {
-      const { data, error } = await supabase
+    async function loadLocation() {
+      const { data } = await supabase
         .from("localizacion")
-        .select("lat, lng, direccion, updated_at")
+        .select("*")
         .eq("mascota_id", MASCOTA_ID)
         .single();
 
-      if (!error) setLocation(data);
-      else console.error("❌ Error al obtener localización:", error.message);
+      if (data) setLocation(data);
     }
-
-    fetchLocation();
-    const interval = setInterval(fetchLocation, 5000);
-    return () => clearInterval(interval);
+    loadLocation();
   }, [MASCOTA_ID]);
 
-  // 🧩 Etapa 4: Sincronización bidireccional
+  // Suscripción realtime
+  useEffect(() => {
+    if (!selectedPet) return;
+
+    // Si ya había un canal, lo eliminamos
+    if (realtimeChannelRef.current) {
+      supabase.removeChannel(realtimeChannelRef.current);
+    }
+
+    const channel = supabase
+      .channel(`realtime-location-${selectedPet.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "localizacion",
+          filter: `mascota_id=eq.${selectedPet.id}`,
+        },
+        (payload) => {
+          console.log("🔄 Realtime → Nueva ubicación:", payload.new);
+          if (simulationRunning) {
+            setLocation(payload.new);
+          }
+        }
+      )
+      .subscribe();
+
+    realtimeChannelRef.current = channel;
+
+    return () => supabase.removeChannel(channel);
+  }, [selectedPet, simulationRunning]);
+
+  // Guardar selected pet en storage
   const setSelectedPet = (pet) => {
     setSelectedPetState(pet);
     setSelectedPetService(pet);
   };
 
-  // 🧩 Mostrar alertas
+  // Mostrar alerta → activa simulación
   useEffect(() => {
-    if (alert) setShowAlert(true);
+    if (alert) {
+      setShowAlert(true);
+      setSimulationRunning(true);
+      setAlertOn(true);
+    }
   }, [alert]);
 
-  function closeAlert() {
-    setShowAlert(false);
-  }
+  const closeAlert = () => setShowAlert(false);
 
-  
+  // 🛑 Detener simulación REAL
+  const stopSimulation = () => {
+    console.log("🛑 Simulación detenida correctamente");
+
+    setSimulationRunning(false);
+    setAlertOn(false);
+    setShowAlert(false);
+
+    // Cortamos el canal realtime DEFINITIVAMENTE
+    if (realtimeChannelRef.current) {
+      supabase.removeChannel(realtimeChannelRef.current);
+      realtimeChannelRef.current = null;
+    }
+  };
 
   return (
     <SavedDataContext.Provider
@@ -85,9 +125,11 @@ const [alertOn, setAlertOn] = useState(false);
         showAlert,
         closeAlert,
         setAlert,
-alertOn,
-setAlertOn,
-
+        alertOn,
+        setAlertOn,
+        alert,
+        simulationRunning,
+        stopSimulation,
       }}
     >
       {children}

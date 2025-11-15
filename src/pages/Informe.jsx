@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useSavedData } from "../context/SavedDataContext";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import SimulateGPS from "../utils/data/simulateGPS";
+
 
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -60,9 +60,7 @@ export default function Informe() {
         </MapContainer>
       </div>
 
-      <div className="p-6">
-        <SimulateGPS /> {/* simula movimiento cuando estoy en la pagina */}
-      </div>
+
     </div>
   );
 }

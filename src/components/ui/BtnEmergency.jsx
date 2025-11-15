@@ -1,4 +1,5 @@
-import { simulateEmergency } from "../../services/MovimentPet.js";
+import React from "react";
+import { startRealTimeSimulation } from "../../services/MovimentPet.js";
 import { useSavedData } from "../../context/SavedDataContext";
 
 export default function BtnEmergency() {
@@ -12,9 +13,17 @@ export default function BtnEmergency() {
 
     console.log("🚨 Emergencia activada:", selectedPet.id);
 
-   
+    // Mostrar modal + activar simulación automáticamente en el context
+    setAlert({
+      title: "Emergencia activada",
+      message: "Tu mascota está siendo rastreada.",
+      color: "#FBC68F",
+      button: "Seguir mirando",
+      redirect: "/maps",
+    });
 
-    await simulateEmergency(selectedPet, location, setAlert);
+    // Iniciar simulación real
+    await startRealTimeSimulation(selectedPet, location, "emergency");
   }
 
   return (
