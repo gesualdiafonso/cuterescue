@@ -15,22 +15,41 @@ import InformePet from './pages/InformePet';
 import Maps from './pages/Maps';
 import AgregarMascota from './pages/AgregarMascota';
 import Planes from './pages/Planes';
+
 import ModalAlert from './components/modals/ModalAlert';
 import { useSavedData } from './context/SavedDataContext';
 
 function App() {
-  const { showAlert, closeAlert, setAlert } = useSavedData();
+  const { showAlert, alert, closeAlert, alertOn } = useSavedData();
   const location = useLocation();
 
-  // Mostrar modal en todas las rutas excepto /maps
+  //  modal global en todas las rutas excepto /maps
   const showModalOnRoute = location.pathname !== "/maps";
 
   return (
     <>
       <Navbar />
 
-      {showModalOnRoute && (
-        <ModalAlert show={showAlert} alert={setAlert} onClose={closeAlert} />
+      {/*  Modal de activación (cuando el usuario presiona Emergency) */}
+      <ModalAlert 
+        show={showAlert}
+        alert={alert}
+        onClose={closeAlert}
+      />
+
+      {/* Modal global: "Tu mascota está actualmente en modo emergencia" */}
+      {alertOn && showModalOnRoute && (
+        <ModalAlert
+          show={true}
+          alert={{
+            color: "#F7612A",
+            title: "Tu mascota está actualmente en modo emergencia",
+            message: "Podrás ver sus movimientos en tiempo real.",
+            button: "Ir al mapa",
+            redirect: "/maps"
+          }}
+          onClose={() => {}}
+        />
       )}
 
       <Routes>
@@ -44,7 +63,6 @@ function App() {
         <Route path="/maps" element={<Maps />} />
         <Route path="/eventos" element={<Eventos />} />
         <Route path="/informe" element={<InformePet />} />
-        <Route path="/informe" element={<Informe />} />
         <Route path="/agregarmascota" element={<AgregarMascota />} />
         <Route path="/planes" element={<Planes />} />
       </Routes>

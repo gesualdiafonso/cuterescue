@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import BtnViaje from "./ui/BtnViaje";
 import BtnEmergency from "./ui/BtnEmergency";
 import ModalViajeCard from "./modals/ModalViajeCard"; 
-import ModalAlert from "./modals/ModalAlert";   // 👈 IMPORTANTE
-import { useSavedData } from "../context/SavedDataContext"; // 👈 IMPORTANTE
+import ModalAlert from "./modals/ModalAlert";   
+import { useSavedData } from "../context/SavedDataContext"; 
 
 
 export default function PersonalInform({ details, locations }) {
@@ -15,7 +15,7 @@ export default function PersonalInform({ details, locations }) {
     alert, 
     setAlert, 
     closeAlert 
-  } = useSavedData();  // 👈 TRAEMOS MODAL GLOBAL
+  } = useSavedData();  //  TRAEMOS MODAL GLOBAL
 
   if (!details || !locations) {
     return <div className="text-center py-10">Cargando...</div>;
@@ -90,6 +90,7 @@ export default function PersonalInform({ details, locations }) {
         alert={alert}
         onClose={closeAlert}
       />
+      
     </div>
   );
 }

@@ -15,8 +15,8 @@ export default function BtnEmergency() {
 
     // Mostrar modal + activar simulación automáticamente en el context
     setAlert({
-      title: "Emergencia activada",
-      message: "Tu mascota está siendo rastreada.",
+      title: "Has activado el botón de emergencia",
+      message: "La activación de la ubicación en tiempo real ha sido activada, active sus notificaciones para que podamos ubicar a su mascota.",
       color: "#FBC68F",
       button: "Seguir mirando",
       redirect: "/maps",
