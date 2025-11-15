@@ -7,7 +7,6 @@ import { supabase } from "../services/supabase";
 import ModalAlert from "../components/modals/ModalAlert";
 import BtnPetFound from "../components/ui/BtnPetFound";
 import BtnScreenshot from "../components/ui/BtnScreenshot";
-import html2canvas from "html2canvas";
 import emailjs from "@emailjs/browser";
 
 const DefaultIcon = L.icon({
@@ -27,12 +26,7 @@ function ChangeView({ center }) {
 }
 
 export default function Maps() {
-  const { 
-    selectedPet, 
-    location, 
-    stopSimulation,
-    setAlertOn,
-  } = useSavedData();
+  const { selectedPet, location, stopSimulation, setAlertOn } = useSavedData();
 
   const [petPosition, setPetPosition] = useState(null);
   const [found, setFound] = useState(false);
@@ -63,42 +57,73 @@ export default function Maps() {
   // --------------------------------------
   // BOTÓN "ENVIAR CAPTURA"
   // --------------------------------------
-  const handleSendScreenshot = async () => {
-    try {
-      // Capturar contenedor del mapa
-      const mapElement = document.querySelector(".leaflet-container");
-      const canvas = await html2canvas(mapElement);
-      const imageBase64 = canvas.toDataURL("image/png");
-
-      // Obtener email real del usuario logueado
-      const { data } = await supabase.auth.getUser();
-      const userEmail = data?.user?.email;
-
-      if (!userEmail) {
-        alert("❌ No hay un usuario autenticado.");
-        return;
-      }
-
-      // Enviar email con EmailJS
-      await emailjs.send(
-        "service_b4i1idl",
-        "template_mpbgcui",
-        {
-  
-          pet_name: selectedPet.nombre,
-          address: address,
-          screenshot: imageBase64,
-        },
-        "YLjoPbSLIq24dKE8j"
-      );
-
-      alert("📸 Captura enviada exitosamente");
-
-    } catch (err) {
-      console.error("Error enviando captura:", err);
-      alert("❌ Error al enviar captura");
+const handleSendScreenshot = async () => {
+  try {
+    if (!petPosition) {
+      alert("❌ No hay posición de la mascota disponible.");
+      return;
     }
-  };
+
+    // -------------------------------
+    // Obtener usuario autenticado
+    // -------------------------------
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !userData?.user) {
+      alert("❌ No hay un usuario autenticado.");
+      return;
+    }
+
+    const userEmail = userData.user.email;
+
+    // -------------------------------
+    // Construir dirección segura
+    // -------------------------------
+    const safeAddress = [
+      location.direccion,
+      location.barrio,
+      location.ciudad,
+      location.provincia,
+      location.codigopostal,
+    ]
+      .filter(Boolean) // elimina undefined 
+      .join(", ");
+
+    // -------------------------------
+    // Crear link de Google Maps
+    // -------------------------------
+    const lat = petPosition.lat;
+    const lng = petPosition.lng;
+    const googleMapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+
+    console.log("🔗 Link de Google Maps:", googleMapsLink);
+
+    // -------------------------------
+    // Enviar email con EmailJS
+    // -------------------------------
+    await emailjs.send(
+      "service_b4i1idl",
+      "template_mpbgcui",
+      {
+        to_email: userEmail,
+        pet_name: selectedPet.nombre,
+        address: safeAddress,
+        screenshot_url: googleMapsLink, 
+      },
+      "YLjoPbSLIq24dKE8j"
+    );
+
+    alert("📍 Link de ubicación enviado exitosamente");
+
+  } catch (err) {
+    console.error("🔥 ERROR FINAL:", err);
+    alert("❌ Error al enviar ubicación");
+  }
+};
+
+
+
+
 
   return (
     <div className="relative max-h-full h-screen w-full flex flex-col">
