@@ -6,8 +6,8 @@ import BtnEmergency from "./ui/BtnEmergency";
 export default function PersonalInform({ details, locations }) {
 =======
 import ModalViajeCard from "./modals/ModalViajeCard"; 
-import ModalAlert from "./modals/ModalAlert";   // 👈 IMPORTANTE
-import { useSavedData } from "../context/SavedDataContext"; // 👈 IMPORTANTE
+import ModalAlert from "./modals/ModalAlert";   
+import { useSavedData } from "../context/SavedDataContext"; 
 
 
 export default function PersonalInform({ details, locations }) {
@@ -18,7 +18,7 @@ export default function PersonalInform({ details, locations }) {
     alert, 
     setAlert, 
     closeAlert 
-  } = useSavedData();  // 👈 TRAEMOS MODAL GLOBAL
+  } = useSavedData();  //  TRAEMOS MODAL GLOBAL
 
 >>>>>>> 6a12757 (estado de emergencia hacia maps)
   if (!details || !locations) {
@@ -128,7 +128,11 @@ export default function PersonalInform({ details, locations }) {
         alert={alert}
         onClose={closeAlert}
       />
+<<<<<<< HEAD
 >>>>>>> 6a12757 (estado de emergencia hacia maps)
+=======
+      
+>>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
     </div>
   );
 }

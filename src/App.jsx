@@ -15,24 +15,67 @@ import 'leaflet/dist/leaflet.css';
 import Eventos from './pages/Eventos';
 import Informe from './pages/Informe';
 import InformePet from './pages/InformePet';
+<<<<<<< HEAD
+=======
+import Maps from './pages/Maps';
+import AgregarMascota from './pages/AgregarMascota';
+import Planes from './pages/Planes';
+
+>>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
 import ModalAlert from './components/modals/ModalAlert';
 import { useSavedData } from './context/SavedDataContext';
 import Maps from './pages/Maps';
 import AgregarMascota from './pages/AgregarMascota';
 
 function App() {
+<<<<<<< HEAD
 
   const { showAlert, closeAlert, setAlert } = useSavedData() 
+=======
+  const { showAlert, alert, closeAlert, alertOn } = useSavedData();
+  const location = useLocation();
+
+  //  modal global en todas las rutas excepto /maps
+  const showModalOnRoute = location.pathname !== "/maps";
+>>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
 
   return (
     <>
 
+<<<<<<< HEAD
     <Navbar />
         <ModalAlert show={showAlert} alert={setAlert} onClose={closeAlert} />
          <Routes>
        <Route path="/" element={<Dashboard />} />
           
          <Route path="/veterinarias-24-hrs" element={<Veterinarias />} />
+=======
+      {/*  Modal de activación (cuando el usuario presiona Emergency) */}
+      <ModalAlert 
+        show={showAlert}
+        alert={alert}
+        onClose={closeAlert}
+      />
+
+      {/* Modal global: "Tu mascota está actualmente en modo emergencia" */}
+      {alertOn && showModalOnRoute && (
+        <ModalAlert
+          show={true}
+          alert={{
+            color: "#F7612A",
+            title: "Tu mascota está actualmente en modo emergencia",
+            message: "Podrás ver sus movimientos en tiempo real.",
+            button: "Ir al mapa",
+            redirect: "/maps"
+          }}
+          onClose={() => {}}
+        />
+      )}
+
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/veterinarias-24-hrs" element={<Veterinarias />} />
+>>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
         <Route path="/documentacion" element={<Documentacion />} />
         <Route path="/registrar" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -41,7 +84,6 @@ function App() {
         <Route path="/maps" element={<Maps />} />
         <Route path="/eventos" element={<Eventos />} />
         <Route path="/informe" element={<InformePet />} />
-        <Route path="/informe" element={<Informe />} />
         <Route path="/agregarmascota" element={<AgregarMascota />} />
       </Routes>  
       <Footer/>

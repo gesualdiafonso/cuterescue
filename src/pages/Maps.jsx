@@ -3,8 +3,16 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useSavedData } from "../context/SavedDataContext";
-import ModalAlert from "../components/modals/ModalAlert";
 import { supabase } from "../services/supabase";
+import ModalAlert from "../components/modals/ModalAlert";
+<<<<<<< HEAD
+import { supabase } from "../services/supabase";
+=======
+import BtnPetFound from "../components/ui/BtnPetFound";
+import BtnScreenshot from "../components/ui/BtnScreenshot";
+import html2canvas from "html2canvas";
+import emailjs from "@emailjs/browser";
+>>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
 
 
 // Ícone padrão do Leaflet
@@ -15,7 +23,11 @@ const DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
+<<<<<<< HEAD
 // Move o mapa quando o centro muda
+=======
+// Centrar mapa cuando cambia la ubicación
+>>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
 function ChangeView({ center }) {
   const map = useMap();
   useEffect(() => {
@@ -25,11 +37,25 @@ function ChangeView({ center }) {
 }
 
 export default function Maps() {
+<<<<<<< HEAD
   const { selectedPet } = useSavedData();
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Busca la ultima ubicacion de la mascota
+=======
+  const { 
+    selectedPet, 
+    location, 
+    stopSimulation,
+    setAlertOn,
+  } = useSavedData();
+
+  const [petPosition, setPetPosition] = useState(null);
+  const [found, setFound] = useState(false);
+
+  // Actualiza la posición que recibe del GPS simulado
+>>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
   useEffect(() => {
     const fetchLocation = async () => {
       if (!selectedPet?.id) return;
@@ -97,9 +123,62 @@ export default function Maps() {
 
   const { nombre, chip_id } = selectedPet;
   const chipActivo = !!chip_id;
+<<<<<<< HEAD
   const { direccion, codigopostal, provincia, lat, lng, segura } = location;
   const position = [lat, lng];
   const address = `${direccion}, ${codigopostal} - ${provincia}`;
+=======
+  const address = `${location.direccion}, ${location.codigopostal} - ${location.provincia}`;
+
+  // --------------------------------------
+  // BOTÓN "ENCONTRÉ A MI MASCOTA"
+  // --------------------------------------
+  const handleFoundPet = () => {
+    stopSimulation();
+    setAlertOn(false);
+    setFound(true);
+  };
+
+  // --------------------------------------
+  // BOTÓN "ENVIAR CAPTURA"
+  // --------------------------------------
+  const handleSendScreenshot = async () => {
+    try {
+      // Capturar contenedor del mapa
+      const mapElement = document.querySelector(".leaflet-container");
+      const canvas = await html2canvas(mapElement);
+      const imageBase64 = canvas.toDataURL("image/png");
+
+      // Obtener email real del usuario logueado
+      const { data } = await supabase.auth.getUser();
+      const userEmail = data?.user?.email;
+
+      if (!userEmail) {
+        alert("❌ No hay un usuario autenticado.");
+        return;
+      }
+
+      // Enviar email con EmailJS
+      await emailjs.send(
+        "service_b4i1idl",
+        "template_mpbgcui",
+        {
+  
+          pet_name: selectedPet.nombre,
+          address: address,
+          screenshot: imageBase64,
+        },
+        "YLjoPbSLIq24dKE8j"
+      );
+
+      alert("📸 Captura enviada exitosamente");
+
+    } catch (err) {
+      console.error("Error enviando captura:", err);
+      alert("❌ Error al enviar captura");
+    }
+  };
+>>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
 
   return (
     <div className="relative max-h-full h-screen w-full flex flex-col">
@@ -134,6 +213,7 @@ export default function Maps() {
         </MapContainer>
       </div>
 
+<<<<<<< HEAD
       {/* Info lateral */}
       <div className="absolute right-0 z-20 w-1/3 bg-[#22687B]/50 p-5 shadow-md flex flex-col justify-center gap-4 rounded-b-lg ">
         <div>
@@ -151,6 +231,28 @@ export default function Maps() {
             Chip: {chipActivo ? "Activo" : "Inactivo"}
           </span>
         </div>
+=======
+      <div className="absolute right-0 z-20 w-1/3 bg-[#22687B]/50 p-5 shadow-md flex flex-col justify-center gap-4 rounded-b-lg">
+        <h2 className="text-2xl text-white font-semibold">{nombre}</h2>
+
+        <p className="text-xl text-white">
+          Última ubicación: <span className="font-medium">{address}</span>
+        </p>
+
+        <span
+          className={`px-3 py-1 rounded-lg text-white font-light ${
+            chipActivo ? "bg-[#007bff]" : "bg-red-400"
+          }`}
+        >
+          Chip: {chipActivo ? "Activo" : "Inactivo"}
+        </span>
+
+        {/* Botón para enviar captura */}
+        <BtnScreenshot onClick={handleSendScreenshot} />
+
+        {/* Botón "Encontré a mi mascota" */}
+        {!found && <BtnPetFound onClick={handleFoundPet} />}
+>>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
       </div>
     </div>
   );
