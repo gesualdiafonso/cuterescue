@@ -23,7 +23,6 @@ export default function Dashboard() {
     if (!modalOpen) setCurrentPet(null);
   };
 
-  // Cargar datos del usuario
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await import("../services/supabase").then(mod => mod.supabase.auth.getUser());
@@ -41,40 +40,43 @@ export default function Dashboard() {
     fetchUser();
   }, [navigate]);
 
-  // Manejar agregado de nueva mascota
   const handlePetAdd = (newPet) => {
-    setSelectedPet(newPet);   // selecciona la nueva mascota
+    setSelectedPet(newPet);
   };
 
   if (!mascotas) return <p className="text-center mt-10">Cargando perfil...</p>;
 
   return (
     <>
-      <div className="max-w-7xl mx-auto p-0">
-        {/* Sección principal: info personal y mapa */}
-        <section className="flex gap-20 justify-between mb-10 w-full">
-          <PersonalInform details={userData} locations={ubicacionUsuario} />
+    <div className="w-full px-4 lg:px-0 max-w-7xl mx-auto">
+  {/* Sección principal: info personal y mapa */}
+  <section className="flex flex-col lg:flex-row gap-10 lg:gap-20 justify-between mb-10 w-full">
+    <PersonalInform details={userData} locations={ubicacionUsuario} />
 
-          <div className="flex flex-col gap-2 w-1/2">
-            <MapsViewer selectedPet={selectedPet} location={location} />
-            <BtnPetMove pet={selectedPet} userLocation={location} />
-          </div>
-        </section>
+    <div className="flex flex-col gap-2 w-full lg:w-1/2">
+      <MapsViewer selectedPet={selectedPet} location={location} />
+      <BtnPetMove pet={selectedPet} userLocation={location} />
+    </div>
+  </section>
 
-        <div className="bg-gray-300/50 w-full h-px my-10" />
+  <div className="bg-gray-300/50 w-full h-px my-10" />
 
-        {/* Sección: PetCards + Maps */}
-        <section className="flex gap-20 mb-10 w-full justify-center items-center z-0">
-          <PetCards
-            pets={mascotas}
-            selectedPet={selectedPet}
-            setSelectedPet={setSelectedPet}
-            onPetAdded={handlePetAdd}
-          />
+  {/* Sección: PetCards + Maps */}
+  <section className="flex flex-col lg:flex-row gap-10 lg:gap-20 mb-10 w-full justify-center items-center z-0">
+    <PetCards
+      pets={mascotas}
+      selectedPet={selectedPet}
+      setSelectedPet={setSelectedPet}
+      onPetAdded={handlePetAdd}
+    />
 
-          <Maps selectedPet={selectedPet} location={location} modalOpen={modalOpen} />
-        </section>
-      </div>
+    <div className="w-full lg:w-auto">
+      <Maps selectedPet={selectedPet} location={location} modalOpen={modalOpen} />
+    </div>
+  </section>
+</div>
+
+
       {/* Modal para agregar/editar mascota */}
       {modalOpen && (
         <ModalMascota
