@@ -35,21 +35,15 @@ export default function BtnPetMove({ pet, userLocation }) {
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 justify-center h-[20px] text-center items-center">
       <button
-        className="bg-[#22687b] rounded-xl py-2 px-8 font-bold text-white hover:bg-transparent hover:border hover:border-[#22687b] hover:text-black transition-all duration-300"
+        className="bg-[#22687b] rounded-xl py-1.5 px-8 font-bold text-white hover:bg-transparent hover:border hover:border-[#22687b] hover:text-black transition-all duration-300 w-full cursor-pointer "
         onClick={handleStartSim}
       >
         ¡Ubícame!
       </button>
 
-      {/* Botón opcional para probar detener simulación */}
-      {/* <button
-        className="bg-red-500 rounded-xl py-2 px-4 text-white"
-        onClick={handleStopSim}
-      >
-        Detener
-      </button> */}
+     
     </div>
   );
 }

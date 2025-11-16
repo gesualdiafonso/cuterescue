@@ -1,5 +1,7 @@
+// src/components/ui/PetsCard.jsx
 import React from "react";
 import AddPets from "../modals/AddPets";
+import PetStatus from "./PetStatus";
 
 export default function PetsCard({ pets = [], selectedPet, setSelectedPet, onPetAdded }) {
   return (
@@ -16,8 +18,11 @@ export default function PetsCard({ pets = [], selectedPet, setSelectedPet, onPet
               <article
                 key={pet.id}
                 onClick={() => setSelectedPet(pet)}
-                className={`bg-[#22687b] w-[256px] h-[420px] flex-shrink-0 rounded-2xl  p-5 flex  flex-col cursor-pointer hover:scale-105 transition-transform 
-                  ${isSelected ? "ring-4 ring-[#71dd5b]/40" : ""}`}
+                className={`
+                  bg-[#22687b] w-[256px] h-[420px] flex-shrink-0 rounded-2xl p-5 flex flex-col cursor-pointer
+                  transition-transform duration-300 ease-in-out
+                  ${isSelected ? "ring-4 ring-[#71dd5b]/60 scale-105 shadow-lg" : "hover:scale-105"}
+                `}
               >
                 <div className="w-full h-60 mb-5 bg-gray-50 rounded-xl overflow-hidden">
                   <img
@@ -29,10 +34,11 @@ export default function PetsCard({ pets = [], selectedPet, setSelectedPet, onPet
                 <div className="text-white flex flex-col justify-center">
                   <h4>{nombre}</h4>
                   <span>
-                    <strong className="text-orange-300">Status: </strong>
-                    <span className="bg-[#71dd5b] text-white text-center rounded-lg font-light py-1 px-2">
-                      {status}
-                    </span>
+                    <strong className="text-orange-300">Status: 
+
+                      <PetStatus activo={selectedPet.activo} /> 
+                    </strong>
+                    
                   </span>
                   <strong className="text-orange-300">Ubicación:</strong>
                   <span className=" h-[70px]">{direccion}</span>

@@ -1,3 +1,5 @@
+/* Borrar componente entero*/
+
 import React, {useEffect, useState} from "react"
 import PetCards from "../components/ui/PetCards"
 import DetailsInform from "../components/DetailsInform"

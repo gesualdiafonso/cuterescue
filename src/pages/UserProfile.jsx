@@ -1,63 +1,83 @@
-import React, {useEffect, useState} from "react"
-import PetCards from "../components/ui/PetsCard"
-import DetailsInform from "../components/DetailsInform"
-import { useNavigate } from "react-router-dom"
-import { supabase } from "../services/supabase";
+// src/pages/DetailsUser.jsx
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import PetCards from "../components/ui/PetsCard";
+import DetailsInform from "../components/DetailsInform";
+import usePets from "../hooks/usePets";
+import ModalMascota from "../components/ModalMascota";
 
+export default function DetailsUser() {
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentPet, setCurrentPet] = useState(null);
 
-export default function DetailsUser(){
-    
-    const navigate = useNavigate();
+  const {
+    mascotas,
+    location,
+    ubicacionUsuario,
+    selectedPet,
+    setSelectedPet,
+    handleSavePet,
+    handleDeletePet
+  } = usePets();
 
-    const [userData, setUserData] = useState(null);
-    const [mascotas, setMascotas] = useState([]);
-    const [ubicacion, setUbicacion] = useState(null);
-    
-    useEffect(() =>{
-        const fetchAllData = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if(!user){
-                navigate("/login")
-                return;
-            }
+  const toggleModal = () => {
+    setModalOpen(!modalOpen);
+    if (!modalOpen) setCurrentPet(null);
+  };
 
-            const { data: detailsUser} = await supabase
-                .from("usuarios")
-                .select("*")
-                .eq("id", user.id)
-                .single();
-            setUserData(detailsUser)
+  // Datos del usuario
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await import("../services/supabase").then(mod => mod.supabase.auth.getUser());
+      if (!user) {
+        navigate("/login");
+        return;
+      }
 
-            const { data: mascotesInfo} = await supabase
-                .from("mascotas")
-                .select("*")
-                .eq("owner_id", user.id);
+      const { data: detailsUser } = await import("../services/supabase").then(mod =>
+        mod.supabase.from("usuarios").select("*").eq("id", user.id).single()
+      );
+      setUserData(detailsUser);
+    };
 
-            setMascotas(mascotesInfo);
+    fetchUser();
+  }, [navigate]);
 
-            const { data: userUbication } = await supabase
-                .from("localizacion_usuario")
-                .select("*")
-                .eq("owner_id", user.id)
-                .single()
-            setUbicacion(userUbication)
-        }
+  // Función para cuando se agrega una mascota desde el modal
+  const handlePetAdd = (newPet) => {
+    setSelectedPet(newPet); // selecciona la nueva mascota
+  };
 
-        fetchAllData();
-    }, [navigate])
+  return (
+    <div className="max-w-7xl mx-auto">
+      {/* Información del usuario */}
+      <section>
+        <DetailsInform details={userData} ubicacion={ubicacionUsuario} />
+      </section>
 
-    return(
-        <div className="max-w-7xl mx-auto">
-            <section>
-                <DetailsInform details={userData} ubicacion={ubicacion}/>
-            </section>
-            <div className="bg-gray-300/50 w-full h-px my-10" />
-            <section>
-                <PetCards
-                    pets={mascotas}
-     
-                    />
-            </section>
-        </div>
-    )
+      <div className="bg-gray-300/50 w-full h-px my-10" />
+
+      {/* Mascotas */}
+      <section>
+        <PetCards
+          pets={mascotas}
+          selectedPet={selectedPet}
+          setSelectedPet={setSelectedPet}
+          onPetAdded={handlePetAdd} // ✅ esto evita el error
+        />
+      </section>
+
+      {/* Modal para agregar/editar mascota */}
+      {modalOpen && (
+        <ModalMascota
+          pet={currentPet}
+          onClose={toggleModal}
+          onSave={handleSavePet}  // el hook maneja agregar o actualizar
+          onDelete={handleDeletePet}
+        />
+      )}
+    </div>
+  );
 }
