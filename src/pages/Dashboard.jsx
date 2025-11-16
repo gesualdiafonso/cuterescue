@@ -48,7 +48,7 @@ export default function Dashboard() {
 
   return (
     <>
-    <div className="w-full px-4 lg:px-0 max-w-7xl mx-auto">
+    <div className="w-full px-4 lg:px-0 max-w-7xl mx-auto mt-5">
   {/* Sección principal: info personal y mapa */}
   <section className="flex flex-col lg:flex-row gap-10 lg:gap-20 justify-between mb-10 w-full">
     <PersonalInform details={userData} locations={ubicacionUsuario} />

@@ -55,7 +55,10 @@ export default function Navbar() {
 
     const today = new Date();
     const filtered = (data || []).filter(
-      (n) => new Date(n.fecha_alerta) <= today && n.documentacion?.alerta === "Activo" && n.vista === false
+      (n) =>
+        new Date(n.fecha_alerta) <= today &&
+        n.documentacion?.alerta === "Activo" &&
+        n.vista === false
     );
     setAlerts(filtered);
   };
@@ -63,7 +66,7 @@ export default function Navbar() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
-    navigate("/");
+    navigate("/login");
   };
 
   const handleNotificationsClick = async () => {
@@ -108,16 +111,35 @@ export default function Navbar() {
           </ul>
         </div>
 
-        {/* Perfil, Notificaciones, PetLink y botón hamburguesa */}
+        {/* DERECHA: usuario logueado o no */}
         <div className="flex items-center gap-2 z-[1002]">
+
+          {/* BOTONES LOGIN / REGISTRAR SI NO HAY USER (DESKTOP) */}
+          {!user && (
+            <div className="hidden lg:flex gap-2">
+              <Link
+                to="/login"
+                className="px-4 py-2 bg-[#22687B] text-white font-semibold rounded-md shadow hover:bg-[#1c5563] transition"
+              >
+                Ingresar
+              </Link>
+
+              <Link
+                to="/registrar"
+                className="px-4 py-2 bg-white text-[#22687B] font-semibold rounded-md shadow border border-[#22687B] hover:bg-[#f0fafa] transition"
+              >
+                Registrarme
+              </Link>
+            </div>
+          )}
+
+          {/* PetLink */}
           {user && <PetLink pet={selectedPet} />}
 
+          {/* Notificaciones */}
           {user && (
             <div className="relative">
-              <button
-                onClick={handleNotificationsClick}
-                className="relative text-[#22687B]"
-              >
+              <button onClick={handleNotificationsClick} className="relative text-[#22687B]">
                 <FiBell size={24} />
                 {alerts.length > 0 && (
                   <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5">
@@ -150,6 +172,7 @@ export default function Navbar() {
             </div>
           )}
 
+          {/* Perfil */}
           {user && (
             <div className="relative">
               <button
@@ -194,7 +217,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Botón hamburguesa ≤976px */}
+          {/* Hamburguesa mobile */}
           <div className="relative z-[1001] max-[976px]:block hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -208,19 +231,9 @@ export default function Navbar() {
                 stroke="currentColor"
               >
                 {isOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 )}
               </svg>
             </button>
@@ -228,7 +241,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Menú responsive ≤976px */}
+      {/* Menú responsive mobile */}
       {isOpen && (
         <div className="fixed top-0 left-0 w-full h-1/2 bg-[#f5f5dc] z-[999] max-[976px]:block hidden shadow-lg">
           <ul className="flex flex-col items-center justify-center h-full space-y-4 text-lg">
@@ -249,6 +262,31 @@ export default function Navbar() {
                 </NavLink>
               </li>
             ))}
+
+            {/* LOGIN / REGISTRO EN MOBILE */}
+            {!user && (
+              <>
+                <li>
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-5 py-2 bg-[#22687B] text-white rounded-full shadow"
+                  >
+                    Ingresar
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    to="/registrar"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-5 py-2 bg-white text-[#22687B] border border-[#22687B] rounded-full shadow"
+                  >
+                    Registrarme
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       )}

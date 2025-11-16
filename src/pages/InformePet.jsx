@@ -26,7 +26,7 @@ export default function InformePet() {
   const [isViajeModalOpen, setIsViajeModalOpen] = useState(false);
 
   return (
-    <div className="max-w-7xl mx-auto p-0">
+    <div className="max-w-7xl mx-auto p-0 mt-5">
       {/* PET CARDS + MAPA */}
       <section className="flex gap-20 mb-10">
         <PetCards

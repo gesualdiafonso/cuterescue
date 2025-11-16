@@ -9,7 +9,6 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Eventos from "./pages/Eventos";
-import Informe from "./pages/Informe";
 import InformePet from "./pages/InformePet";
 import Maps from "./pages/Maps";
 import AgregarMascota from "./pages/AgregarMascota";
@@ -19,11 +18,14 @@ import { useSavedData } from "./context/SavedDataContext";
 import { useEffect } from "react";
 import logo from "./assets/logo.png";
 
+// PRIVATE ROUTE
+import PrivateRoute from "./router/PrivateRoute";
+
 function App() {
   const { showAlert, alert, closeAlert, alertOn } = useSavedData();
   const location = useLocation();
 
-  //  modal global en todas las rutas excepto /maps
+  // modal global excepto en /maps
   const showModalOnRoute = location.pathname !== "/maps";
 
   // logo o favicon
@@ -31,14 +33,15 @@ function App() {
     const link = document.querySelector("link[rel~='icon']");
     if (link) link.href = logo;
   }, []);
+
   return (
     <>
       <Navbar />
 
-      {/*  Modal de activación (cuando el usuario presiona Emergency) */}
+      {/* Modal Emergency */}
       <ModalAlert show={showAlert} alert={alert} onClose={closeAlert} />
 
-      {/* Modal global: "Tu mascota está actualmente en modo emergencia" */}
+      {/* Modal global si hay alerta ON */}
       {alertOn && showModalOnRoute && (
         <ModalAlert
           show={true}
@@ -54,18 +57,92 @@ function App() {
       )}
 
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/veterinarias-24-hrs" element={<Veterinarias />} />
-        <Route path="/documentacion" element={<Documentacion />} />
-        <Route path="/registrar" element={<Register />} />
+        {/* ------------- RUTAS PÚBLICAS ------------- */}
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/detalles" element={<UserProfile />} />
-        <Route path="/maps" element={<Maps />} />
+        <Route path="/registrar" element={<Register />} />
         <Route path="/eventos" element={<Eventos />} />
-        <Route path="/informe" element={<InformePet />} />
-        <Route path="/agregarmascota" element={<AgregarMascota />} />
-        <Route path="/planes" element={<Planes />} />
+        
+        {/* ------------- RUTAS PROTEGIDAS ------------- */}
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/veterinarias-24-hrs"
+          element={
+            <PrivateRoute>
+              <Veterinarias />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/documentacion"
+          element={
+            <PrivateRoute>
+              <Documentacion />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/detalles"
+          element={
+            <PrivateRoute>
+              <UserProfile />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/maps"
+          element={
+            <PrivateRoute>
+              <Maps />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/informe"
+          element={
+            <PrivateRoute>
+              <InformePet />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/agregarmascota"
+          element={
+            <PrivateRoute>
+              <AgregarMascota />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/planes"
+          element={
+            <PrivateRoute>
+              <Planes />
+            </PrivateRoute>
+          }
+        />
       </Routes>
 
       <Footer />
