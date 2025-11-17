@@ -6,17 +6,17 @@ export default function EditPetForm({
   selectedPet,
   location,
   ubicacion,
-  refreshPets, // callback para actualizar la lista después de editar o borrar
+  refreshPets,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteMessage, setDeleteMessage] = useState(""); // mensaje para feedback
-  const [confirmDelete, setConfirmDelete] = useState(false); // para confirmar borrado
+  const [deleteMessage, setDeleteMessage] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   if (!selectedPet)
     return (
-      <div className="flex justify-center items-center">
-        <h2 className="text-3xl font-black text-center my-10">
-          Todavía no haz agregado una mascota
+      <div className="flex justify-center items-center py-10">
+        <h2 className="text-3xl font-black text-[#22687b] text-center">
+          Todavía no has agregado una mascota
         </h2>
       </div>
     );
@@ -43,7 +43,7 @@ export default function EditPetForm({
 
   const handleDelete = async () => {
     if (!confirmDelete) {
-      setConfirmDelete(true); // primer click activa confirmación
+      setConfirmDelete(true);
       return;
     }
 
@@ -62,41 +62,45 @@ export default function EditPetForm({
   };
 
   return (
-    <div className="flex gap-20 justify-center items-center w-full mb-10">
-      <div className="w-60 h-80 bg-gray-200 rounded-2xl">
+    <div className="flex flex-col md:flex-row gap-10 justify-center items-center w-full mb-10 bg-[#f5f5f5]/60 rounded-3xl p-10 shadow-sm">
+      {/* 📸 Imagen de mascota */}
+      <div className="bg-gray-200 w-72 h-80 rounded-2xl overflow-hidden shadow-md">
         <img
           src={foto_url || "/default-pet.png"}
           alt={nombre}
-          className="w-full h-full object-cover rounded-2xl"
+          className="object-cover w-full h-full"
         />
       </div>
 
-      <form className="flex flex-col gap-10 w-2/3">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full mb-10">
-          <Input label="Nombre" value={nombre} />
-          <Input label="Especie" value={especie} />
-          <Input label="Raza" value={raza} />
-          <Input label="Fecha de Nacimiento" value={fecha_nacimiento} />
-          <Input label="Sexo" value={sexo} />
-          <Input label="Color" value={color} />
-          <Input label="Estado de salud" value={estado_salud} />
-          <Input label="Peso" value={peso + " kg"} />
-          <Input
+      {/* 🐾 Información de la mascota */}
+      <div className="flex flex-col gap-4 max-w-2xl w-full">
+        <h2 className="font-bold text-4xl text-[#22687b] mb-3">{nombre}</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-gray-800">
+          <Info label="Especie" value={especie} />
+          <Info label="Raza" value={raza} />
+          <Info label="Fecha de nacimiento" value={fecha_nacimiento} />
+          <Info label="Sexo" value={sexo} />
+          <Info label="Color" value={color} />
+          <Info label="Estado de salud" value={estado_salud} />
+          <Info label="Peso" value={`${peso} kg`} />
+          <Info
             label="Ubicación dueño"
-            value={`${userDireccion} ${userCodigoPostal} ${userProvincia}`}
+            value={`${userDireccion}, ${userCodigoPostal}, ${userProvincia}`}
           />
-          <Input
+          <Info
             label="Última ubicación"
-            value={`${direccion} ${codigoPostal} ${provincia}`}
+            value={`${direccion}, ${codigoPostal}, ${provincia}`}
           />
         </div>
 
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex gap-5">
+        {/* Botones de acción */}
+        <div className="mt-6 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row gap-4">
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="w-full bg-white border border-[#22687c] font-black py-2 rounded-xl"
+              className="w-full bg-white border border-[#22687b] text-[#22687b] font-bold py-2 rounded-xl hover:bg-[#22687b] hover:text-white transition"
             >
               Editar informes
             </button>
@@ -104,10 +108,10 @@ export default function EditPetForm({
             <button
               type="button"
               onClick={handleDelete}
-              className={`w-full font-black py-2 rounded-xl ${
+              className={`w-full font-bold py-2 rounded-xl transition ${
                 confirmDelete
                   ? "bg-red-600 text-white"
-                  : "bg-[#22687c] text-white"
+                  : "bg-[#22687b] text-white hover:bg-[#1a5361]"
               }`}
             >
               {confirmDelete ? "Confirmar Borrar" : "Borrar Pet"}
@@ -115,7 +119,7 @@ export default function EditPetForm({
 
             <button
               type="button"
-              className="w-full bg-[#fbc68f] text-white font-black py-2 rounded-xl"
+              className="w-full bg-[#f7a82a] text-white font-bold py-2 rounded-xl hover:bg-[#e6931f] transition"
             >
               Informe Chip
             </button>
@@ -123,7 +127,7 @@ export default function EditPetForm({
 
           {deleteMessage && (
             <p
-              className={`mt-2 text-center ${
+              className={`mt-2 text-center text-sm font-medium ${
                 deleteMessage.includes("✅") ? "text-green-600" : "text-red-500"
               }`}
             >
@@ -131,8 +135,9 @@ export default function EditPetForm({
             </p>
           )}
         </div>
-      </form>
+      </div>
 
+      {/* Modal de edición */}
       {isModalOpen && (
         <EditPetModal
           pet={selectedPet}
@@ -144,16 +149,12 @@ export default function EditPetForm({
   );
 }
 
-function Input({ label, value }) {
+
+function Info({ label, value }) {
   return (
-    <div className="flex flex-col">
-      <label className="font-light text-lg text-black">{label}</label>
-      <input
-        type="text"
-        value={value}
-        disabled
-        className="border border-[#22687c] p-2 mt-2 bg-gray-100 text-gray-700"
-      />
-    </div>
+    <p>
+      <strong className="text-[#22687b] font-semibold">{label}:</strong>{" "}
+      <span className="text-gray-700">{value || "—"}</span>
+    </p>
   );
 }

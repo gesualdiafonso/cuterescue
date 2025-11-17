@@ -7,7 +7,6 @@ import { supabase } from "../services/supabase";
 import ModalAlert from "../components/modals/ModalAlert";
 import BtnPetFound from "../components/ui/BtnPetFound";
 import BtnScreenshot from "../components/ui/BtnScreenshot";
-import html2canvas from "html2canvas";
 import emailjs from "@emailjs/browser";
 
 const DefaultIcon = L.icon({
@@ -27,12 +26,7 @@ function ChangeView({ center }) {
 }
 
 export default function Maps() {
-  const { 
-    selectedPet, 
-    location, 
-    stopSimulation,
-    setAlertOn,
-  } = useSavedData();
+  const { selectedPet, location, stopSimulation, setAlertOn } = useSavedData();
 
   const [petPosition, setPetPosition] = useState(null);
   const [found, setFound] = useState(false);
@@ -49,54 +43,61 @@ export default function Maps() {
 
   const { nombre, chip_id } = selectedPet;
   const chipActivo = !!chip_id;
-  const address = `${location.direccion}, ${location.codigopostal} - ${location.provincia}`;
 
-  // --------------------------------------
+  // Defino safeAddress a nivel del componente para usar en JSX y funciones
+  const safeAddress = [
+    location?.direccion,
+    location?.barrio,
+    location?.ciudad,
+    location?.provincia,
+    location?.codigo_postal || location?.codigopostal,
+  ].filter(Boolean).join(", ");
+
   // BOTÓN "ENCONTRÉ A MI MASCOTA"
-  // --------------------------------------
   const handleFoundPet = () => {
     stopSimulation();
     setAlertOn(false);
     setFound(true);
   };
 
-  // --------------------------------------
   // BOTÓN "ENVIAR CAPTURA"
-  // --------------------------------------
   const handleSendScreenshot = async () => {
     try {
-      // Capturar contenedor del mapa
-      const mapElement = document.querySelector(".leaflet-container");
-      const canvas = await html2canvas(mapElement);
-      const imageBase64 = canvas.toDataURL("image/png");
+      if (!petPosition) {
+        alert("❌ No hay posición de la mascota disponible.");
+        return;
+      }
 
-      // Obtener email real del usuario logueado
-      const { data } = await supabase.auth.getUser();
-      const userEmail = data?.user?.email;
-
-      if (!userEmail) {
+      // Obtener usuario autenticado
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData?.user) {
         alert("❌ No hay un usuario autenticado.");
         return;
       }
+      const userEmail = userData.user.email;
+
+      // Crear link de Google Maps
+      const lat = petPosition.lat;
+      const lng = petPosition.lng;
+      const googleMapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
 
       // Enviar email con EmailJS
       await emailjs.send(
         "service_b4i1idl",
         "template_mpbgcui",
         {
-  
+          to_email: userEmail,
           pet_name: selectedPet.nombre,
-          address: address,
-          screenshot: imageBase64,
+          address: safeAddress,
+          screenshot_url: googleMapsLink,
         },
         "YLjoPbSLIq24dKE8j"
       );
 
-      alert("📸 Captura enviada exitosamente");
-
+      alert("📍 Link de ubicación enviado exitosamente");
     } catch (err) {
-      console.error("Error enviando captura:", err);
-      alert("❌ Error al enviar captura");
+      console.error("🔥 ERROR FINAL:", err);
+      alert("❌ Error al enviar ubicación");
     }
   };
 
@@ -120,7 +121,7 @@ export default function Maps() {
           <Marker position={[petPosition.lat, petPosition.lng]}>
             <Popup>
               <strong>{nombre}</strong> 🐾<br />
-              {address}<br />
+              {safeAddress}<br />
               {location.segura ? "Zona segura ✅" : "Fuera de zona segura ⚠️"}
             </Popup>
           </Marker>
@@ -131,7 +132,7 @@ export default function Maps() {
         <h2 className="text-2xl text-white font-semibold">{nombre}</h2>
 
         <p className="text-xl text-white">
-          Última ubicación: <span className="font-medium">{address}</span>
+          Última ubicación: <span className="font-medium">{safeAddress}</span>
         </p>
 
         <span

@@ -1,114 +1,91 @@
-import React, {useEffect, useState} from "react";
+import React, { useState } from "react";
 import PetCards from "../components/ui/PetsCard";
-import MapsViwer from "../components/maps/MapsViewer"
-import Maps from "../components/maps/Maps"
+import MapsViewer from "../components/maps/MapsViewer";
+import Maps from "../components/maps/Maps";
 import EditPetForm from "../components/ui/EditPetForm";
-import BtnViaje from "../components/ui/BtnViaje"
+import BtnViaje from "../components/ui/BtnViaje";
 import BtnEmergency from "../components/ui/BtnEmergency";
-import BtnPetMove from "../components/ui/BtnPetMove"
+import BtnPetMove from "../components/ui/BtnPetMove";
 import ModalEditPet from "../components/modals/ModalEditPet";
-import { supabase } from "../services/supabase";
-import { useSavedData } from "../context/SavedDataContext";
+import ModalViajeCard from "../components/modals/ModalViajeCard";
+import usePets from "../hooks/usePets";
 
+export default function InformePet() {
+  const {
+    mascotas,
+    location,
+    ubicacionUsuario,
+    selectedPet,
+    setSelectedPet,
+    handleDeletePet,
+    handleSavePet,
+  } = usePets();
 
-export default function InformePet(){
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isViajeModalOpen, setIsViajeModalOpen] = useState(false);
 
-    const[mascotas, setMascotas] = useState([]);
-    const{selectedPet, setSelectedPet}= useSavedData();
-    const[location, setLocation] = useState(null);
-    const [ ubicacion, setUbicacion] = useState(null);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  return (
+    <div className="max-w-7xl mx-auto p-0 mt-5">
+      {/* PET CARDS + MAPA */}
+      <section className="flex gap-20 mb-10">
+        <PetCards
+          pets={mascotas}
+          selectedPet={selectedPet}
+          setSelectedPet={setSelectedPet}
+          onPetAdded={(newPet) => setSelectedPet(newPet)}
+        />
 
-    useEffect(() => {
-        const fetchPets = async () =>{
-            const { data: { user }} = await supabase.auth.getUser();
-            if(!user) return;
+        <Maps selectedPet={selectedPet} location={location} />
+      </section>
 
-            const { data: mascotas} = await supabase
-                .from("mascotas")
-                .select("*")
-                .eq("owner_id", user.id);
-            setMascotas(mascotas || []);
+      <div className="bg-gray-300/50 w-full h-px my-10" />
 
-            if(mascotas && mascotas.length > 0) setSelectedPet(mascotas[0]);
+      {/* INFORME - Edit info */}
+      <section className="mb-5 mt-5">
+        <EditPetForm
+          pets={mascotas}
+          selectedPet={selectedPet}
+          location={location}
+          ubicacion={ubicacionUsuario}
+          setSelectedPet={setSelectedPet}
+          onEditClick={() => setIsEditModalOpen(true)}
+          onDeleteClick={() => setIsDeleteModalOpen(true)}
+        />
 
-            const { data: ubicacioUser } = await supabase
-                .from("localizacion_usuario")
-                .select("*")
-                .eq("owner_id", user.id)
-            setUbicacion(ubicacioUser?.[0] || null);
-        };
-        fetchPets();
-    }, []);
+        <MapsViewer selectedPet={selectedPet} location={location} />
 
-    const handleSelectPet = async (petId) => {
-        const pet = mascotas.find((m) => m.id === petId);
-        if(!pet) return;
-        setSelectedPet(pet);
-
-        const { data } = await supabase
-            .from("localizacion")
-            .select("*")
-            .eq("mascota_id", petId)
-            .maybeSingle();
-        setLocation(data || null)
-    };
-
-    const handleDeletPet = async (pet) =>{
-        await supabase.from("mascotas").delete().eq("id", pet.id);
-        setMascotas((prev) => prev.filter((m) => m.id !== pet.id));
-        setSelectedPet(null)
-    }
-    
-
-    return(
-        <div className="max-w-7xl mx-auto p-0">
-            <section className="flex gap-20 mb-10">
-                <PetCards
-                    pets={mascotas}
-                    location={location}
-                    selectedPet={selectedPet}
-                    setSelectedPet={handleSelectPet}
-                    onPetAdded={(newPet) => setMascotas((prev) => [...prev, newPet])}
-                />
-                <Maps selectedPet={selectedPet} location={location} />
-            </section>
-            <div className="bg-black w-full h-0.5 my-10"/>
-            <section className="mb-5 mt-5">
-                <EditPetForm 
-                    pets={mascotas} 
-                    selectedPet={selectedPet} 
-                    location={location}
-                    ubicacion={ubicacion}
-                    setSelectedPet={(pet) => handleSelectPet(pet.id)} 
-                    onEditClick={() => setIsEditModalOpen(true)} 
-                    onDeleteClick={() => setIsDeleteModalOpen(true)} 
-                />
-                <MapsViwer selectedPet={selectedPet} location={location} />
-                <div className="flex gap-10 justify-center items-center">
-                    <BtnViaje/>
-                    <BtnPetMove/>
-                    <BtnEmergency/>
-                </div>
-            </section>
-
-           {/* Modal de edição */}
-            {isEditModalOpen && (
-                <ModalEditPet
-                pet={selectedPet}
-                onClose={() => setIsEditModalOpen(false)}
-                />
-            )}
-
-            {/* Modal de exclusão */}
-            {isDeleteModalOpen && (
-                <ModalDeletePet
-                pet={selectedPet}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onDelete={() => handleDeletPet(selectedPet)}
-                />
-            )}
+        <div className="flex gap-10 justify-center items-center">
+          <BtnViaje onClick={() => setIsViajeModalOpen(true)} />
+          <BtnPetMove />
+          <BtnEmergency />
         </div>
-    )
+      </section>
+
+      {/* Modal Editar */}
+      {isEditModalOpen && (
+        <ModalEditPet
+          pet={selectedPet}
+          onClose={() => setIsEditModalOpen(false)}
+          onUpdated={(updatedPet) =>
+            mascotas.map((m) => (m.id === updatedPet.id ? updatedPet : m))
+          }
+        />
+      )}
+
+      {/* Modal Eliminar */}
+      {isDeleteModalOpen && (
+        <ModalDeletePet
+          pet={selectedPet}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onDelete={() => handleDeletePet(selectedPet)}
+        />
+      )}
+
+      {/* Modal Viaje */}
+      {isViajeModalOpen && (
+        <ModalViajeCard onClose={() => setIsViajeModalOpen(false)} />
+      )}
+    </div>
+  );
 }

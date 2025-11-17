@@ -20,6 +20,7 @@ export default function Register() {
     codigoPostal: "",
     password: "",
   });
+  const [foto, setFoto] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,71 +35,80 @@ export default function Register() {
     const { email, password, ...userData } = formData;
 
     try {
-      // 1. crea usuario en auth
+      // 1️⃣ Crear usuario en AUTH
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (authError) {
-        setError(authError.message);
-        setLoading(false);
-        return;
-      }
+      if (authError) throw authError;
 
       const userId = authData?.user?.id;
 
-      // 2.0 Busca las coordenadas en OSM (GeoAPI)
+      // 2️⃣ Subir imagen de perfil si se seleccionó una
+      let foto_url = "";
+      if (foto) {
+        const fileExt = foto.name.split(".").pop();
+        const fileName = `${userId}.${fileExt}`;
+        const filePath = `avatars/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("avatars")
+          .upload(filePath, foto, { upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrlData } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(filePath);
+
+        foto_url = publicUrlData.publicUrl;
+      }
+
+      // 3️⃣ Buscar coordenadas en OSM
       const { lat, lng, source } = await getCoordinatesFromAddress({
         direccion: userData.direccion,
         codigoPostal: userData.codigoPostal,
-        provincia: userData.provincia
+        provincia: userData.provincia,
       });
 
-      // Si no lo encontra la ubicaicón valida, mostre error
-      if(!lat || !lng){
-        setError(
-          "No se puede econtrar la dirección en el mapa. Verifica los datos ingresados"
+      if (!lat || !lng) {
+        throw new Error(
+          "No se puede encontrar la dirección en el mapa. Verifica los datos ingresados."
         );
-        setLoading(false);
-        return;
       }
 
-      // 2. inserto datos en la tabla 'usuarios'
-      const { error: dbError } = await supabase
-        .from("usuarios")
-        .insert([{ id: authData.user.id, email, ...userData }]);
+      // 4️⃣ Insertar en la tabla 'usuarios'
+      const { error: dbError } = await supabase.from("usuarios").insert([
+        {
+          id: userId,
+          email,
+          foto_url,
+          ...userData,
+        },
+      ]);
 
-      if (dbError) {
-        setError(dbError.message);
-        setLoading(false);
-        return;
-      }
+      if (dbError) throw dbError;
 
-      // 3. inserta ubicación inicial en la tabal 'localizacion_usuario'
-      const { error: dbError2 } = await supabase
-        .from("localizacion_usuario")
-        .insert({
-          direccion: `${userData.direccion}`,
-          provincia: userData.provincia,
-          lat,
-          lng,
-          source,
-          direccion_segura: true,
-          owner_id: userId
-        })
+      // 5️⃣ Insertar ubicación inicial
+      const { error: dbError2 } = await supabase.from("localizacion_usuario").insert({
+        direccion: userData.direccion,
+        provincia: userData.provincia,
+        codigoPostal: userData.codigoPostal,
+        lat,
+        lng,
+        source,
+        direccion_segura: true,
+        owner_id: userId,
+      });
 
-        if (dbError2) {
-        setError(dbError2.message);
-        setLoading(false);
-        return;
-      }
+      if (dbError2) throw dbError2;
 
-      // redirigir al login 
+      // 6️⃣ Redirigir al login
       navigate("/login");
     } catch (err) {
-      setError("Ocurrió un error inesperado.");
-      console.error(err);
+      console.error("Error en el registro:", err);
+      setError(err.message || "Ocurrió un error inesperado.");
     } finally {
       setLoading(false);
     }
@@ -120,13 +130,12 @@ export default function Register() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Nombre y Apellido */}
           <input
             name="nombre"
             placeholder="Nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full"
             required
           />
           <input
@@ -134,11 +143,11 @@ export default function Register() {
             placeholder="Apellido"
             value={formData.apellido}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full"
             required
           />
 
-          {/* Fecha de nacimiento */}
+          {/* Fecha */}
           <div className="md:col-span-2 flex flex-col">
             <label className="text-sm text-white mb-1">
               Fecha de nacimiento
@@ -148,41 +157,40 @@ export default function Register() {
               name="fechaNacimiento"
               value={formData.fechaNacimiento}
               onChange={handleChange}
-              className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+              className="bg-white text-black rounded-lg p-2 w-full"
               required
             />
           </div>
 
-          {/* tipo y num de documento */}
+          {/* Documento */}
           <select
             name="tipoDocumento"
             value={formData.tipoDocumento}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full"
             required
           >
-            <option value="">Seleccionar tipo de documento</option>
+            <option value="">Tipo de documento</option>
             <option value="DNI">DNI</option>
             <option value="Pasaporte">Pasaporte</option>
             <option value="CUIL">CUIL</option>
           </select>
-
           <input
             name="documento"
             placeholder="Número de documento"
             value={formData.documento}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full"
             required
           />
 
-          {/* tel y mail */}
+          {/* Teléfono y Email */}
           <input
             name="telefono"
-            placeholder="Código de área y número. Solo números."
+            placeholder="Teléfono"
             value={formData.telefono}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full"
             required
           />
           <input
@@ -191,61 +199,70 @@ export default function Register() {
             placeholder="Correo electrónico"
             value={formData.email}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full"
             required
           />
 
-          {/* direccion */}
+          {/* Dirección */}
           <input
             name="direccion"
             placeholder="Dirección"
             value={formData.direccion}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full md:col-span-2 focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full md:col-span-2"
             required
           />
 
-          {/* provincia y codpostal */}
+          {/* Provincia y Código Postal */}
           <select
             name="provincia"
             value={formData.provincia}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full"
             required
           >
             <option value="">Seleccionar provincia</option>
             <option value="Buenos Aires">Buenos Aires</option>
+            <option value="CABA">Ciudad Autónoma de Buenos Aires (CABA)</option>
             <option value="Córdoba">Córdoba</option>
             <option value="Santa Fe">Santa Fe</option>
             <option value="Mendoza">Mendoza</option>
           </select>
-
           <input
             name="codigoPostal"
             placeholder="Código postal"
             value={formData.codigoPostal}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full"
             required
           />
 
-          {/* password */}
+          {/* Foto del usuario */}
+          <div className="md:col-span-2 flex flex-col">
+            <label className="text-sm text-white mb-1">Foto de perfil</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFoto(e.target.files[0])}
+              className="bg-white text-black rounded-lg p-2 w-full"
+            />
+          </div>
+
+          {/* Password */}
           <input
             type="password"
             name="password"
             placeholder="Contraseña"
             value={formData.password}
             onChange={handleChange}
-            className="bg-white text-black rounded-lg p-2 w-full md:col-span-2 focus:outline-none"
+            className="bg-white text-black rounded-lg p-2 w-full md:col-span-2"
             required
           />
         </div>
 
-        {/* Error */}
         {error && (
           <p className="text-red-400 text-sm mt-4 text-center">{error}</p>
         )}
-
 
         <button
           type="submit"

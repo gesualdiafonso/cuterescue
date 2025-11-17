@@ -1,28 +1,25 @@
-import React, { useState } from "react"; 
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import BtnEditProfile from "./ui/BtnEditProfile";
 import ModalEdicionUsuario from "./modals/ModalEdicionUsuario";
 import { supabase } from "../services/supabase";
 
-
-export default function DetailsInform( {details, ubicacion}){
-
+export default function DetailsInform({ details, ubicacion }) {
   if (!details) return <div>Loading...</div>;
-  const { 
+
+  const {
     email,
-    status,
-    fechaNacimiento, 
-    documento, 
-    telefono, 
-    genero, 
-    nombre, 
+    fechaNacimiento,
+    documento,
+    telefono,
+    nombre,
     apellido,
-    tipo_documento 
+    tipoDocumento,
+    foto_url,
   } = details;
 
-  const { direccion, codigoPostal, provincia, direccion_segura } = ubicacion || {}
+  const { direccion, codigoPostal, provincia, direccion_segura } = ubicacion || {};
 
-  // ✅ Conversão lógica e cor condicional
+  // Estado de dirección segura (verde o rojo)
   const esSegura = direccion_segura === true || direccion_segura === "true";
   const estadoSeguridad = esSegura ? "Sí" : "No";
   const colorSeguridad = esSegura ? "bg-green-500" : "bg-red-500";
@@ -31,7 +28,6 @@ export default function DetailsInform( {details, ubicacion}){
   const [userData, setUserData] = useState(details);
 
   const handleSave = async () => {
-    // Trae los datos actualizados desde Supabase
     const { data, error } = await supabase
       .from("usuarios")
       .select("*")
@@ -42,61 +38,75 @@ export default function DetailsInform( {details, ubicacion}){
   };
 
   return (
-    <div className="flex gap-10 justify-center items-center">
-      <div className="bg-gray-200 w-72 h-80 rounded-2xl">
-             <div className="relative bg-gray-200 w-72 h-80 rounded-2xl overflow-hidden">
-  <img
-    src={userData.foto_url || "/default-avatar.png"}
-    alt="Foto de perfil"
-    className="object-cover w-full h-full"
-  />
-  <button
-    onClick={() => setOpenModal(true)}
-    className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-[#22687b] text-white px-4 py-1 font-medium rounded-md hover:bg-[#1b5056] transition"
-  > 
-    Editar foto
-  </button>
-</div>
+    <div className="flex flex-col md:flex-row gap-10 justify-center items-center w-full">
+      {/* 📸 Foto */}
+      <div className="bg-gray-200 w-72 h-80 rounded-2xl overflow-hidden shadow-md">
+        <img
+          src={userData.foto_url || "/default-avatar.png"}
+          alt="Foto de perfil"
+          className="object-cover w-full h-full"
+        />
       </div>
 
-      <div className="flex flex-col gap-4">
-        <h2 className="font-bold text-4xl">{nombre + " " + apellido}</h2>
+      {/* 📋 Información del usuario */}
+      <div className="flex flex-col gap-4 max-w-2xl">
+        <h2 className="font-bold text-4xl text-[#22687b]">
+          {nombre} {apellido}
+        </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-gray-800">
           <p><strong>Fecha de nacimiento:</strong> {fechaNacimiento}</p>
           <p>
-            <strong>Ubicación:  </strong> 
-              { direccion + ", " + codigoPostal + ", " + provincia ||" No especificada"}  
-              <span className={`${colorSeguridad} py-1 px-5 ml-2 rounded-2xl text-white`}>
-                {estadoSeguridad}
-              </span>
-            </p>
+            <strong>Dirección:</strong>{" "}
+            {direccion
+              ? `${direccion}, ${codigoPostal || ""}, ${provincia || ""}`
+              : "No especificada"}
+            <span className={`${colorSeguridad} py-1 px-5 ml-2 rounded-2xl text-white`}>
+              {estadoSeguridad}
+            </span>
+          </p>
           <p><strong>Email:</strong> {email}</p>
           <p><strong>Teléfono:</strong> {telefono}</p>
-          <p><strong>Documento:</strong> {tipo_documento}: {documento}</p>
-          <p><strong>Género:</strong> {genero}</p>
-          <p><strong>Plan:</strong> Premium 
-            <Link to="/planes" className="ml-3 px-4 py-1 bg-[#FF8C09] text-white font-medium rounded-md hover:bg-[#e07e07] transition">
+          <p>
+            <strong>Documento:</strong> {tipoDocumento || "DNI"} {documento}
+          </p>
+          <p><strong>Plan:</strong> Premium{" "}
+            <Link
+              to="/planes"
+              className="ml-3 px-4 py-1 bg-[#FF8C09] text-white font-medium rounded-md hover:bg-[#e07e07] transition"
+            >
               Cambiar
             </Link>
           </p>
-          <p><strong>GPS Activo:</strong> gps  
-            <Link to="/gps-pets" className="ml-3 px-4 py-1 bg-[#22687B] text-white font-medium rounded-md hover:bg-[#1b5056] transition">
+          <p><strong>GPS Activo:</strong> Sí{" "}
+            <Link
+              to="/gps-pets"
+              className="ml-3 px-4 py-1 bg-[#22687B] text-white font-medium rounded-md hover:bg-[#1b5056] transition"
+            >
               Acceder
             </Link>
           </p>
         </div>
-        <div>
-  
 
+        {/* Botón Editar perfil */}
+        <div className="mt-6">
+          <button
+            onClick={() => setOpenModal(true)}
+            className="bg-[#22687b] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#1b5056] transition"
+          >
+            Editar perfil
+          </button>
         </div>
-      </div> <ModalEdicionUsuario
+      </div>
+
+      {/* Modal de edición */}
+      <ModalEdicionUsuario
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
         currentUser={userData}
+        ubicacion={ubicacion}
         onSave={handleSave}
       />
-
     </div>
   );
 }

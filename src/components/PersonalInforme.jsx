@@ -9,13 +9,7 @@ import { useSavedData } from "../context/SavedDataContext";
 
 export default function PersonalInform({ details, locations }) {
   const [showModal, setShowModal] = useState(false); 
-
-  const { 
-    showAlert, 
-    alert, 
-    setAlert, 
-    closeAlert 
-  } = useSavedData();  //  TRAEMOS MODAL GLOBAL
+  const { showAlert, alert, setAlert, closeAlert } = useSavedData();
 
   if (!details || !locations) {
     return <div className="text-center py-10">Cargando...</div>;
@@ -32,7 +26,7 @@ export default function PersonalInform({ details, locations }) {
 
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-0">
-      
+
       {/* Dirección */}
       <div className="flex flex-wrap gap-3 text-gray-700 text-sm sm:text-base">
         <span>{`${direccion}, ${codigoPostal}`}</span>
@@ -46,10 +40,8 @@ export default function PersonalInform({ details, locations }) {
       </h2>
 
       {/* Botones */}
-      <div className="flex gap-3 flex-wrap mt-4">
+      <div className="flex flex-col lg:flex-row gap-2 lg:gap-3 mt-4">
         <BtnViaje onClick={() => setShowModal(true)} />
-
- 
         <BtnEmergency 
           onClick={() =>
             setAlert({
@@ -64,8 +56,10 @@ export default function PersonalInform({ details, locations }) {
         />
       </div>
 
-      {/* Avatar */}
-      <div className="flex flex-row justify-end items-center gap-5">
+      {/* Avatar + Visualizar perfil */}
+      <div className="flex flex-row lg:flex-row justify-end lg:justify-end items-center gap-5 mt-4 
+                      order-last lg:order-none 
+                      self-start lg:self-auto">
         <div className="bg-gray-300 rounded-full w-16 h-16 sm:w-15 sm:h-15 overflow-hidden">
           <img
             src={foto_url || "/default-avatar.png"}
@@ -90,7 +84,8 @@ export default function PersonalInform({ details, locations }) {
         alert={alert}
         onClose={closeAlert}
       />
-      
+
     </div>
   );
 }
+

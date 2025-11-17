@@ -1,3 +1,5 @@
+/* Borrar componente entero*/
+
 import React, {useEffect, useState} from "react"
 import PetCards from "../components/ui/PetCards"
 import DetailsInform from "../components/DetailsInform"
@@ -44,7 +46,7 @@ export default function DetailsUser(){
             <section>
                 <DetailsInform details={userData} />
             </section>
-            <div className="bg-black w-full h-0.5 my-10"/>
+            <div className="bg-gray-300/50 w-full h-px my-10" />
             <section>
                 <PetCards
                     pets={mascotas}
