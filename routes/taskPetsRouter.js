@@ -2,7 +2,7 @@ import express from 'express';
 import PetController from '../controllers/PetController.js';
 import multer from 'multer';
 
-const upload = multer({ dest: '../uploads' });
+const upload = multer({ dest: '/uploads' });
 
 const router = express.Router();
 

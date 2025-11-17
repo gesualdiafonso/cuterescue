@@ -2,7 +2,7 @@ import { petService } from '../services/index.js'
 import UploadModel from "../model/Upload.js";
 import multer from 'multer';
 
-const upload = multer({ dets: '../uploads/' });
+const upload = multer({ dets: '/uploads/' });
 
 
 class PetController{
@@ -24,7 +24,7 @@ class PetController{
             const uploadData = {
                 name: req.file.originalname,
                 userId: petData.dueno_id,
-                src: `../uploads/${req.file.filename}`
+                src: `/uploads/${req.file.filename}`
             };
 
             const savedUpload = await UploadModel.create(uploadData);

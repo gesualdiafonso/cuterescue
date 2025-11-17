@@ -12,7 +12,7 @@ export const create = async (req, res) => {
         const uploadData = {
             name,
             userId,
-            src: `/../upload/${file.filename}`
+            src: `//upload/${file.filename}`
         };
 
         const savedUpload = await UploadModel.create(uploadData);
@@ -85,7 +85,7 @@ export const getUploadsBySrc = async (req, res) => {
     try{
         const { userId, src } = req.params;
         const uploads = await UploadModel.findByUserId(userId);
-        const upload = uploads.find(u => u.src === `/../upload/${src}`);
+        const upload = uploads.find(u => u.src === `//upload/${src}`);
         if(!upload){
             return res.status(404).json({ message: "Upload not found" });
         }
