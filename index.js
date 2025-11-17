@@ -4,6 +4,7 @@ import fs from 'fs/promises';
 import dotenv from 'dotenv';
 import routerAPI from './routes/index.js';
 import cors from 'cors'; 
+import path from 'path';
 
 dotenv.config();
 
@@ -16,12 +17,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(express.static('public'));
-
-// // Acesso a API
-// app.get('/', (req, res) => {
-//     res.send('<h1> Bienvenido a la API de Cute Rescue... </h1>');
-// });
+app.use('./uploads', express.static(path.resolve('./uploads')));
 
 routerAPI(app);
 

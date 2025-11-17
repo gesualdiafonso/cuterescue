@@ -56,6 +56,7 @@ class DetailsUserController{
     async update(req, res){
         const { userId } = req.params;
         const updateFields = req.body;
+
         try {
             const updatedDetails = await detrailsService.update(userId, updateFields);
             res.status(200).json({ message: 'Detalles del usuario actualizados exitosamente', data: updatedDetails });

@@ -31,7 +31,7 @@ class Location{
 
     async getByPetId(pet_id){
         const collection = await this.getCollection();
-        return await collection.findOne({pet_id}) || null;
+        return await collection.findOne({pet_id});
     }
 
     async update(chip_id, updateFields) {

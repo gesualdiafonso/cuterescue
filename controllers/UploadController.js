@@ -1,66 +1,99 @@
-import { GridFSBucket } from "mongodb";
-import clientPromise from "../services/useConnection.js";
-import { Readable } from "stream";
+import UploadModel from "../model/Upload.js";
+import fs from "fs";
+import { ObjectId } from "mongodb";
 
-class UploadController {
-  async uploadFile(req, res) {
+export const create = async (req, res) => {
     try {
-      if (!req.file) return res.status(400).json({ error: "Nenhum arquivo foi enviado" });
+        const { name, userId } = req.body;
+        const file = req.file;
 
-      const client = await clientPromise;
-      const db = client.db("cuterescue");
-      const bucket = new GridFSBucket(db, { bucketName: "uploads" });
+        if (!file) throw new Error("Arquivo não enviado");
 
-      const filename = `${Date.now()}-cuterescue-${req.file.originalname}`;
-      const uploadStream = bucket.openUploadStream(filename, {
-        contentType: req.file.mimetype,
-      });
+        const uploadData = {
+            name,
+            userId,
+            src: `/./upload/${file.filename}`
+        };
 
-      const readableStream = new Readable();
-      readableStream.push(req.file.buffer);
-      readableStream.push(null); // fim do stream
+        const savedUpload = await UploadModel.create(uploadData);
 
-      readableStream.pipe(uploadStream)
-        .on("error", (err) => {
-          console.error("❌ Erro ao salvar no GridFS:", err);
-          res.status(500).json({ error: "Erro ao enviar o arquivo" });
-        })
-        .on("finish", () => {
-          res.status(201).json({
-            message: "Arquivo enviado com sucesso",
-            filename,
-            id: uploadStream.id,
-            fileUrl: `/api/upload/${filename}`,
-          });
+        return res.json({
+            fileUrl: uploadData.src,
+            upload: savedUpload,
+            message: "Upload concluído com sucesso 🚀"
         });
 
     } catch (error) {
-      console.error("❌ Erro geral no upload:", error);
-      res.status(500).json({ error: "Erro interno ao enviar o arquivo" });
+        return res.status(500).json({ error: error.message });
     }
-  }
+};
 
-  async getFile(req, res) {
+
+export const findAll = async (req, res) => {
     try {
-      const { filename } = req.params;
-      const client = await clientPromise;
-      const db = client.db("cuterescue");
-      const bucket = new GridFSBucket(db, { bucketName: "uploads" });
-
-      const stream = bucket.openDownloadStreamByName(filename);
-
-      stream.on("error", (err) => {
-        console.error("❌ Erro stream:", err);
-        return res.status(404).json({ error: "Arquivo não encontrado" });
-      });
-
-      res.set("Content-Type", "image/jpeg");
-      stream.pipe(res);
+        const uploads = await UploadModel.findAll();
+        return res.json(uploads);
     } catch (error) {
-      console.error("❌ Erro ao recuperar arquivo:", error);
-      res.status(500).json({ error: "Erro interno ao recuperar arquivo" });
+        return res.status(500).json({ error: error.message });
     }
-  }
-}
+};
 
-export default new UploadController();
+
+export const remove = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const uploadId = new ObjectId(id);
+
+        // get upload info
+        const collection = await UploadModel.getCollection();
+        const uploadData = await collection.findOne({ _id: uploadId });
+
+        if (!uploadData) {
+            return res.status(404).json({ message: "Upload not found" });
+        }
+
+        // delete file
+        try {
+            fs.unlinkSync("." + uploadData.src);
+        } catch (err) {
+            console.warn("⚠️ Erro ao apagar arquivo físico:", err.message);
+        }
+
+        // delete db entry
+        await UploadModel.remove(uploadId);
+
+        return res.json({ message: "Upload deleted successfully" });
+
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const getUploadsByUserId = async (req, res) => {
+    try{
+        const { userId } = req.params;
+        const upload = await UploadModel.findByUserId(userId);
+        return res.json(upload);
+    }
+    catch(error){
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const getUploadsBySrc = async (req, res) => {
+    try{
+        const { userId, src } = req.params;
+        const uploads = await UploadModel.findByUserId(userId);
+        const upload = uploads.find(u => u.src === `/./upload/${src}`);
+        if(!upload){
+            return res.status(404).json({ message: "Upload not found" });
+        }
+        return res.json(upload);
+
+    } catch(error){
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export default { create, findAll, remove, getUploadsByUserId, getUploadsBySrc };

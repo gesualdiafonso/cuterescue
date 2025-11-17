@@ -1,11 +1,14 @@
 import express from 'express';
 import PetController from '../controllers/PetController.js';
+import multer from 'multer';
+
+const upload = multer({ dest: './uploads' });
 
 const router = express.Router();
 
 router.get('/api/pets', PetController.getAll);
 
-router.post('/api/pets', PetController.create);
+router.post('/api/pets', upload.single('foto'), PetController.create);
 
 router.get('/api/pets/:id', PetController.getById);
 

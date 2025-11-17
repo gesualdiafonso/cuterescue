@@ -1,4 +1,9 @@
 import { petService } from '../services/index.js' 
+import UploadModel from "../model/Upload.js";
+import multer from 'multer';
+
+const upload = multer({ dets: './uploads/' });
+
 
 class PetController{
     async getAll(req, res){
@@ -11,12 +16,35 @@ class PetController{
     }
 
     async create(req, res){
-        try{
-            const newPet = await petService.createPet(req.body);
-            res.status(201).json(newPet);
-        } catch(error){
-            res.status(500).json({ error: 'Erro al cargar el pet', message: error.message})
+        try {
+        let petData = req.body;
+        let foto_url = null;
+
+        if (req.file) {
+            const uploadData = {
+                name: req.file.originalname,
+                userId: petData.dueno_id,
+                src: `./uploads/${req.file.filename}`
+            };
+
+            const savedUpload = await UploadModel.create(uploadData);
+            foto_url = savedUpload.src;
         }
+
+        // agora adiciona corretamente
+        petData.foto_url = foto_url;
+
+        // AGORA SIM → envia os dados corretos
+        const newPet = await petService.createPet(petData);
+
+        res.status(201).json(newPet);
+
+    } catch (error) {
+        res.status(500).json({ 
+            error: 'Erro al cargar el pet', 
+            message: error.message 
+        });
+    }
     }
 
     async getById(req, res){

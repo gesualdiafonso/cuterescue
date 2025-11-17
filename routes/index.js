@@ -4,8 +4,7 @@ import taskUser from './taskUserRouter.js';
 import taskUserDetails from './taskDetailsUserRouter.js';
 import taskChips from './taskChipsRouter.js';
 import authRouter from './authRouter.js';
-import uploadRouter from './taskUploadRouter.js';
-import testGeo from './testGeo.js';
+import uploadRouter from './taskUploadRoute.js';
 
 
 function routerAPI(app) {
@@ -16,7 +15,6 @@ function routerAPI(app) {
     app.use(taskUser);
     app.use(taskUserDetails);
     app.use(taskChips);
-    app.use('/api/test', testGeo)
 }
 
 export default routerAPI;

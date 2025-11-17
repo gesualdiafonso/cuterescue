@@ -139,6 +139,11 @@ class PetService {
         return newPet;
     }
 
+    async updatePetFoto(petId, foto_url){
+        const collection = await this.pets.getCollection();
+        await collection.updateOne({ id: petId}, { $set: { foto_url } });
+    }
+
     async updatePet(id, updatedFields){
         // Se atualizar ultima_localizacion, atualiza também no LocationService
         if (updatedFields.last_location){
