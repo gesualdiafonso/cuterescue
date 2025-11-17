@@ -2,7 +2,7 @@ import { petService } from '../services/index.js'
 import UploadModel from "../model/Upload.js";
 import multer from 'multer';
 
-const upload = multer({ dets: '/uploads/' });
+const upload = multer({ dets: 'uploads/' });
 
 
 class PetController{
