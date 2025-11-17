@@ -1,4 +1,5 @@
-import { simulateEmergency } from "../../services/MovimentPet.js";
+import React from "react";
+import { startRealTimeSimulation } from "../../services/MovimentPet.js";
 import { useSavedData } from "../../context/SavedDataContext";
 
 export default function BtnEmergency() {
@@ -6,23 +7,12 @@ export default function BtnEmergency() {
 
   async function handleClick() {
     if (!selectedPet || !location) {
-<<<<<<< HEAD
-    console.log("Error: Faltan datos:", { selectedPet, location });
-    return;
-  }
-  console.log("Simulación: Emergencia disparada:", selectedPet.id);
-  await simulateEmergency(selectedPet, location, setAlert);
-  console.log("Correct: Simulación completa");
-=======
       console.log("❌ Faltan datos:", { selectedPet, location });
       return;
     }
 
     console.log("🚨 Emergencia activada:", selectedPet.id);
 
-<<<<<<< HEAD
-   
-=======
     // Mostrar modal + activar simulación automáticamente en el context
     setAlert({
       title: "Has activado el botón de emergencia",
@@ -31,10 +21,9 @@ export default function BtnEmergency() {
       button: "Seguir mirando",
       redirect: "/maps",
     });
->>>>>>> 254b876 (boton captura, emailJS, 2do modal emergencia, simulacion en pausa)
 
-    await simulateEmergency(selectedPet, location, setAlert);
->>>>>>> 6a12757 (estado de emergencia hacia maps)
+    // Iniciar simulación real
+    await startRealTimeSimulation(selectedPet, location, "emergency");
   }
 
   return (

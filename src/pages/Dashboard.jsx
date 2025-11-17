@@ -1,33 +1,36 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../services/supabase";
 import { useNavigate } from "react-router-dom";
-import { Card, Typography } from "@material-tailwind/react";
 import ModalMascota from "../components/ModalMascota";
 import PersonalInform from "../components/PersonalInforme";
 import Maps from "../components/maps/Maps";
 import PetCards from "../components/ui/PetsCard";
-import BtnPetMove from "../components/ui/BtnPetMove"
+import BtnPetMove from "../components/ui/BtnPetMove";
 import { useSavedData } from "../context/SavedDataContext";
-import MapsViewer from "../components/maps/MapsViewer"
-
+import MapsViewer from "../components/maps/MapsViewer";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [mascotas, setMascotas] = useState([]);
-  const {selectedPet, setSelectedPet} = useSavedData();
-  const [location, setLocation] = useState(null);
+
+  const { selectedPet, setSelectedPet, location } = useSavedData();
+
   const [ubicacion, setUbicacion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPet, setCurrentPet] = useState(null);
+  
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
     if (!modalOpen) setCurrentPet(null);
   };
 
+  // --------------------------------------------
+  // Load user and their pets
+  // --------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -55,29 +58,33 @@ export default function Dashboard() {
         .from("localizacion_usuario")
         .select("*")
         .eq("owner_id", user.id)
-        .single()
-      setUbicacion(userUbication)
-      
+        .single();
+
+      setUbicacion(userUbication);
       setLoading(false);
     };
 
     fetchData();
   }, [navigate]);
 
+  // --------------------------------------------
+  // Select first pet by default
+  // --------------------------------------------
   useEffect(() => {
     if (!loading && mascotas.length > 0 && !selectedPet) {
       setSelectedPet(mascotas[0]);
-      fetchPetLocation(mascotas[0].id);
     }
-  }, [loading, mascotas, selectedPet]);
+  }, [loading, mascotas, selectedPet, setSelectedPet]);
 
+  // --------------------------------------------
+  // Handle saving/updating pets
+  // --------------------------------------------
   const handleSavePet = async (form, file) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     let fotoUrl = form.foto_url;
 
-    // Si hay archivo nuevo, subirlo
     if (file) {
       const fileName = `${user.id}_${Date.now()}_${file.name}`;
       const { data, error: uploadError } = await supabase.storage
@@ -127,6 +134,9 @@ export default function Dashboard() {
     setTimeout(() => setMessage(""), 2000);
   };
 
+  // --------------------------------------------
+  // Delete pet
+  // --------------------------------------------
   const handleDeletePet = async (pet) => {
     const { error } = await supabase.from("mascotas").delete().eq("id", pet.id);
     if (!error) {
@@ -136,48 +146,31 @@ export default function Dashboard() {
     }
   };
 
-  const fetchPetLocation = async (petId) => {
-    const { data: location, error } = await supabase
-      .from("localizacion")
-      .select("*")
-      .eq("mascota_id", petId)
-      .single();
-    if (!error) setLocation(location || null);
+  // --------------------------------------------
+  // Select pet
+  // --------------------------------------------
+  const handleSelectPet = (petId) => {
+    const pet = mascotas.find((m) => m.id === petId);
+    if (!pet) return;
+
+    setSelectedPet(pet);
   };
 
+  // --------------------------------------------
+  // Add new pet
+  // --------------------------------------------
   const handlePetAdd = (newPet) => {
     setMascotas((prev) => [...prev, newPet]);
     setSelectedPet(newPet);
-    // Busca ubicacion recién asociado al pet como ultima_ubicacion
-    fetchPetLocation(newPet.id);
-  }
+  };
 
+  // --------------------------------------------
+  // Calculate pet age
+  // --------------------------------------------
   const calculateAge = (fecha_nacimiento) => {
     const birth = new Date(fecha_nacimiento);
     const diff = Date.now() - birth.getTime();
     return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-  };
-
-  // Función para que selecione el pet y busca los datos asociado a este pet
-  const handleSelectPet = async (petId) => {
-    const pet = mascotas.find((m) => m.id === petId);
-    if (!pet) return;
-
-    // Atualiza o Context + Service sincronizado
-    setSelectedPet(pet);
-
-    // Corrigido: busca pela localização real do pet
-    const { data: location, error } = await supabase
-      .from("localizacion")
-      .select("*")
-      .eq("mascota_id", pet.id) 
-      .single();
-
-    if (error) {
-      console.error("Error buscando ubicación:", error.message);
-    }
-
-    setLocation(location || null);
   };
 
   if (loading) return <p className="text-center mt-10">Cargando perfil...</p>;
@@ -185,17 +178,18 @@ export default function Dashboard() {
   return (
     <>
       <div className="max-w-7xl mx-auto p-0">
-        <section className="flex gap-20 mb-10 w-full">
-          <PersonalInform details={userData} locations={ubicacion}/>
-          <div className="flex flex-col gap-5 w-1/2">
+        <section className="flex gap-20 justify-between mb-10 w-full">
+          <PersonalInform details={userData} locations={ubicacion} />
+
+          <div className="flex flex-col gap-2 w-1/2">
             <MapsViewer selectedPet={selectedPet} location={location} />
             <BtnPetMove pet={selectedPet} userLocation={location} />
           </div>
         </section>
 
-        <div className="bg-black w-full h-0.5 my-10" />
+        <div className="bg-gray-300/50 w-full h-px my-10" />
 
-        <section className="flex gap-20 mb-10 w-full justify-center items-center">
+        <section className="flex gap-20 mb-10 w-full justify-center items-center  z-0">
           <PetCards
             pets={mascotas}
             selectedPet={selectedPet}
@@ -203,36 +197,10 @@ export default function Dashboard() {
             setSelectedPet={handleSelectPet}
             onPetAdded={handlePetAdd}
           />
-          <Maps selectedPet={selectedPet} location={location} />
+
+          <Maps selectedPet={selectedPet} location={location}  modalOpen={modalOpen} />
         </section>
-
-        <section className="flex flex-col lg:flex-row gap-10 lg:gap-20 mb-10 w-full">
-      {/* Columna izquierda: información del usuario */}
-      <div className="w-full lg:w-1/2">
-        <PersonalInform details={userData} locations={ubicacion} />
       </div>
-
-      {/* Columna derecha: mapa y botones */}
-      <div className="w-full lg:w-1/2 flex flex-col gap-5">
-        <MapsViewer selectedPet={selectedPet} location={location} />
-        <BtnPetMove />
-      </div>
-    </section>
-
-
-      <div className="bg-black w-full h-0.5 my-10" />
-
-      <section className="flex gap-20 mb-10 w-full justify-center items-center">
-        <PetCards
-          pets={mascotas}
-          selectedPet={selectedPet}
-          location={location}
-          setSelectedPet={handleSelectPet}
-          onPetAdded={handlePetAdd}
-        />
-        <Maps selectedPet={selectedPet} location={location} />
-      </section>
-    </div>
     </>
   );
 }

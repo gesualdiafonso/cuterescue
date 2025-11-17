@@ -1,10 +1,9 @@
-// ✅ SavedDataContext.jsx
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { supabase } from "../services/supabase";
 import {
   getSelectedPetService,
   setSelectedPet as setSelectedPetService,
-  subscribeSelectedPet
+  subscribeSelectedPet,
 } from "../services/SelectedPet";
 
 const SavedDataContext = createContext();
@@ -15,74 +14,107 @@ export function SavedDataProvider({ children }) {
 
   const [alert, setAlert] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [alertOn, setAlertOn] = useState(false);
 
-<<<<<<< HEAD
-=======
+  const [simulationRunning, setSimulationRunning] = useState(false);
 
-  // estado de emergencia (ON/OFF)
-const [alertOn, setAlertOn] = useState(false);
+  // 🆕 Guardamos el canal realtime
+  const realtimeChannelRef = useRef(null);
 
->>>>>>> 6a12757 (estado de emergencia hacia maps)
-
-
-  // 🧩 Etapa 1: Carrega imediatamente o pet salvo no localStorage
+  // Cargar mascota seleccionada
   useEffect(() => {
     const saved = getSelectedPetService();
-    if (saved) {
-      setSelectedPetState(saved);
-    }
+    if (saved) setSelectedPetState(saved);
   }, []);
 
-  // 🧩 Etapa 2: Subscreve às mudanças do service
+  // Escuchar cambios del pet
   useEffect(() => {
-    const unsubscribe = subscribeSelectedPet((newPet) => {
-      setSelectedPetState(newPet);
-    });
+    const unsubscribe = subscribeSelectedPet(setSelectedPetState);
     return unsubscribe;
   }, []);
 
-  const MASCOTA_ID = selectedPet?.id || null;
+  const MASCOTA_ID = selectedPet?.id ?? null;
 
-  // 🧩 Etapa 3: Atualiza a localização do pet ativo
+  // Obtener ubicación inicial
   useEffect(() => {
     if (!MASCOTA_ID) return;
 
-    async function fetchLocation() {
-      const { data, error } = await supabase
+    async function loadLocation() {
+      const { data } = await supabase
         .from("localizacion")
-        .select("lat, lng, direccion, updated_at")
+        .select("*")
         .eq("mascota_id", MASCOTA_ID)
         .single();
 
-      if (!error) setLocation(data);
-      else console.error("❌ Error al obtener localización:", error.message);
+      if (data) setLocation(data);
     }
-
-    fetchLocation();
-    const interval = setInterval(fetchLocation, 5000);
-    return () => clearInterval(interval);
+    loadLocation();
   }, [MASCOTA_ID]);
 
-  // 🧩 Etapa 4: Sincroniza bidirecionalmente
+  // Suscripción realtime
+  useEffect(() => {
+    if (!selectedPet) return;
+
+    // Si ya había un canal, lo eliminamos
+    if (realtimeChannelRef.current) {
+      supabase.removeChannel(realtimeChannelRef.current);
+    }
+
+    const channel = supabase
+      .channel(`realtime-location-${selectedPet.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "localizacion",
+          filter: `mascota_id=eq.${selectedPet.id}`,
+        },
+        (payload) => {
+          console.log("🔄 Realtime → Nueva ubicación:", payload.new);
+          if (simulationRunning) {
+            setLocation(payload.new);
+          }
+        }
+      )
+      .subscribe();
+
+    realtimeChannelRef.current = channel;
+
+    return () => supabase.removeChannel(channel);
+  }, [selectedPet, simulationRunning]);
+
+  // Guardar selected pet en storage
   const setSelectedPet = (pet) => {
     setSelectedPetState(pet);
     setSelectedPetService(pet);
   };
 
-  // Informo los alerts a usuario
+  // Mostrar alerta → activa simulación
   useEffect(() => {
-    if(alert) setShowAlert(true);
-  }, [alert])
+    if (alert) {
+      setShowAlert(true);
+      setSimulationRunning(true);
+      setAlertOn(true);
+    }
+  }, [alert]);
 
-  function closeAlert(){
+  const closeAlert = () => setShowAlert(false);
+
+  // 🛑 Detener simulación REAL
+  const stopSimulation = () => {
+    console.log("🛑 Simulación detenida correctamente");
+
+    setSimulationRunning(false);
+    setAlertOn(false);
     setShowAlert(false);
-  }
-<<<<<<< HEAD
-  return (
-    <SavedDataContext.Provider value={{ location, selectedPet, setSelectedPet, showAlert, closeAlert, setAlert }}>
-=======
 
-  
+    // Cortamos el canal realtime DEFINITIVAMENTE
+    if (realtimeChannelRef.current) {
+      supabase.removeChannel(realtimeChannelRef.current);
+      realtimeChannelRef.current = null;
+    }
+  };
 
   return (
     <SavedDataContext.Provider
@@ -93,12 +125,13 @@ const [alertOn, setAlertOn] = useState(false);
         showAlert,
         closeAlert,
         setAlert,
-alertOn,
-setAlertOn,
-
+        alertOn,
+        setAlertOn,
+        alert,
+        simulationRunning,
+        stopSimulation,
       }}
     >
->>>>>>> 6a12757 (estado de emergencia hacia maps)
       {children}
     </SavedDataContext.Provider>
   );
