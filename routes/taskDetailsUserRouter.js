@@ -1,6 +1,6 @@
 import express from 'express';
 import DetailsUserController from '../controllers/DetailsUserController.js';
-
+import { verifyToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -10,13 +10,13 @@ router.get('/api/details', DetailsUserController.getAll);
 router.post('/api/user/:userId/details', DetailsUserController.create);
 
 // Rota para obtener detalles de usuario por userId
-router.get('/api/user/:userId/details', DetailsUserController.getByUserId);
+router.get('/api/user/:userId/details', verifyToken, DetailsUserController.getByUserId);
 
 // Rota para actualizar detalles de usuario por userId
-router.put('/api/user/:userId/details', DetailsUserController.update);
+router.put('/api/user/:userId/details', verifyToken, DetailsUserController.update);
 
 // Rota para eliminar detalles de usuario por userId
-router.delete('/api/user/:userId/details', DetailsUserController.delete);
+router.delete('/api/user/:userId/details', verifyToken, DetailsUserController.delete);
 
 
 export default router;
