@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSavedData } from "../context/SavedDataContext";
 import usePets from "../hooks/usePets";
-import ModalMascota from "../components/ModalMascota";
+
 import PersonalInform from "../components/PersonalInforme";
 import Maps from "../components/maps/Maps";
 import MapsViewer from "../components/maps/MapsViewer";
@@ -77,15 +77,7 @@ export default function Dashboard() {
 </div>
 
 
-      {/* Modal para agregar/editar mascota */}
-      {modalOpen && (
-        <ModalMascota
-          pet={currentPet}
-          onClose={toggleModal}
-          onSave={handleSavePet}
-          onDelete={handleDeletePet}
-        />
-      )}
+   
     </>
   );
 }

@@ -29,7 +29,7 @@ export default function PersonalInform({ details, locations }) {
 
       {/* Dirección */}
       <div className="flex flex-wrap gap-3 text-gray-700 text-sm sm:text-base">
-        <span>{`${direccion}, ${codigoPostal}`}</span>
+        <span>{`${capitalizeAll(direccion)}, ${codigoPostal}`}</span>
         <span>|</span>
         <span>{provincia}</span>
       </div>

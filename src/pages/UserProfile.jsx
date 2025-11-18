@@ -1,10 +1,9 @@
-// src/pages/DetailsUser.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PetCards from "../components/ui/PetsCard";
 import DetailsInform from "../components/DetailsInform";
 import usePets from "../hooks/usePets";
-import ModalMascota from "../components/ModalMascota";
+
 
 export default function DetailsUser() {
   const navigate = useNavigate();
@@ -51,7 +50,7 @@ export default function DetailsUser() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto mt-5">
       {/* Información del usuario */}
       <section>
         <DetailsInform details={userData} ubicacion={ubicacionUsuario} />
@@ -69,15 +68,7 @@ export default function DetailsUser() {
         />
       </section>
 
-      {/* Modal para agregar/editar mascota */}
-      {modalOpen && (
-        <ModalMascota
-          pet={currentPet}
-          onClose={toggleModal}
-          onSave={handleSavePet}  // el hook maneja agregar o actualizar
-          onDelete={handleDeletePet}
-        />
-      )}
+  
     </div>
   );
 }

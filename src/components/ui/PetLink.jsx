@@ -3,7 +3,7 @@ import React from "react";
 export default function PetLink({ pet }){
 
     if (!pet) return (
-    <span className="text-gray-500 italic">Nenhuma mascota selecionada 🐾</span>
+    <span className="text-gray-500 italic">🐾</span>
   );
 
     return(

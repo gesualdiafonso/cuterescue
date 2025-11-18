@@ -2,11 +2,13 @@ import { useState } from "react";
 import { supabase } from "../services/supabase";
 import { useNavigate } from "react-router-dom";
 import { getCoordinatesFromAddress } from "../services/GeoAPI";
+import { provinciasArg } from "../constants/provincias";
 
 export default function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -19,8 +21,12 @@ export default function Register() {
     provincia: "",
     codigoPostal: "",
     password: "",
+    genero: "", // 🆕
   });
+
   const [foto, setFoto] = useState(null);
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,74 +46,107 @@ export default function Register() {
         email,
         password,
       });
-
       if (authError) throw authError;
 
-      const userId = authData?.user?.id;
+      const userId = authData.user.id;
 
-      // 2️⃣ Subir imagen de perfil si se seleccionó una
-      let foto_url = "";
-      if (foto) {
-        const fileExt = foto.name.split(".").pop();
-        const fileName = `${userId}.${fileExt}`;
-        const filePath = `avatars/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("avatars")
-          .upload(filePath, foto, { upsert: true });
-
-        if (uploadError) throw uploadError;
-
-        const { data: publicUrlData } = supabase.storage
-          .from("avatars")
-          .getPublicUrl(filePath);
-
-        foto_url = publicUrlData.publicUrl;
-      }
-
-      // 3️⃣ Buscar coordenadas en OSM
+      // 2️⃣ Obtener coordenadas
       const { lat, lng, source } = await getCoordinatesFromAddress({
         direccion: userData.direccion,
         codigoPostal: userData.codigoPostal,
         provincia: userData.provincia,
       });
 
-      if (!lat || !lng) {
-        throw new Error(
-          "No se puede encontrar la dirección en el mapa. Verifica los datos ingresados."
-        );
+      // Si geocodificación falla, NO se corta el registro
+      const latFinal = lat ?? -34.6037; // fallback CABA centro
+      const lngFinal = lng ?? -58.3816;
+
+      // 3️⃣ Insertar usuario en la tabla "usuarios" y ver qué devuelve
+      const { data: insertedUser, error: userInsertError } = await supabase
+        .from("usuarios")
+        .insert([
+          {
+            id: userId,
+            email,
+            nombre: userData.nombre,
+            apellido: userData.apellido,
+            fechaNacimiento: userData.fechaNacimiento,
+            tipoDocumento: userData.tipoDocumento,
+            documento: userData.documento,
+            telefono: userData.telefono,
+            direccion: userData.direccion,
+            provincia: userData.provincia,
+            codigoPostal: userData.codigoPostal,
+            genero: userData.genero || null,
+            foto_url: "",
+          },
+        ])
+        .select()
+        .single();
+
+      console.log("✅ Usuario insertado en tabla usuarios:", insertedUser);
+      if (userInsertError) {
+        console.error("❌ Error insertando en usuarios:", userInsertError);
+        throw userInsertError;
       }
 
-      // 4️⃣ Insertar en la tabla 'usuarios'
-      const { error: dbError } = await supabase.from("usuarios").insert([
-        {
-          id: userId,
-          email,
-          foto_url,
-          ...userData,
-        },
-      ]);
+      // 4️⃣ Insertar ubicación inicial
+      const { error: locInsertError } = await supabase
+        .from("localizacion_usuario")
+        .insert({
+          owner_id: userId,
+          direccion: userData.direccion,
+          provincia: userData.provincia,
+          codigoPostal: userData.codigoPostal,
+          lat: latFinal,
+          lng: lngFinal,
+          source,
+          direccion_segura: true,
+        });
 
-      if (dbError) throw dbError;
+      if (locInsertError) {
+        console.error("❌ Error insertando en localizacion_usuario:", locInsertError);
+        throw locInsertError;
+      }
 
-      // 5️⃣ Insertar ubicación inicial
-      const { error: dbError2 } = await supabase.from("localizacion_usuario").insert({
-        direccion: userData.direccion,
-        provincia: userData.provincia,
-        codigoPostal: userData.codigoPostal,
-        lat,
-        lng,
-        source,
-        direccion_segura: true,
-        owner_id: userId,
-      });
+      // 5️⃣ Subir foto
+      let foto_url = "";
+      if (foto) {
+        const ext = foto.name.split(".").pop();
+        const fileName = `${userId}.${ext}`;
+        const filePath = `avatars/${fileName}`;
 
-      if (dbError2) throw dbError2;
+        const { error: uploadError } = await supabase.storage
+          .from("avatars")
+          .upload(filePath, foto, { upsert: true });
 
-      // 6️⃣ Redirigir al login
-      navigate("/login");
+        if (uploadError) {
+          console.error("❌ Error subiendo foto:", uploadError);
+          throw uploadError;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(filePath);
+
+        foto_url = publicUrlData.publicUrl;
+
+        // 6️⃣ Actualizar foto_url en usuarios
+        const { error: updateError } = await supabase
+          .from("usuarios")
+          .update({ foto_url })
+          .eq("id", userId);
+
+        if (updateError) {
+          console.error("❌ Error actualizando foto_url:", updateError);
+          throw updateError;
+        }
+      }
+
+      // 7️⃣ Redirigir al dashboard directamente
+      navigate("/dashboard");
     } catch (err) {
-      console.error("Error en el registro:", err);
+      console.error("🔥 Error en el registro:", err);
       setError(err.message || "Ocurrió un error inesperado.");
     } finally {
       setLoading(false);
@@ -115,15 +154,16 @@ export default function Register() {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col justify-center items-center relative overflow-hidden">
+    <div className="w-full h-[80vh] flex flex-col justify-center items-center relative overflow-hidden">
       <img
         src="src/assets/vetorpatas_trama.png"
         alt=""
         className="absolute w-full h-full object-cover -z-10 opacity-30"
       />
+
       <form
         onSubmit={handleRegister}
-        className="rounded-2xl shadow-lg p-8 w-full max-w-3xl bg-[#22687B]/90 backdrop-blur-md"
+        className="rounded-2xl shadow-lg p-8 w-full max-w-3xl bg-gray-500/50 backdrop-blur-md"
       >
         <h2 className="text-2xl font-semibold text-white mb-6 text-center">
           Datos del titular
@@ -138,6 +178,7 @@ export default function Register() {
             className="bg-white text-black rounded-lg p-2 w-full"
             required
           />
+
           <input
             name="apellido"
             placeholder="Apellido"
@@ -147,11 +188,9 @@ export default function Register() {
             required
           />
 
-          {/* Fecha */}
+          {/* Fecha de nacimiento */}
           <div className="md:col-span-2 flex flex-col">
-            <label className="text-sm text-white mb-1">
-              Fecha de nacimiento
-            </label>
+            <label className="text-sm text-white mb-1">Fecha de nacimiento</label>
             <input
               type="date"
               name="fechaNacimiento"
@@ -175,6 +214,7 @@ export default function Register() {
             <option value="Pasaporte">Pasaporte</option>
             <option value="CUIL">CUIL</option>
           </select>
+
           <input
             name="documento"
             placeholder="Número de documento"
@@ -193,6 +233,7 @@ export default function Register() {
             className="bg-white text-black rounded-lg p-2 w-full"
             required
           />
+
           <input
             type="email"
             name="email"
@@ -213,7 +254,7 @@ export default function Register() {
             required
           />
 
-          {/* Provincia y Código Postal */}
+          {/* Provincia */}
           <select
             name="provincia"
             value={formData.provincia}
@@ -222,12 +263,13 @@ export default function Register() {
             required
           >
             <option value="">Seleccionar provincia</option>
-            <option value="Buenos Aires">Buenos Aires</option>
-            <option value="CABA">Ciudad Autónoma de Buenos Aires (CABA)</option>
-            <option value="Córdoba">Córdoba</option>
-            <option value="Santa Fe">Santa Fe</option>
-            <option value="Mendoza">Mendoza</option>
+            {provinciasArg.map((prov) => (
+              <option key={prov} value={prov}>
+                {prov}
+              </option>
+            ))}
           </select>
+
           <input
             name="codigoPostal"
             placeholder="Código postal"
@@ -237,7 +279,25 @@ export default function Register() {
             required
           />
 
-          {/* Foto del usuario */}
+          {/* Género */}
+          <div className="md:col-span-2 flex flex-col">
+            <label className="text-sm text-white mb-1">Género</label>
+            <select
+              name="genero"
+              value={formData.genero}
+              onChange={handleChange}
+              className="bg-white text-black rounded-lg p-2 w-full"
+              required
+            >
+              <option value="">Seleccionar</option>
+              <option value="Femenino">Femenino</option>
+              <option value="Masculino">Masculino</option>
+              <option value="No Binario">No binario</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+
+          {/* Foto */}
           <div className="md:col-span-2 flex flex-col">
             <label className="text-sm text-white mb-1">Foto de perfil</label>
             <input
@@ -248,7 +308,7 @@ export default function Register() {
             />
           </div>
 
-          {/* Password */}
+          {/* Contraseña */}
           <input
             type="password"
             name="password"
@@ -267,7 +327,7 @@ export default function Register() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#1e88e5] text-white mt-6 py-2 px-6 rounded-lg hover:bg-[#1976d2] w-full transition-all"
+          className="bg-cyan-700 text-center px-10 py-2 text-white font-semibold rounded-md hover:bg-cyan-800 transition-all w-full mt-5"
         >
           {loading ? "Registrando..." : "Registrarme"}
         </button>

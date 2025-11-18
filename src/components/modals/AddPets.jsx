@@ -14,6 +14,7 @@ export default function AddPets({ onPetAdded }) {
     estado_salud: "",
     foto_url: null,
   });
+
   const [ubicacion, setUbicacion] = useState(null);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
@@ -41,18 +42,33 @@ export default function AddPets({ onPetAdded }) {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === "foto_url" && files[0]) {
+
+    if (name === "foto_url" && files?.[0]) {
       setForm({ ...form, foto_url: files[0] });
       setPreview(URL.createObjectURL(files[0]));
-    } else {
-      setForm({ ...form, [name]: value });
+      return;
     }
+
+    // Validación peso solo números positivos
+    if (name === "peso" && value !== "") {
+      if (!/^\d*\.?\d*$/.test(value)) return;
+    }
+
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+
+    // ❌ Validación: NO permitir fecha futura
+    const today = new Date().toISOString().split("T")[0];
+    if (form.fecha_nacimiento > today) {
+      setMessage("⚠️ La fecha de nacimiento no puede ser futura.");
+      setLoading(false);
+      return;
+    }
 
     if (
       !form.nombre ||
@@ -75,6 +91,7 @@ export default function AddPets({ onPetAdded }) {
       if (!user) throw new Error("Usuario no autenticado.");
 
       let fotoUrl = null;
+
       if (form.foto_url instanceof File) {
         const fileName = `${user.id}_${Date.now()}_${form.foto_url.name}`;
         const { error: uploadError } = await supabase.storage
@@ -99,7 +116,7 @@ export default function AddPets({ onPetAdded }) {
             especie: form.especie,
             raza: form.raza,
             fecha_nacimiento: form.fecha_nacimiento,
-            peso: parseInt(form.peso),
+            peso: parseFloat(form.peso),
             sexo: form.sexo,
             color: form.color,
             estado_salud: form.estado_salud,
@@ -114,6 +131,7 @@ export default function AddPets({ onPetAdded }) {
 
       if (ubicacion) {
         const { direccion, codigoPostal, provincia, lat, lng, source } = ubicacion;
+
         const { error: locError } = await supabase.from("localizacion").insert([
           {
             owner_id: user.id,
@@ -149,20 +167,18 @@ export default function AddPets({ onPetAdded }) {
 
   return (
     <>
-      {/* Card que abre el modal */}
-<article
-  className="mx-auto bg-[#f5f5dc]/50 w-[256px] flex-shrink-0 rounded-3xl h-[250px] p-5 flex justify-center items-center flex-col cursor-pointer
-             shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
-  onClick={() => setShowModal(true)}
->
-  <span className="text-3xl font-bold text-[#22687b]">+</span>
-  <p className="text-[#22687b] mt-2">Agregar mascota</p>
-</article>
+      {/* CARD */}
+      <article
+        className="mx-auto bg-[#f5f5dc]/50 w-[256px] flex-shrink-0 rounded-3xl h-[250px] p-5 flex justify-center items-center flex-col cursor-pointer shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
+        onClick={() => setShowModal(true)}
+      >
+        <span className="text-3xl font-bold text-[#22687b]">+</span>
+        <p className="text-[#22687b] mt-2">Agregar mascota</p>
+      </article>
 
-
-      {/* Modal */}
+      {/* MODAL */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center w-full z-50">
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center w-full z-[1000]">
           <div className="bg-[#22687b] rounded-2xl p-6 w-[90%] max-w-lg relative shadow-xl">
             <button
               onClick={() => setShowModal(false)}
@@ -179,35 +195,92 @@ export default function AddPets({ onPetAdded }) {
               onSubmit={handleSubmit}
               className="grid grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto"
             >
-              {/* Campos */}
-              {[
-                { label: "Nombre", name: "nombre", type: "text" },
-                { label: "Especie", name: "especie", type: "text" },
-                { label: "Raza", name: "raza", type: "text" },
-                { label: "Fecha de nacimiento", name: "fecha_nacimiento", type: "date" },
-                { label: "Peso (kg)", name: "peso", type: "number" },
-                { label: "Color", name: "color", type: "text" },
-              ].map(({ label, name, type }) => (
-                <div key={name}>
-                  <label className="block text-sm font-medium text-white mb-1">{label}</label>
-                  <input
-                    type={type}
-                    name={name}
-                    value={form[name] || ""}
-                    onChange={handleChange}
-                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#22687B]"
-                  />
-                </div>
-              ))}
-
-              {/* Sexo */}
+              {/* Nombre */}
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Sexo</label>
+                <label className="text-sm text-white mb-1">Nombre</label>
+                <input
+                  type="text"
+                  name="nombre"
+                  value={form.nombre}
+                  onChange={handleChange}
+                  className="w-full bg-white rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* ESPECIE → SELECT */}
+              <div>
+                <label className="text-sm text-white mb-1">Especie</label>
+                <select
+                  name="especie"
+                  value={form.especie}
+                  onChange={handleChange}
+                  className="w-full bg-white rounded-lg px-3 py-2"
+                >
+                  <option value="">Seleccionar</option>
+                  <option value="Canino">Canino</option>
+                  <option value="Felino">Felino</option>
+                </select>
+              </div>
+
+              {/* Raza */}
+              <div>
+                <label className="text-sm text-white mb-1">Raza</label>
+                <input
+                  type="text"
+                  name="raza"
+                  value={form.raza}
+                  onChange={handleChange}
+                  className="w-full bg-white rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* FECHA NACIMIENTO → sin fechas futuras */}
+              <div>
+                <label className="text-sm text-white mb-1">Fecha de nacimiento</label>
+                <input
+                  type="date"
+                  name="fecha_nacimiento"
+                  max={new Date().toISOString().split("T")[0]}
+                  value={form.fecha_nacimiento}
+                  onChange={handleChange}
+                  className="w-full bg-white rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* Peso → solo números */}
+              <div>
+                <label className="text-sm text-white mb-1">Peso (kg)</label>
+                <input
+                  type="number"
+                  name="peso"
+                  min="0"
+                  step="0.1"
+                  value={form.peso}
+                  onChange={handleChange}
+                  className="w-full bg-white rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* Color */}
+              <div>
+                <label className="text-sm text-white mb-1">Color</label>
+                <input
+                  type="text"
+                  name="color"
+                  value={form.color}
+                  onChange={handleChange}
+                  className="w-full bg-white rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* SELECCION SEXO */}
+              <div>
+                <label className="text-sm text-white mb-1">Sexo</label>
                 <select
                   name="sexo"
                   value={form.sexo}
                   onChange={handleChange}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#22687B]"
+                  className="w-full bg-white rounded-lg px-3 py-2"
                 >
                   <option value="">Seleccionar</option>
                   <option value="Macho">Macho</option>
@@ -215,60 +288,41 @@ export default function AddPets({ onPetAdded }) {
                 </select>
               </div>
 
-              {/* Estado de salud */}
+              {/* ESTADO SALUD */}
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Estado de salud</label>
+                <label className="text-sm text-white mb-1">Estado de salud</label>
                 <input
                   type="text"
                   name="estado_salud"
                   value={form.estado_salud}
                   onChange={handleChange}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#22687B]"
+                  className="w-full bg-white rounded-lg px-3 py-2"
                 />
               </div>
 
-              {/* Foto */}
+              {/* FOTO */}
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-white mb-1">Foto</label>
+                <label className="text-sm text-white mb-1">Foto</label>
                 <input
                   type="file"
                   name="foto_url"
                   accept="image/*"
                   onChange={handleChange}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full bg-white rounded-lg px-3 py-2"
                 />
                 {preview && (
                   <img
                     src={preview}
-                    alt="preview"
-                    className="mt-3 w-40 h-40 object-cover rounded-xl mx-auto"
+                    className="w-40 h-40 mt-3 rounded-xl object-cover mx-auto"
                   />
                 )}
               </div>
-
-              {/* Localización */}
-              {ubicacion && (
-                <div className="col-span-2 bg-gray-100 p-3 rounded-lg text-sm text-gray-700 border">
-                  <p>
-                    <strong>Dirección:</strong> {ubicacion.direccion}
-                  </p>
-                  <p>
-                    <strong>Código Postal:</strong> {ubicacion.codigoPostal}
-                  </p>
-                  <p>
-                    <strong>Provincia:</strong> {ubicacion.provincia}
-                  </p>
-                  <p className="text-green-700 font-medium mt-1">
-                    📍 Esta será la ubicación inicial de tu mascota.
-                  </p>
-                </div>
-              )}
 
               {message && (
                 <p
                   className={`col-span-2 text-center mt-2 ${
                     message.includes("⚠️") || message.includes("❌")
-                      ? "text-red-400"
+                      ? "text-red-300"
                       : "text-green-300"
                   }`}
                 >

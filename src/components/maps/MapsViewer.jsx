@@ -23,7 +23,7 @@ export default function MapsViewer({ selectedPet, location }) {
   if (!selectedPet)
     return (
       <div className="w-full bg-amber-400 h-96 mb-5 rounded-2xl flex items-center justify-center text-white text-5xl font-black">
-        Todavía no hay un Pet
+        Seleccione una mascota
       </div>
     );
 

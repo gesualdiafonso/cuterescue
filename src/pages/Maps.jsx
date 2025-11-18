@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { useSavedData } from "../context/SavedDataContext";
 import { supabase } from "../services/supabase";
 import ModalAlert from "../components/modals/ModalAlert";
@@ -50,7 +51,7 @@ export default function Maps() {
     location?.barrio,
     location?.ciudad,
     location?.provincia,
-    location?.codigo_postal || location?.codigopostal,
+    location?.codigoPostal || location?.codigopostal,
   ].filter(Boolean).join(", ");
 
   // BOTÓN "ENCONTRÉ A MI MASCOTA"

@@ -32,7 +32,7 @@ export default function Maps({ modalOpen }) {
   if (!selectedPet)
     return (
       <div className="w-full h-80 flex items-center justify-center text-white text-3xl font-bold bg-amber-400 rounded-2xl">
-        Todavía no hay una mascota seleccionada
+        Seleccione una mascota
       </div>
     );
 
@@ -45,7 +45,11 @@ export default function Maps({ modalOpen }) {
 
   const direccion = location?.direccion || "Ubicación no disponible";
   const status = selectedPet.activo ? "Activo" : "Inactivo";
-
+  const capitalizeAll = (text = "") =>
+    text
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
   return (
     <div className={`w-full rounded-2xl overflow-hidden shadow ${modalOpen ? "pointer-events-none z-0" : "z-10"}`}>
      
@@ -53,14 +57,14 @@ export default function Maps({ modalOpen }) {
   <div>
     <h3 className="font-semibold text-lg text-[#22687b]">{selectedPet.nombre}</h3>
     <p className="text-sm text-gray-700">
-      Última Localización: <span className="font-medium">{direccion}</span>
+      Última Localización: <span className="font-medium">{capitalizeAll(direccion)}</span>
     </p>
   </div>
   <PetStatus activo={selectedPet.activo} /> {/* status reutilizable */}
 </div>
 
       {/* Mapa */}
-      <div className=" h-[270px]">
+      <div className=" h-[270px] w-full">
         <MapContainer
           center={[petPosition.lat, petPosition.lng]}
           zoom={14}

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import ModalEdicionUsuario from "./modals/ModalEdicionUsuario";
 import { supabase } from "../services/supabase";
 
+
 export default function DetailsInform({ details, ubicacion }) {
   if (!details) return <div>Loading...</div>;
 
@@ -56,6 +57,7 @@ export default function DetailsInform({ details, ubicacion }) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-gray-800">
           <p><strong>Fecha de nacimiento:</strong> {fechaNacimiento}</p>
+          <p><strong>Género:</strong> {details.genero || "No especificado"}</p>
           <p>
             <strong>Dirección:</strong>{" "}
             {direccion
@@ -80,7 +82,7 @@ export default function DetailsInform({ details, ubicacion }) {
           </p>
           <p><strong>GPS Activo:</strong> Sí{" "}
             <Link
-              to="/gps-pets"
+              to="/#"
               className="ml-3 px-4 py-1 bg-[#22687B] text-white font-medium rounded-md hover:bg-[#1b5056] transition"
             >
               Acceder

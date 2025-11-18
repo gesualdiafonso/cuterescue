@@ -1,10 +1,10 @@
-/* Borrar componente entero*/
-
 import React, {useEffect, useState} from "react"
 import PetCards from "../components/ui/PetCards"
 import DetailsInform from "../components/DetailsInform"
 import { supabase } from "../../services/supabase"
 import { useNavigate } from "react-router-dom"
+
+
 
 export default function DetailsUser(){
 
