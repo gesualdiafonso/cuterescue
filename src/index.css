@@ -55,12 +55,11 @@
   .veterinaria-direccion {
     @apply text-base text-gray-600;
   }
+
+  /* FOOTER */
     .footer {
     @apply  text-[var(--color-brand-teal)] py-6;
   }
-/*    .footer {
-    @apply bg-[var(--color-footer-bg)] text-[var(--color-brand-teal)] py-6;
-  } */
   .footer-container {
     @apply max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between px-4;
   }
@@ -89,9 +88,11 @@
     @apply border-t border-[var(--color-brand-teal)] mt-6 pt-4 text-center text-sm text-[var(--color-brand-teal)];
   }
 }
+
 body {
   font-family: "Agrandir", sans-serif;
 }
+
 /* elimino barra lateral de formulario */
 .overflow-y-auto {
     overflow-y: hidden;

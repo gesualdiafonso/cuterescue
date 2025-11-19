@@ -1,4 +1,5 @@
 import React from "react";
+import { capitalizeAll } from "../../utils/text";
 
 export default function PetLink({ pet }){
 
@@ -12,7 +13,7 @@ export default function PetLink({ pet }){
                 <img src={pet.foto_url} alt="Shimbinha" className="bg-gray-200 rounded-full w-full h-full object-cover"/>
             </div>
             <div>
-                <span>{pet.nombre}</span>
+                <span>{capitalizeAll(pet.nombre)}</span>
             </div>
         </div>
     )

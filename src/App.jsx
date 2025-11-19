@@ -11,7 +11,6 @@ import Dashboard from "./pages/Dashboard";
 import Eventos from "./pages/Eventos";
 import InformePet from "./pages/InformePet";
 import Maps from "./pages/Maps";
-import AgregarMascota from "./pages/AgregarMascota";
 import Planes from "./pages/Planes";
 import ModalAlert from "./components/modals/ModalAlert";
 import { useSavedData } from "./context/SavedDataContext";
@@ -126,14 +125,6 @@ function App() {
           }
         />
 
-        <Route
-          path="/agregarmascota"
-          element={
-            <PrivateRoute>
-              <AgregarMascota />
-            </PrivateRoute>
-          }
-        />
 
         <Route
           path="/planes"

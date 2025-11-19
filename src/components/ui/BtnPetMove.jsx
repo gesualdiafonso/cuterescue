@@ -1,37 +1,26 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { startRealTimeSimulation } from "../../services/MovimentPet.js";
+import { useSavedData } from "../../context/SavedDataContext";
 
 export default function BtnPetMove({ pet, userLocation }) {
   const navigate = useNavigate();
-  let stopSimulation = null;
+  const { simStopRef, setSimulationRunning } = useSavedData();
 
   async function handleStartSim() {
-    if (!pet || !userLocation) {
-      console.error("🚫 Falta mascota o localización del usuario");
-      return;
-    }
+    if (!pet || !userLocation) return;
 
-    // Inicia simulación y guarda la función de stop
-    stopSimulation = await startRealTimeSimulation(
+    const stopFn = await startRealTimeSimulation(
       pet,
       userLocation,
       "normal",
-      (alert) => {
-        console.log("📡 ALERT:", alert);
-      }
+      null
     );
 
-    // Redirige inmediatamente al mapa
-    navigate("/maps");
-  }
+    simStopRef.current = stopFn;
+    setSimulationRunning(true);
 
-  // Función opcional para detener desde este componente
-  function handleStopSim() {
-    if (stopSimulation) {
-      stopSimulation();
-      console.log("Simulación detenida");
-    }
+    navigate("/maps");
   }
 
   return (
@@ -42,8 +31,6 @@ export default function BtnPetMove({ pet, userLocation }) {
       >
         ¡Ubícame!
       </button>
-
-     
     </div>
   );
 }

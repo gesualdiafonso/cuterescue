@@ -5,62 +5,69 @@ import BtnEmergency from "./ui/BtnEmergency";
 import ModalViajeCard from "./modals/ModalViajeCard"; 
 import ModalAlert from "./modals/ModalAlert";   
 import { useSavedData } from "../context/SavedDataContext"; 
-
+import AppH1 from "./ui/AppH1";
+import { capitalizeAll } from "../utils/text";
 
 export default function PersonalInform({ details, locations }) {
   const [showModal, setShowModal] = useState(false); 
   const { showAlert, alert, setAlert, closeAlert } = useSavedData();
 
-  if (!details || !locations) {
+  //  bloquea si todavía no tenemos al usuario
+  if (!details) {
     return <div className="text-center py-10">Cargando...</div>;
   }
 
-  const { nombre = "", apellido = "", foto_url = "" } = details || {};
-  const { direccion = "", codigoPostal = "", provincia = "" } = locations || {};
+  const {
+    nombre = "",
+    apellido = "",
+    foto_url = "",
+    direccion: direccionUser = "",
+    codigoPostal: codigoPostalUser = "",
+    provincia: provinciaUser = "",
+  } = details;
 
-  const capitalizeAll = (text = "") =>
-    text
-      .split(" ")
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
+  const {
+    direccion: direccionLoc = "",
+    codigoPostal: codigoPostalLoc = "",
+    provincia: provinciaLoc = "",
+  } = locations || {};
 
+  //  Tomamos primero de localización_usuario, y si no hay, de usuarios
+  const direccionMostrar = direccionLoc || direccionUser || "";
+  const codigoPostalMostrar = codigoPostalLoc || codigoPostalUser || "";
+  const provinciaMostrar = provinciaLoc || provinciaUser || "";
+
+  
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-0">
 
       {/* Dirección */}
-      <div className="flex flex-wrap gap-3 text-gray-700 text-sm sm:text-base">
-        <span>{`${capitalizeAll(direccion)}, ${codigoPostal}`}</span>
-        <span>|</span>
-        <span>{provincia}</span>
-      </div>
+      {(direccionMostrar || codigoPostalMostrar || provinciaMostrar) && (
+        <div className="flex flex-wrap gap-3 text-gray-700 text-sm sm:text-base">
+          <span>{`${capitalizeAll(direccionMostrar)}, ${codigoPostalMostrar}`}</span>
+          
+          <span>|</span>
+          <span>{provinciaMostrar}</span>
+        </div>
+      )}
 
       {/* Nombre */}
-      <h2 className="font-bold text-2xl sm:text-6xl mt-4">
-        {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
-      </h2>
+     <AppH1 className="mt-4 sm:text-5xl">
+  {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
+</AppH1>
+
 
       {/* Botones */}
       <div className="flex flex-col lg:flex-row gap-2 lg:gap-3 mt-4">
         <BtnViaje onClick={() => setShowModal(true)} />
         <BtnEmergency 
-          onClick={() =>
-            setAlert({
-              type: "emergency",
-              color: "#F7612A",
-              title: "Has activado el botón de emergencia",
-              message: "La ubicación en tiempo real está activa.",
-              button: "Seguir mirando",
-              redirect: "/maps",
-            })
-          }
+        
         />
       </div>
 
       {/* Avatar + Visualizar perfil */}
-      <div className="flex flex-row lg:flex-row justify-end lg:justify-end items-center gap-5 mt-4 
-                      order-last lg:order-none 
-                      self-start lg:self-auto">
-        <div className="bg-gray-300 rounded-full w-16 h-16 sm:w-15 sm:h-15 overflow-hidden">
+      <div className="flex flex-row justify-end items-center gap-5 mt-4">
+        <div className="bg-gray-300 rounded-full w-16 h-16 overflow-hidden">
           <img
             src={foto_url || "/default-avatar.png"}
             alt={`Foto de ${nombre || "usuario"}`}
@@ -84,8 +91,6 @@ export default function PersonalInform({ details, locations }) {
         alert={alert}
         onClose={closeAlert}
       />
-
     </div>
   );
 }
-

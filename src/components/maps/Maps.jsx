@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import { useSavedData } from "../../context/SavedDataContext";
 import PetStatus from "../ui/PetStatus";
+import { capitalizeAll } from "../../utils/text";
 
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -45,17 +46,13 @@ export default function Maps({ modalOpen }) {
 
   const direccion = location?.direccion || "Ubicación no disponible";
   const status = selectedPet.activo ? "Activo" : "Inactivo";
-  const capitalizeAll = (text = "") =>
-    text
-      .split(" ")
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
+ 
   return (
     <div className={`w-full rounded-2xl overflow-hidden shadow ${modalOpen ? "pointer-events-none z-0" : "z-10"}`}>
      
      <div className="flex justify-between bg-[#f5dcb3] h-20 py-3 px-3">
   <div>
-    <h3 className="font-semibold text-lg text-[#22687b]">{selectedPet.nombre}</h3>
+    <h2 className="font-semibold text-lg text-[#22687b]">{capitalizeAll(selectedPet.nombre)}</h2>
     <p className="text-sm text-gray-700">
       Última Localización: <span className="font-medium">{capitalizeAll(direccion)}</span>
     </p>

@@ -83,12 +83,12 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
           <>
             <div className="form-row">
               <div className="form-group">
-                <label>Tipo de vacunación</label>
+                <label>Vacuna</label>
                 <select
                   name="tipo_vacuna"
                   value={formData.tipo_vacuna || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.tipo_vacuna ? "border-violet-500" : ""}`}
+                  className={`input-field ${errors.tipo_vacuna ? "border-red-600" : ""}`}
                 >
                   <option value="">Seleccionar</option>
                   <option>Triple Felina</option>
@@ -238,7 +238,7 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
             </div>
 
             {errorMessage && (
-              <p className="text-violet-600 text-sm mt-3 text-center font-medium">
+              <p className="text-red-600 text-sm mt-3 text-center font-medium">
                 {errorMessage}
               </p>
             )}

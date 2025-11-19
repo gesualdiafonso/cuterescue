@@ -1,5 +1,5 @@
-// src/components/Planes.jsx
 import React from "react";
+import AppH1 from "../components/ui/AppH1";
 
 const plans = [
   {
@@ -53,7 +53,10 @@ const plans = [
 const Planes = () => {
   return (
     <section className="py-16 px-4 md:px-12 text-center">
-      <h2 className="text-3xl font-bold mb-12">Planes y Precios</h2>
+         <AppH1 className="text-2xl font-bold text-[#3D8E88] mb-12">
+        Planes y Precios
+      </AppH1>
+      
       <div className="flex flex-col md:flex-row justify-center gap-8">
         {plans.map((plan, index) => (
           <div
@@ -65,9 +68,9 @@ const Planes = () => {
             {plan.highlight && (
               <div className="text-[#F7A82A] mb-2 text-xl">★</div>
             )}
-            <h3 className={`text-xl font-semibold mb-2 ${plan.textColor}`}>
+            <h2 className={`text-xl font-semibold mb-2 ${plan.textColor}`}>
               {plan.title}
-            </h3>
+            </h2>
             <p className="text-3xl font-bold mb-6">{plan.price}</p>
             <ul className="text-left mb-6 space-y-2">
               {plan.features.map((feature, idx) => (

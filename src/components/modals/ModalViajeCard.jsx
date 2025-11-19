@@ -1,7 +1,7 @@
 export default function ModalViajeCard({ onClose }) {
   return (
     <div className="modal-overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-      <div className="bg-[#22687B] rounded-2xl p-6 max-w-md text-center text-white shadow-lg">
+      <div className="bg-[#22687B] rounded-2xl p-6 max-w-md text-center text-white shadow-lg ">
         <h2 className="text-2xl font-bold mb-4">Has activado el botón de viaje</h2>
         <p className="text-white mb-4">
           El modo de viaje fue activado correctamente. La ubicación en tiempo real

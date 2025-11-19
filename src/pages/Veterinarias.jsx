@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import MapaVeterinaria from "../components/maps/MapaVeterinarias";
+import AppH1 from "../components/ui/AppH1";
 
 const veterinarias = [
   {
@@ -74,6 +75,8 @@ const veterinarias = [
   },
 ];
 
+
+
 export default function Veterinaria() {
     const [selectedVet, setSelectedVet] = useState(veterinarias[0]);
 
@@ -91,7 +94,7 @@ export default function Veterinaria() {
   return (
     <div className="min-h-screen bg-[#F7F9F9] py-10 px-6">
         <div className="flex justify-center" ref={mapRef}>
-            <div className="max-w-7xl w-full">
+            <div className="max-w-7xl w-full z-10">
                 <MapaVeterinaria 
                     lat={selectedVet.lat}
                     lng={selectedVet.lng}
@@ -99,9 +102,12 @@ export default function Veterinaria() {
                 />
             </div>
         </div>
-      <h1 className="text-3xl font-bold text-center text-[#3D8E88] mb-10">
-        Veterinarias 24 hrs
-      </h1>
+   
+
+      <AppH1 className="text-2xl font-bold text-center text-[#3D8E88] mb-10">
+  Veterinarias 24 hrs
+</AppH1>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
         {veterinarias.map((vet) => (

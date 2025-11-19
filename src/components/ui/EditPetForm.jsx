@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import EditPetModal from "../modals/EditPetModal";
 import { supabase } from "../../services/supabase";
+import AppH1 from "./AppH1";
+import { capitalizeAll } from "../../utils/text";
 
 export default function EditPetForm({
   selectedPet,
   location,
   ubicacion,
   refreshPets,
+  onPetDeleted, 
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState("");
@@ -52,7 +55,13 @@ export default function EditPetForm({
       if (error) throw error;
 
       setDeleteMessage("✅ Mascota borrada correctamente");
-      refreshPets?.();
+
+      //  Actualizar lista global sin refrescar
+      await refreshPets?.();
+
+      // Avisar al dashboard que se borró
+      onPetDeleted?.();
+
     } catch (err) {
       console.error(err);
       setDeleteMessage("❌ Error al borrar la mascota");
@@ -60,10 +69,11 @@ export default function EditPetForm({
       setConfirmDelete(false);
     }
   };
-
+  
   return (
     <div className="flex flex-col md:flex-row gap-10 justify-center items-center w-full mb-10 bg-[#f5f5f5]/60 rounded-3xl p-10 shadow-sm">
-      {/* 📸 Imagen de mascota */}
+
+      {/* FOTO */}
       <div className="bg-gray-200 w-72 h-80 rounded-2xl overflow-hidden shadow-md">
         <img
           src={foto_url || "/default-pet.png"}
@@ -72,9 +82,13 @@ export default function EditPetForm({
         />
       </div>
 
-      {/* 🐾 Información de la mascota */}
+      {/* INFO */}
       <div className="flex flex-col gap-4 max-w-2xl w-full">
-        <h2 className="font-bold text-4xl text-[#22687b] mb-3">{nombre}</h2>
+      
+
+        <AppH1 className="font-bold text-4xl text-[#22687b] mb-3">
+  {`${capitalizeAll(nombre)}`}
+</AppH1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-gray-800">
           <Info label="Especie" value={especie} />
@@ -86,17 +100,18 @@ export default function EditPetForm({
           <Info label="Peso" value={`${peso} kg`} />
           <Info
             label="Ubicación dueño"
-            value={`${userDireccion}, ${userCodigoPostal}, ${userProvincia}`}
+            value={`${capitalizeAll(userDireccion)}, ${userCodigoPostal}, ${userProvincia}`}
           />
           <Info
             label="Última ubicación"
-            value={`${direccion}, ${codigoPostal}, ${provincia}`}
+            value={`${capitalizeAll(direccion)}, ${codigoPostal}, ${provincia}`}
           />
         </div>
 
-        {/* Botones de acción */}
+        {/* BOTONES */}
         <div className="mt-6 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row gap-4">
+
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
@@ -137,7 +152,6 @@ export default function EditPetForm({
         </div>
       </div>
 
-      {/* Modal de edición */}
       {isModalOpen && (
         <EditPetModal
           pet={selectedPet}
@@ -148,7 +162,6 @@ export default function EditPetForm({
     </div>
   );
 }
-
 
 function Info({ label, value }) {
   return (

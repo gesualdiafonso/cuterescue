@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import ModalDocumentacion from "../components/ModalDocumentacion";
+import AppH1 from "../components/ui/AppH1";
 
 export default function Documentacion() {
   const [user, setUser] = useState(null);
@@ -178,7 +179,9 @@ export default function Documentacion() {
   return (
     <div className="documentacion-container px-4 md:px-16 lg:px-32 py-8">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Ficha médica de tus mascotas</h1>
+          <AppH1 className="text-2xl font-bold text-center text-[#3D8E88] mb-10">
+          Ficha médica de tus mascotas
+        </AppH1>
         <p className="text-gray-600 max-w-4xl mx-auto">
           Mantén toda la información de salud de tus mascotas organizada y accesible.
         </p>
@@ -221,6 +224,8 @@ export default function Documentacion() {
           return (
             <section key={categoria} className="section-container mb-10">
               <h2 className="section-title text-xl font-semibold mb-4">{titulo}</h2>
+
+              
               <div className="cards-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
                 {items.map((item) => (
                   <div

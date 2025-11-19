@@ -27,24 +27,30 @@ export default function ModalEdicionUsuario({
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    if (currentUser) {
-      setForm({
-        nombre: currentUser.nombre || "",
-        apellido: currentUser.apellido || "",
-        email: currentUser.email || "",
-        telefono: currentUser.telefono || "",
-        genero: currentUser.genero || "",
-        fechaNacimiento: currentUser.fechaNacimiento || "",
-        tipoDocumento: currentUser.tipoDocumento || "",
-        documento: currentUser.documento || "",
-        direccion: ubicacion?.direccion || "",
-        codigoPostal: ubicacion?.codigoPostal || "",
-        provincia: ubicacion?.provincia || "",
-        foto_url: currentUser.foto_url || "",
-      });
-    }
-  }, [currentUser, ubicacion, isOpen]);
+useEffect(() => {
+  if (currentUser) {
+    setForm({
+      nombre: currentUser.nombre || "",
+      apellido: currentUser.apellido || "",
+      email: currentUser.email || "",
+      telefono: currentUser.telefono || "",
+      genero: currentUser.genero || "",
+      fechaNacimiento: currentUser.fechaNacimiento || "",
+      tipoDocumento: currentUser.tipoDocumento || "",
+      documento: currentUser.documento || "",
+
+      // 🔥 PRIORIDAD: tabla usuarios → fallback localizacion_usuario
+      direccion: currentUser.direccion || ubicacion?.direccion || "",
+      codigoPostal: currentUser.codigoPostal || ubicacion?.codigoPostal || "",
+      provincia: currentUser.provincia || ubicacion?.provincia || "",
+
+      foto_url: currentUser.foto_url || ""
+    });
+
+  
+  }
+}, [currentUser, ubicacion, isOpen]);
+
 
   if (!isOpen) return null;
 
@@ -84,6 +90,9 @@ export default function ModalEdicionUsuario({
           documento: form.documento,
           email: form.email,
           foto_url: fotoPublicUrl,
+              direccion: form.direccion,
+    codigoPostal: form.codigoPostal,
+    provincia: form.provincia,
         })
         .eq("id", currentUser.id);
 

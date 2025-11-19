@@ -150,9 +150,9 @@ export default function Navbar() {
 
               {notificationsOpen && (
                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-[10000] p-2 border border-gray-200">
-                  <h3 className="text-sm font-semibold text-[#22687B] border-b pb-1 mb-2">
+                  <span className="text-sm font-semibold text-[#22687B] border-b">
                     Notificaciones
-                  </h3>
+                  </span>
                   {alerts.length === 0 ? (
                     <p className="text-gray-500 text-sm px-2">No hay alertas por ahora 🐾</p>
                   ) : (
@@ -180,7 +180,7 @@ export default function Navbar() {
                   setProfileOpen(!profileOpen);
                   setNotificationsOpen(false);
                 }}
-                className="px-4 py-2 bg-white text-[#22687B] font-semibold rounded-md shadow hover:bg-[#f0fafa] transition"
+                className="w-25 not-[]:px-4 py-2 bg-white text-[#22687B] font-semibold rounded-md shadow hover:bg-[#f0fafa] transition"
               >
                 Mi Perfil
               </button>
