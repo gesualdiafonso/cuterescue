@@ -1,4 +1,3 @@
-import React from "react";
 import { useSavedData } from "../../context/SavedDataContext";
 
 export default function BtnPetFound() {

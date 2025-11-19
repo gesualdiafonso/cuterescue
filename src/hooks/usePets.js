@@ -9,7 +9,7 @@ export default function usePets() {
   const [location, setLocation] = useState(null);
   const [ubicacionUsuario, setUbicacionUsuario] = useState(null);
 
-  // 🔁 Carga inicial de mascotas + ubicación usuario
+  //  Carga inicial de mascotas + ubicacion usuario
   const refreshPets = async () => {
     const {
       data: { user },
@@ -22,7 +22,7 @@ export default function usePets() {
       return;
     }
 
-    // 🐾 Mascotas del usuario
+    //  Mascotas del usuario
     const { data: mascotasData, error: petsError } = await supabase
       .from("mascotas")
       .select("*")
@@ -56,7 +56,7 @@ export default function usePets() {
 
     setMascotas(mascotasConUbicacion);
 
-    // 📍 Ubicación del usuario
+    // Ubicación del usuario
     const { data: ubicacionData, error: ubicError } = await supabase
       .from("localizacion_usuario")
       .select("*")
@@ -68,7 +68,7 @@ export default function usePets() {
     }
     setUbicacionUsuario(ubicacionData || null);
 
-    // 🎯 Manejo de selectedPet y location
+    // Manejo de selectedPet y location
     if (mascotasConUbicacion.length === 0) {
       // No hay mascotas
       setLocation(null);
@@ -76,7 +76,7 @@ export default function usePets() {
       return;
     }
 
-    // Si no hay selectedPet, seleccionamos la primera
+    // si no hay selectedpet seleccionamos la primera
     if (!selectedPet) {
       const firstPet = mascotasConUbicacion[0];
       setSelectedPet(firstPet);
@@ -84,7 +84,7 @@ export default function usePets() {
       return;
     }
 
-    // Si había selectedPet, tratamos de mantenerla
+    // si habia selectedpet trata de mantenerla
     const stillExists = mascotasConUbicacion.find(
       (m) => m.id === selectedPet.id
     );
@@ -100,7 +100,7 @@ export default function usePets() {
 
   useEffect(() => {
     refreshPets();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  
   }, []); // solo una vez al montar
 
   // 👉 seleccionar mascota desde UI
@@ -121,7 +121,7 @@ export default function usePets() {
     setLocation(data || null);
   };
 
-  // 👉 eliminar mascota
+  //  eliminar mascota
 const handleDeletePet = async (pet) => {
   const { error } = await supabase.from("mascotas").delete().eq("id", pet.id);
   if (!error) {
@@ -131,7 +131,7 @@ const handleDeletePet = async (pet) => {
 };
 
 
-  // 👉 agregar / actualizar mascota desde un formulario que use este hook
+  //  agregar / actualizar mascota desde un formulario que use este hook
   const handleSavePet = async (pet, file) => {
     const {
       data: { user },
@@ -193,6 +193,6 @@ const handleDeletePet = async (pet) => {
     setSelectedPet: handleSelectPet,
     handleDeletePet,
     handleSavePet,
-    refreshPets, // 👈 clave para AddPets / EditPetForm
+    refreshPets, 
   };
 }

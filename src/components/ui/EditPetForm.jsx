@@ -56,10 +56,10 @@ export default function EditPetForm({
 
       setDeleteMessage("✅ Mascota borrada correctamente");
 
-      //  Actualizar lista global sin refrescar
+      //  actualizar lista global sin refresh f5
       await refreshPets?.();
 
-      // Avisar al dashboard que se borró
+      // avisar al dashboard que se borró
       onPetDeleted?.();
 
     } catch (err) {
@@ -86,7 +86,7 @@ export default function EditPetForm({
       <div className="flex flex-col gap-4 max-w-2xl w-full">
       
 
-        <AppH1 className="font-bold text-4xl text-[#22687b] mb-3">
+        <AppH1 className="estilosH1 ">
   {`${capitalizeAll(nombre)}`}
 </AppH1>
 
@@ -115,7 +115,7 @@ export default function EditPetForm({
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="w-full bg-white border border-[#22687b] text-[#22687b] font-bold py-2 rounded-xl hover:bg-[#22687b] hover:text-white transition"
+              className="btnTransparente w-full"
             >
               Editar informes
             </button>
@@ -126,15 +126,15 @@ export default function EditPetForm({
               className={`w-full font-bold py-2 rounded-xl transition ${
                 confirmDelete
                   ? "bg-red-600 text-white"
-                  : "bg-[#22687b] text-white hover:bg-[#1a5361]"
+                  : "bg-[#22687b] text-white hover:bg-[#1a5361] cursor-pointer"
               }`}
             >
-              {confirmDelete ? "Confirmar Borrar" : "Borrar Pet"}
+              {confirmDelete ? "Confirmar Borrar" : "Borrar Mascota"}
             </button>
 
             <button
               type="button"
-              className="w-full bg-[#f7a82a] text-white font-bold py-2 rounded-xl hover:bg-[#e6931f] transition"
+              className="btnNaranja w-full"
             >
               Informe Chip
             </button>

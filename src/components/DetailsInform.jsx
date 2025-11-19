@@ -29,12 +29,12 @@ export default function DetailsInform({ details, ubicacion }) {
     direccion_segura,
   } = ubicacion || {};
 
-  // localizacion_usuario → fallback usuarios
+  // tablsa localizacion_usuario → fallback usuarios
   const direccionMostrar = direccionLoc || direccionUser || "";
   const codigoPostalMostrar = codigoPostalLoc || codigoPostalUser || "";
   const provinciaMostrar = provinciaLoc || provinciaUser || "";
 
-  // Estado de seguridad
+  // estado de seguridad para implementacion futura con iot
   const esSegura = direccion_segura === true || direccion_segura === "true";
   const estadoSeguridad = esSegura ? "Sí" : "No";
   const colorSeguridad = esSegura ? "bg-green-500" : "bg-red-500";
@@ -64,7 +64,7 @@ export default function DetailsInform({ details, ubicacion }) {
         />
       </div>
 
-      {/* Info del usuario */}
+      {/* info del usuario */}
       <div className="flex flex-col gap-4 max-w-2xl">
         <h2 className="font-bold text-4xl text-[#22687b]">
           {nombre} {apellido}
@@ -113,7 +113,6 @@ export default function DetailsInform({ details, ubicacion }) {
           </p>
         </div>
 
-        {/* Botón Editar */}
         <div className="mt-6">
           <button
             onClick={() => setOpenModal(true)}
@@ -124,7 +123,6 @@ export default function DetailsInform({ details, ubicacion }) {
         </div>
       </div>
 
-      {/* Modal */}
       <ModalEdicionUsuario
         isOpen={openModal}
         onClose={() => setOpenModal(false)}

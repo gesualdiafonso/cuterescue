@@ -39,7 +39,7 @@ useEffect(() => {
       tipoDocumento: currentUser.tipoDocumento || "",
       documento: currentUser.documento || "",
 
-      // 🔥 PRIORIDAD: tabla usuarios → fallback localizacion_usuario
+      //  tabla usuarios → fallback localizacion_usuario
       direccion: currentUser.direccion || ubicacion?.direccion || "",
       codigoPostal: currentUser.codigoPostal || ubicacion?.codigoPostal || "",
       provincia: currentUser.provincia || ubicacion?.provincia || "",
@@ -126,22 +126,12 @@ useEffect(() => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-[9999] p-3">
       <div className="
-          bg-[#22687b] 
-          p-4 
-          rounded-2xl 
-          shadow-xl 
-          w-full 
-          max-w-md 
-          md:max-w-2xl 
-          max-h-[80vh] 
-          overflow-y-auto">
+          modalGlobal">
 
-        {/* Título */}
         <h2 className="text-xl font-bold mb-3 text-center text-white">
           Editar perfil
         </h2>
 
-        {/* GRID RESP */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-white">
 
           <div>
@@ -190,7 +180,7 @@ useEffect(() => {
             <input name="documento" value={form.documento} onChange={handleChange} className="input-edit" />
           </div>
 
-          {/* Dirección → fila completa */}
+
           <div className="md:col-span-2">
             <label className="label-edit">Dirección</label>
             <input name="direccion" value={form.direccion} onChange={handleChange} className="input-edit" />
@@ -214,7 +204,6 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Foto */}
         <div className="mt-4">
           <label className="label-edit">Foto de perfil</label>
           <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} className="w-full bg-white text-black rounded-lg p-2" />
@@ -222,10 +211,9 @@ useEffect(() => {
 
         {message && <p className="mt-3 text-center text-white">{message}</p>}
 
-        {/* BOTONES */}
         <div className="flex justify-center gap-4 mt-5">
-          <button onClick={onClose} className="btn-modal">Cancelar</button>
-          <button onClick={handleSubmit} className="btn-modal">Guardar</button>
+          <button onClick={onClose} className="btnTransparente px-8">Cancelar</button>
+          <button onClick={handleSubmit} className="btnNaranja  px-8">Guardar</button>
         </div>
       </div>
     </div>

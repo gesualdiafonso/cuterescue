@@ -1,7 +1,6 @@
 let currentPet = null;
 let subscribers = [];
 
-// Lista de columnas reales de la tabla "mascotas"
 const VALID_PET_FIELDS = [
   "id",
   "owner_id",
@@ -13,7 +12,7 @@ const VALID_PET_FIELDS = [
   "estado_salud",
   "peso",
   "fecha_nacimiento",
-  "foto_url" // si existe
+  "foto_url" 
 ];
 
 // 🔹 Filtra la mascota y deja solo campos que existen en Supabase
@@ -25,11 +24,11 @@ function cleanPetForStorage(pet) {
   return cleaned;
 }
 
-// 🔹 Guarda selectedPet y notifica suscriptores
+// guarda selectedPet y notifica suscriptores
 export function setSelectedPet(pet) {
   if (!pet) return;
 
-  // Filtrar antes de guardar
+  // filtrar antes de guardar
   const cleanedPet = cleanPetForStorage(pet);
 
   currentPet = cleanedPet;
@@ -39,7 +38,7 @@ export function setSelectedPet(pet) {
   subscribers.forEach((cb) => cb(cleanedPet));
 }
 
-// 🔹 Obtiene la mascota seleccionada
+// obtiene la mascota seleccionada
 export function getSelectedPetService() {
   if (currentPet) return currentPet;
 
@@ -47,7 +46,7 @@ export function getSelectedPetService() {
   return saved ? JSON.parse(saved) : null;
 }
 
-// 🔹 Subscripción a cambios
+// subscripcion a cambios
 export function subscribeSelectedPet(callback) {
   if (typeof callback !== "function") return () => {};
   subscribers.push(callback);
@@ -57,7 +56,7 @@ export function subscribeSelectedPet(callback) {
   };
 }
 
-// 🔹 Reset
+//  reset si eliminamos mascota
 export function clearSelectedPet() {
   currentPet = null;
   localStorage.removeItem("selectedPet");

@@ -70,7 +70,7 @@ export default function Documentacion() {
       const diffTime = fechaVenc - today;
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      let diasPrevios = [7, 1]; // Notificaciones 7 días y 1 día antes
+      let diasPrevios = [7, 1]; // Notificaciones 7 días y 1 día antes, 7  dias no funciona arreglar !!!! 
       if (!diasPrevios.includes(diffDays)) continue;
 
       const mensaje =
@@ -179,7 +179,7 @@ export default function Documentacion() {
   return (
     <div className="documentacion-container px-4 md:px-16 lg:px-32 py-8">
       <div className="mb-8 text-center">
-          <AppH1 className="text-2xl font-bold text-center text-[#3D8E88] mb-10">
+          <AppH1 className="estilosH1">
           Ficha médica de tus mascotas
         </AppH1>
         <p className="text-gray-600 max-w-4xl mx-auto">

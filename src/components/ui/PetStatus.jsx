@@ -1,4 +1,3 @@
-// src/components/ui/PetStatus.jsx
 import React from "react";
 
 export default function PetStatus({ activo }) {

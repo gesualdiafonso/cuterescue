@@ -64,7 +64,7 @@ export default function DetailsUser() {
           pets={mascotas}
           selectedPet={selectedPet}
           setSelectedPet={setSelectedPet}
-          onPetAdded={handlePetAdd} // ✅ esto evita el error
+          onPetAdded={handlePetAdd} 
         />
       </section>
 

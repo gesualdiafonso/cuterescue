@@ -1,11 +1,7 @@
 /**
- * 🌎 Servicios para geocodificación y reversa de geocodificación
- * usando OpenStreetMap (Nominatim API).
- * 
- * Mejora:
- * - Normaliza "CABA" a "Ciudad Autónoma de Buenos Aires"
- * - Reintenta búsqueda sin código postal si la primera falla
- * - Devuelve fuente y control de errores más claros
+ *   geocodificación
+ * usando open street map 
+
  */
 
 export async function getCoordinatesFromAddress({
@@ -17,7 +13,7 @@ export async function getCoordinatesFromAddress({
     const provinciaNormalizada =
       provincia === "CABA" ? "Ciudad Autónoma de Buenos Aires" : provincia;
 
-    // 🧩 Intento principal con código postal
+    //  Intento principal con codigo postal
     let query = `${direccion}, ${codigoPostal}, ${provinciaNormalizada}, Argentina`;
     let encodedQuery = encodeURIComponent(query);
 
@@ -31,7 +27,7 @@ export async function getCoordinatesFromAddress({
 
     let data = await response.json();
 
-    // 👉 Si falla, reintento sin código postal
+    //  Si falla, reintento sin código postal ,,, ARREGLAR
     if (!data || data.length === 0) {
       console.warn("No se encontró con código postal. Reintentando sin él...");
       query = `${direccion}, ${provinciaNormalizada}, Argentina`;
@@ -44,7 +40,7 @@ export async function getCoordinatesFromAddress({
       data = await response.json();
     }
 
-    // 👉 Si sigue fallando, devolvemos null pero NO cancelamos el flujo
+    //  Si sigue fallando devuelve null pero NO cancela el flujo
     if (!data || data.length === 0) {
       console.warn("Sin resultados para la dirección proporcionada.");
       return { lat: null, lng: null, source: "OSM:no_result" };
@@ -65,8 +61,8 @@ export async function getCoordinatesFromAddress({
 
 
 /**
- * 📍 Reverse Geocoding: obtiene dirección textual a partir de coordenadas.
- * Útil para mostrar la dirección estimada del chip o simulador.
+ * obtenemos direccion textual a partir de coordenadas para mostrar direccion aprox en simulador
+
  */
 export async function getAddressFromCoordinates(lat, lng) {
   try {

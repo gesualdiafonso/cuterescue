@@ -7,8 +7,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from "@material-tailwind/react";
 import { SavedDataProvider } from "./context/SavedDataContext.jsx";
 
-// 
-
 
 createRoot(document.getElementById('root')).render(
   <StrictMode> 

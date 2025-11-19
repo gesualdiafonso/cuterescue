@@ -1,4 +1,3 @@
-import React from "react";
 import { capitalizeAll } from "../../utils/text";
 
 export default function PetLink({ pet }){

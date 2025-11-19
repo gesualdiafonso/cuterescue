@@ -73,8 +73,8 @@ export default function EditPetModal({ pet, onClose, onSave }) {
   if (!pet) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex justify-center items-center p-4">
-      <div className="bg-[#22687B] rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/90 z-[2000] flex justify-center items-center p-4">
+      <div className="modalGlobal max-w-3xl">
         <h2 className="text-2xl font-bold mb-6 text-center text-white">
           Editar Mascota
         </h2>
@@ -127,16 +127,16 @@ export default function EditPetModal({ pet, onClose, onSave }) {
           </p>
         )}
 
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-center gap-6 mt-6">
           <button
             onClick={onClose}
-               className="btn-modal"
+               className=" btnTransparente px-8 "
           >
             Cancelar
           </button>
           <button
             onClick={handleSubmit}
-            className="btn-modal"
+            className="btnNaranja px-8"
           >
             Guardar
           </button>

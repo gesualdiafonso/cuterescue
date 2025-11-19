@@ -53,13 +53,13 @@ export default function InformePet() {
     <div className="max-w-7xl mx-auto p-0 mt-5">
 
       {/* 🐶 PET CARDS + MAPA */}
-      <section className="flex flex-col lg:flex-row gap-10 mb-10">
+      <section className="flex flex-col lg:flex-row gap-10 mb-10 items-center">
         <PetCards
           pets={mascotas}
           selectedPet={selectedPet}
           setSelectedPet={setSelectedPet}
-          onPetAdded={handlePetAdded}     // 👈 REAL-TIME ADD
-          onPetDeleted={handlePetDeleted} // 👈 REAL-TIME DELETE
+          onPetAdded={handlePetAdded}     // REAL-TIME ADD
+          onPetDeleted={handlePetDeleted} // REAL-TIME DELETE
           refreshPets={refreshPets}
         />
 
@@ -76,8 +76,8 @@ export default function InformePet() {
           location={location}
           ubicacion={ubicacionUsuario}
           refreshPets={refreshPets}
-          onPetDeleted={handlePetDeleted}      // 🔥 REAL-TIME DELETE
-          onPetUpdated={handlePetUpdated}      // 🔥 REAL-TIME UPDATE
+          onPetDeleted={handlePetDeleted}      //  REAL-TIME DELETE
+          onPetUpdated={handlePetUpdated}      //  REAL-TIME UPDATE
         />
 
         <MapsViewer selectedPet={selectedPet} location={location} />
@@ -98,7 +98,7 @@ export default function InformePet() {
       />
   
 
-      {/* ✈️ Modal Viaje */}
+      {/*  Modal Viaje */}
       {isViajeModalOpen && (
         <ModalViajeCard onClose={() => setIsViajeModalOpen(false)} />
       )}

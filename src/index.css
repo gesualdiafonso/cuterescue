@@ -6,56 +6,27 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 976px;
   --color-main-bg: #fcb974;
-    --color-footer-bg: #F5F5DC;
+  --color-main: #22687B;
+  --color-footer-bg: #F5F5DC;
   --color-brand-teal: #3D8E88;
   --color-brand-yellow: #F7A934;
 }
+
+body {
+  font-family: "Agrandir", sans-serif;
+}
+
+/* h1*/
+.estilosH1{
+  @apply text-3xl font-bold  text-[#22687b] mb-10
+}
+
 .input-edit {
   @apply w-full text-black bg-white border border-gray-300 rounded-lg px-3 py-2 
          focus:outline-none focus:ring-2 focus:ring-[#22687B];
 }
 
-
-
-.btn-modal {
-  @apply bg-[#FD9B08] text-white px-6 py-2 rounded-lg hover:bg-[#f7a82a] transition;
-}
-
-.btn {
-  @apply px-4 py-2 rounded text-white bg-[#22687B] hover:bg-[#22687B] transition-colors duration-300;
-}
-
-.btn-outline {
-  @apply px-4 py-2 border border-[#22687B] text-[#22687B] rounded hover:bg-[#22687B] hover:text-white transition-colors duration-300;
-}
-.btn-form-login {
-  @apply px-4 py-2  text-[#ff8800] rounded hover:bg-[#ffd28f] transition-colors duration-300 bg-white;
-}
-.custom-input {
-  @apply rounded-md !border-t-white focus:!border-t-gray-900 px-4 py-2 bg-amber-50 border-none;
-}
-
 @layer components {
-  .veterinaria-card {
-    @apply flex items-center gap-6 bg-[#F5F5DC] p-6 rounded-3xl shadow-md transition-transform hover:scale-[1.02];
-  }
-
-  .veterinaria-img {
-    @apply w-20 h-20 bg-black rounded-2xl flex-shrink-0;
-  }
-
-  .veterinaria-text {
-    @apply flex flex-col;
-  }
-
-  .veterinaria-nombre {
-    @apply font-semibold text-xl text-gray-900;
-  }
-
-  .veterinaria-direccion {
-    @apply text-base text-gray-600;
-  }
-
   /* FOOTER */
     .footer {
     @apply  text-[var(--color-brand-teal)] py-6;
@@ -88,19 +59,13 @@
     @apply border-t border-[var(--color-brand-teal)] mt-6 pt-4 text-center text-sm text-[var(--color-brand-teal)];
   }
 }
-
-body {
-  font-family: "Agrandir", sans-serif;
-}
-
 /* elimino barra lateral de formulario */
 .overflow-y-auto {
     overflow-y: hidden;
 }
 
 /* seccion documentacion */
-
-/* ======== CONTENEDORES ======== */
+/* CONTENEDORES  */
 .documentacion-container {
   @apply flex flex-col gap-10 p-8;
 }
@@ -117,7 +82,7 @@ body {
   @apply flex flex-wrap gap-6;
 }
 
-/* ======== CARD GENERAL ======== */
+/*  CARD GENERAL DE DOCUMENTACION  */
 .card {
   @apply bg-[#1E293B] text-white rounded-2xl p-5 w-64 shadow-md flex flex-col justify-between;
 }
@@ -134,9 +99,6 @@ body {
   @apply flex justify-between items-center mb-2;
 }
 
-.alert-active {
-  @apply bg-[#22C55E] text-white text-xs px-2 py-0.5 rounded;
-}
 
 /* ======== BOTÓN INTERNO DE CADA CARD ======== */
 .btn-card {
@@ -158,9 +120,9 @@ body {
 
 /* MODAL DOCUMENTACION*/
 
-/* ======== MODAL ======== */
+/* ======== MODAL de alertas ======== */
 .modal-overlay {
-  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-200;
 }
 
 .modal-container {
@@ -171,9 +133,6 @@ body {
   @apply text-2xl font-bold text-center mb-2;
 }
 
-.modal-subtitle {
-  @apply text-sm text-center mb-6;
-}
 
 /* ======== FORM ======== */
 .modal-form {
@@ -192,51 +151,7 @@ body {
   @apply rounded-md border-none px-3 py-2 text-[#1E293B] bg-white;
 }
 
-.file-upload {
-  @apply cursor-pointer;
-}
 
-/* ======== CHECKBOX & TOGGLE ======== */
-.checkbox input {
-  @apply mr-2 accent-[#FF8800];
-}
-
-.toggle-container {
-  @apply flex items-center gap-2;
-}
-
-.switch {
-  @apply relative inline-block w-10 h-5;
-}
-
-.switch input {
-  @apply opacity-0 w-0 h-0;
-}
-
-.slider {
-  @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition;
-}
-
-.slider:before {
-  @apply absolute content-[''] h-4 w-4 left-[2px] bottom-[2px] bg-white rounded-full transition;
-}
-
-.switch input:checked + .slider {
-  @apply bg-[#FF8800];
-}
-
-.switch input:checked + .slider:before {
-  @apply translate-x-5;
-}
-
-/* ======== BOTÓN Y FOOTER ======== */
-.btn-modal {
-  @apply mt-6 mx-auto block bg-[#F5DCB3] text-black py-2 px-6 rounded hover:bg-[#0ea5e9] transition-colors duration-300;
-}
-
-.modal-footer {
-  @apply text-center text-xs mt-4 text-white/80;
-}
 /* Scrollbar  */
 ::-webkit-scrollbar {
   width: 15px;               
@@ -255,4 +170,29 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(34, 104, 123, 0.8);
+}
+
+/* botones*/
+.btnNaranja {
+  @apply bg-[#fd9b08] rounded-xl py-2 font-bold text-white hover:bg-[#ff4e0d] transition-all duration-300 cursor-pointer
+}
+
+.btnAzul{
+  @apply bg-[#22687b] rounded-xl py-2 px-8  text-white font-bold  border border-transparent hover:bg-transparent hover:border-[#22687b]  hover:text-black transition-all duration-300 cursor-pointer
+}
+.btnTransparente{
+  @apply  bg-white border border-[#22687b] text-[#22687b] font-bold py-2 rounded-xl hover:bg-[#22687b] hover:text-white transition cursor-pointer
+}
+
+/* Modal global*/ 
+.modalGlobal{
+  @apply   bg-[#22687b] 
+          p-6 
+          rounded-2xl 
+          shadow-xl 
+          w-full 
+          max-w-md 
+          md:max-w-2xl 
+          max-h-[80vh] 
+          overflow-y-auto
 }

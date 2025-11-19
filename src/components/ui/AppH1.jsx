@@ -1,4 +1,3 @@
-import React from "react";
 
 export default function AppH1({ children, className = "" }) {
   return (

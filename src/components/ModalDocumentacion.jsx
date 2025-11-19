@@ -88,7 +88,7 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="tipo_vacuna"
                   value={formData.tipo_vacuna || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.tipo_vacuna ? "border-red-600" : ""}`}
+                  className={`input-field ${errors.tipo_vacuna ? "border-red-500" : ""}`}
                 >
                   <option value="">Seleccionar</option>
                   <option>Triple Felina</option>
@@ -108,7 +108,7 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="fecha_aplicacion"
                   value={formData.fecha_aplicacion || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.fecha_aplicacion ? "border-violet-500" : ""}`}
+                  className={`input-field ${errors.fecha_aplicacion ? "border-red-500" : ""}`}
                 />
               </div>
               <div className="form-group">
@@ -118,7 +118,7 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="fecha_vencimiento"
                   value={formData.fecha_vencimiento || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.fecha_vencimiento ? "border-violet-500" : ""}`}
+                  className={`input-field ${errors.fecha_vencimiento ? "border-red-500" : ""}`}
                 />
               </div>
             </div>
@@ -151,7 +151,7 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name={fieldName}
                   value={formData[fieldName] || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors[fieldName] ? "border-violet-500" : ""}`}
+                  className={`input-field ${errors[fieldName] ? "border-red-500" : ""}`}
                 />
               </div>
               <div className="form-group">
@@ -160,7 +160,7 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="presentacion"
                   value={formData.presentacion || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.presentacion ? "border-violet-500" : ""}`}
+                  className={`input-field ${errors.presentacion ? "border-red-500" : ""}`}
                 >
                   <option value="">Seleccionar</option>
                   <option>Pipeta (aceite en la nuca)</option>
@@ -179,7 +179,7 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="fecha_aplicacion"
                   value={formData.fecha_aplicacion || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.fecha_aplicacion ? "border-violet-500" : ""}`}
+                  className={`input-field ${errors.fecha_aplicacion ? "border-red-500" : ""}`}
                 />
               </div>
               <div className="form-group">
@@ -189,7 +189,7 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="fecha_vencimiento"
                   value={formData.fecha_vencimiento || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.fecha_vencimiento ? "border-violet-500" : ""}`}
+                  className={`input-field ${errors.fecha_vencimiento ? "border-red-500" : ""}`}
                 />
               </div>
             </div>
@@ -224,14 +224,14 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
 
           <div className="form-actions flex flex-col items-center mt-4">
             <div className="flex justify-center gap-3">
-              <button type="button" className="btn-modal w-32" onClick={onClose}>
+              <button type="button" className="btnAzul w-32 " onClick={onClose}>
                 Volver
               </button>
-              <button type="button" className="btn-modal w-32" onClick={handleSubmit}>
+              <button type="button" className="btnNaranja w-32" onClick={handleSubmit}>
                 {data ? "Editar" : "Agregar"}
               </button>
               {data && (
-                <button type="button" className="btn-modal delete w-32" onClick={handleDelete}>
+                <button  type="button" className="btnTransparente delete w-32" onClick={handleDelete}>
                   Borrar
                 </button>
               )}

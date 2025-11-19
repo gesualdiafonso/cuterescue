@@ -39,14 +39,14 @@ export default function ModalAlert({ show, alert, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/70 z-[1100] flex items-center justify-center">
       <div
-        className="rounded-2xl p-6 max-w-md text-center text-white shadow-lg"
+        className="rounded-2xl p-6 max-w-md text-center text-[#22687C]  shadow-lg"
         style={{ backgroundColor: finalText.color }}
       >
         <h2 className="text-2xl font-bold mb-4">{finalText.title}</h2>
 
-        <p className="text-white font-bold mb-4">{finalText.message}</p>
+        <p className="text-[#22687C]  font-bold mb-4">{finalText.message}</p>
 
         {finalText.sub && (
           <p className="text-[#22687C] mb-6 font-bold text-lg">{finalText.sub}</p>

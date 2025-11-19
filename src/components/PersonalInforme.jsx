@@ -60,9 +60,7 @@ export default function PersonalInform({ details, locations }) {
       {/* Botones */}
       <div className="flex flex-col lg:flex-row gap-2 lg:gap-3 mt-4">
         <BtnViaje onClick={() => setShowModal(true)} />
-        <BtnEmergency 
-        
-        />
+        <BtnEmergency  />
       </div>
 
       {/* Avatar + Visualizar perfil */}

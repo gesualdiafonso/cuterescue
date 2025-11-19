@@ -26,8 +26,6 @@ export default function Register() {
 
   const [foto, setFoto] = useState(null);
 
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -41,7 +39,7 @@ export default function Register() {
     const { email, password, ...userData } = formData;
 
     try {
-      // 1️⃣ Crear usuario en AUTH
+      //  Crear usuario en AUTH
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -50,7 +48,7 @@ export default function Register() {
 
       const userId = authData.user.id;
 
-      // 2️⃣ Obtener coordenadas
+      //  Obtener coordenadas
       const { lat, lng, source } = await getCoordinatesFromAddress({
         direccion: userData.direccion,
         codigoPostal: userData.codigoPostal,
@@ -61,7 +59,7 @@ export default function Register() {
       const latFinal = lat ?? -34.6037; // fallback CABA centro
       const lngFinal = lng ?? -58.3816;
 
-      // 3️⃣ Insertar usuario en la tabla "usuarios" y ver qué devuelve
+      //  Insertar usuario en la tabla usuarios
       const { data: insertedUser, error: userInsertError } = await supabase
         .from("usuarios")
         .insert([
@@ -90,7 +88,7 @@ export default function Register() {
         throw userInsertError;
       }
 
-      // 4️⃣ Insertar ubicación inicial
+      // insertar ubicacion inicial
       const { error: locInsertError } = await supabase
         .from("localizacion_usuario")
         .insert({
@@ -109,7 +107,7 @@ export default function Register() {
         throw locInsertError;
       }
 
-      // 5️⃣ Subir foto
+      // subir foto
       let foto_url = "";
       if (foto) {
         const ext = foto.name.split(".").pop();
@@ -131,7 +129,7 @@ export default function Register() {
 
         foto_url = publicUrlData.publicUrl;
 
-        // 6️⃣ Actualizar foto_url en usuarios
+        //  actualizar foto_url en usuarios
         const { error: updateError } = await supabase
           .from("usuarios")
           .update({ foto_url })
@@ -143,7 +141,7 @@ export default function Register() {
         }
       }
 
-      // 7️⃣ Redirigir al dashboard directamente
+      //  redirigir al dashboard 
       navigate("/dashboard");
     } catch (err) {
       console.error("🔥 Error en el registro:", err);

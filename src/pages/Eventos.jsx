@@ -24,7 +24,7 @@ export default function Eventos() {
 
   return (
     <div className="max-w-6xl w-full mx-auto py-10">
-          <AppH1 className="text-2xl font-bold text-center text-[#3D8E88] mb-10">
+          <AppH1 className="estilosH1 text-center">
         Eventos mascoteros
       </AppH1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">

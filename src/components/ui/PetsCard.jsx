@@ -1,4 +1,3 @@
-// src/components/ui/PetsCard.jsx
 import React from "react";
 import AddPets from "../modals/AddPets";
 import PetStatus from "./PetStatus";

@@ -2,7 +2,7 @@ import React from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 
-// Icono default
+// Icono default del gps
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconSize: [25, 41],
@@ -10,7 +10,7 @@ const DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Componente para mover el mapa cuando la ubicación cambia
+//  para mover el mapa cuando la ubicacion cambia
 function ChangeView({ center }) {
   const map = useMap();
   React.useEffect(() => {
@@ -37,12 +37,12 @@ export default function MapsViewer({ selectedPet, location }) {
   const position = [location.lat, location.lng];
 
   return (
-    <div className="w-full bg-gray-100 h-96 mb-5 rounded-2xl overflow-hidden shadow  z-0">
-      <MapContainer
+    <div className="w-full bg-gray-100 h-96 mb-5 rounded-2xl overflow-hidden shadow ">
+      <MapContainer 
         center={position}
         zoom={15}
         scrollWheelZoom={true}
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", width: "100%", }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

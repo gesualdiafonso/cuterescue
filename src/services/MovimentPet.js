@@ -1,11 +1,7 @@
 import { getAddressFromCoordinates } from "./GeoAPI";
 import { supabase } from "./supabase";
 
-
-
-
-
-// Función auxiliar: genera coordenadas cerca de la anterior, movimiento suave
+//  genera coordenadas cerca de la anterior, movimiento suave
 function generateRandomCoords(lat, lng, radiusKm) {
   // 1 km ≈ 0.009 grados (aprox)
   const r = radiusKm / 111; 
@@ -61,9 +57,9 @@ export function startRealTimeSimulation(pet, userLocation, type = "normal", onAl
   let interval;
 
   const radiusMap = {
-    normal: 0.05, // ~50m para movimiento realista
-    paseo: 0.08,  // ~80m
-    emergency: 0.2, // ~200m
+    normal: 0.05, // 50m para movimiento realista
+    paseo: 0.08,  // 80m
+    emergency: 0.2, // 200m
   };
 
   const colorMap = {

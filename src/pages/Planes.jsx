@@ -39,7 +39,7 @@ const plans = [
     features: [
       "Todo lo del plan Premium",
       "Hasta 5 mascotas",
-      "COMPLETAR ---",
+      "Sin publicidad",
       "Rastreo de hasta 20 Km",
       "Documentación infinita",
     ],
@@ -53,7 +53,7 @@ const plans = [
 const Planes = () => {
   return (
     <section className="py-16 px-4 md:px-12 text-center">
-         <AppH1 className="text-2xl font-bold text-[#3D8E88] mb-12">
+         <AppH1 className="estilosH1 text-center">
         Planes y Precios
       </AppH1>
       
@@ -81,7 +81,7 @@ const Planes = () => {
             </ul>
             <button
               className={`w-full py-2 rounded-md text-white font-semibold transition-colors hover:brightness-90 ${
-                plan.highlight ? "bg-[#F7A82A] text-white" : "bg-[#3D8E88]"
+                plan.highlight ? "bg-[#F7A82A] text-white" : "bg-[#22687b]"
               }`}
             >
               {plan.buttonText}

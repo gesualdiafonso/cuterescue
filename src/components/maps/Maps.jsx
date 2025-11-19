@@ -48,7 +48,7 @@ export default function Maps({ modalOpen }) {
   const status = selectedPet.activo ? "Activo" : "Inactivo";
  
   return (
-    <div className={`w-full rounded-2xl overflow-hidden shadow ${modalOpen ? "pointer-events-none z-0" : "z-10"}`}>
+    <div className={` rounded-2xl overflow-hidden shadow ${modalOpen ? "pointer-events-none z-0" : "z-10"}`}>
      
      <div className="flex justify-between bg-[#f5dcb3] h-20 py-3 px-3">
   <div>
@@ -57,11 +57,10 @@ export default function Maps({ modalOpen }) {
       Última Localización: <span className="font-medium">{capitalizeAll(direccion)}</span>
     </p>
   </div>
-  <PetStatus activo={selectedPet.activo} /> {/* status reutilizable */}
+  <PetStatus activo={selectedPet.activo} /> 
 </div>
 
-      {/* Mapa */}
-      <div className=" h-[270px] w-full">
+      <div className=" h-[270px] w-[450px]">
         <MapContainer
           center={[petPosition.lat, petPosition.lng]}
           zoom={14}

@@ -20,7 +20,7 @@ export default function AddPets({ onPetAdded }) {
   const [preview, setPreview] = useState(null);
   const [message, setMessage] = useState("");
 
-  // 🔹 Obtener ubicación del usuario
+  //  Obtener ubicación del usuario
   useEffect(() => {
     const fetchUbicacion = async () => {
       const {
@@ -41,7 +41,7 @@ export default function AddPets({ onPetAdded }) {
     if (showModal) fetchUbicacion();
   }, [showModal]);
 
-  // 🔹 Manejo de inputs
+  //  Manejo de inputs
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -51,7 +51,7 @@ export default function AddPets({ onPetAdded }) {
       return;
     }
 
-    // Validación de peso → Números positivos o vacío
+    // validacion de peso kg numeros positivos 
     if (name === "peso") {
       if (value === "" || Number(value) >= 0) {
         setForm({ ...form, [name]: value });
@@ -62,7 +62,7 @@ export default function AddPets({ onPetAdded }) {
     setForm({ ...form, [name]: value });
   };
 
-  // 🔹 Guardar mascota
+  // guarda mascota
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -183,7 +183,7 @@ export default function AddPets({ onPetAdded }) {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 flex justify-center items-center w-full z-[1000]">
-          <div className="bg-[#22687b] rounded-2xl p-6 w-[90%] max-w-lg relative shadow-xl">
+          <div className="modalGlobal relative ">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-3 right-4 text-white hover:text-blue-300"
@@ -192,7 +192,7 @@ export default function AddPets({ onPetAdded }) {
             </button>
 
             <h2 className="text-xl font-semibold text-white mb-4 text-center">
-              Agregar nuevo Pet
+              Agregar mascota
             </h2>
 
             <form
@@ -375,9 +375,9 @@ export default function AddPets({ onPetAdded }) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-[#fd9b08] text-white px-6 py-2 rounded-lg hover:bg-[#f7a82a] transition"
+                  className="btnNaranja px-8"
                 >
-                  {loading ? "Guardando..." : "Guardar Pet"}
+                  {loading ? "Guardando..." : "Guardar mascota"}
                 </button>
               </div>
             </form>
