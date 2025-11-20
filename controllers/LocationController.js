@@ -60,15 +60,15 @@ class LocationController{
     }
 
     async updateLocation(req, res){
-        const { chip_id } = req.params;
+        const { pet_id } = req.params;
         const updates = req.body; 
     
         try {
-            const updated = await locationService.updateLocation(chip_id, updates);
+            const updated = await locationService.updateLocation(pet_id, updates);
     
             if (!updated){
                 return res.status(404).json({
-                    error: `Location con id ${chip_id}, no fue encontrada`
+                    error: `Location con id ${pet_id}, no fue encontrada`
                 });
             }
     

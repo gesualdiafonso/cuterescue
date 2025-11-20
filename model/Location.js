@@ -34,11 +34,11 @@ class Location{
         return await collection.findOne({pet_id});
     }
 
-    async update(chip_id, updateFields) {
+    async update(pet_id, updateFields) {
         const collection = await this.getCollection();
 
         const result = await collection.findOneAndUpdate(
-            { chip_id },
+            { pet_id },
             { $set: { ...updateFields, timestamp: new Date().toISOString() } },
             { returnDocument: 'after' }
         );
@@ -50,7 +50,7 @@ class Location{
 
             // Actualiza el campo ultima_localizacion en pet correposdiente
             await petCollection.updateOne(
-                { chip_id },
+                { pet_id },
                 { $set: { ultima_localizacion: result.value } }
             );
         }

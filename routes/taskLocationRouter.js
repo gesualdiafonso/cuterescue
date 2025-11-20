@@ -10,7 +10,7 @@ router.get('/api/locations/:chip_id', verifyToken, LocationController.getByChipI
 
 router.get('/api/locations/pets/:pet_id', verifyToken, LocationController.getByPetId);
 
-router.put('/api/locations/:chip_id', (req, res) => LocationController.updateLocation(req, res));
+router.put('/api/locations/:pet_id', (req, res) => LocationController.updateLocation(req, res));
 
 
 export default router;

@@ -1,5 +1,7 @@
 import Location from '../model/Location.js';
+import AlertsService from '../services/useAlertsService.js'
 
+const alertService = new AlertsService()
 class LocationService {
     constructor(){
         this.locationModel = new Location();
@@ -65,8 +67,8 @@ class LocationService {
         return savedLocation;
     }
 
-    async updateLocation(chip_id, updates){
-        const updatedLocation = await this.locationModel.update(chip_id, updates);
+    async updateLocation(pet_id, updates){
+        const updatedLocation = await this.locationModel.update(pet_id, updates);
         if (!updatedLocation) return null;
 
         // 🔔 Disparar alerta de movimento
@@ -75,12 +77,12 @@ class LocationService {
                 // Buscar dados do pet
                 let petData = null;
                 if (this.petService) {
-                    petData = await this.petService.getPetByChipId(chip_id);
+                    petData = await this.petService.getByPetId(pet_id);
                 }
 
                 await alertService.createAlert({
-                    chip_id: chip_id,
-                    pet_id: petData?.id || null,
+                    chip_id: petData?.chip_id || null,
+                    pet_id: pet_id,
                     dueno_id: petData?.dueno_id || null,
                     type: "movement",
                     message: `El pet ${petData?.nombre || "desconocido"} ha cambiado de ubicación.`,

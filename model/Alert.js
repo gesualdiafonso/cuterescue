@@ -1,4 +1,4 @@
-import clientPromise from "../services/useConnection";
+import clientPromise from "../services/useConnection.js";
 class Alert
 {
     constructor(){

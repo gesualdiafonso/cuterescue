@@ -1,5 +1,5 @@
-import Alert from "../model/Alert";
-import GeoAPI from "../lib/utils/services/GeoAPI";
+import Alert from "../model/Alert.js";
+import GeoAPI from "../lib/utils/services/GeoAPI.js";
 
 const geoAPI = new GeoAPI();
 
@@ -12,7 +12,7 @@ class AlertsService{
         try {
             const alertData = {
                 id: `ALERT-${Date.now().toString(36)}`,
-                chip_id: data.chip_id,
+                chip_id: data.chip_id || null,
                 pet_id: data.pet_id,
                 dueno_id: data.dueno_id,
                 type: data.type,
@@ -76,4 +76,4 @@ class AlertsService{
     }
 }
 
-export default new AlertsService();
+export default  AlertsService;
