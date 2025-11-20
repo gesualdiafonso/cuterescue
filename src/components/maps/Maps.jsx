@@ -5,6 +5,30 @@ import { useSavedData } from "../../context/SavedDataContext";
 import PetStatus from "../ui/PetStatus";
 import { capitalizeAll } from "../../utils/text";
 
+
+/**
+ * muestra un mapa enfocado en la mascota seleccionada
+ *
+ * funcionalidades:
+ *  - Renderiza un mapa con Leaflet basado en las coordenadas en tiempo real
+ *  - Actualiza la vista con flyTo() cuando la mascota se mueve
+ *  - Inhabilita interacciones con el mapa cuando un modal está abierto
+ *  - Muestra datos clave como nombre, última dirección y estado (activo/inactivo) falta agregar HORA
+ *
+ * usando: 
+ *  - React Leaflet, Leaflet
+ *  -  context (SavedDataContext)
+ *   capitalizeAll universal dentro de  /utils
+ *
+ * Props:
+ * @param {boolean} modalOpen - Indica si un modal está abierto (bloquea interacciones del mapa)
+ *
+ * Context (useSavedData):
+ * @property {Object} selectedPet Mascota actualmente seleccionada
+ * @property {Object} location  ult ubicación recibida (lat, lng, direc..)
+ *
+ */
+
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconSize: [25, 41],

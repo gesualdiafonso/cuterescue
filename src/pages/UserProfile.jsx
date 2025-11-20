@@ -4,6 +4,29 @@ import PetCards from "../components/ui/PetsCard";
 import DetailsInform from "../components/DetailsInform";
 import usePets from "../hooks/usePets";
 
+/**
+ * seccion de info del usuario y administración de sus mascotas
+ *
+ * Este componente:
+ * - Obtiene los datos del usuario autenticado desde Supabase
+ * - Muestra la información personal del usuario mediante DetailsInform
+ * - Lista todas las mascotas del usuario utilizando `PetCards`
+ * - Permite seleccionar una mascota desde la sección de tarjetas
+ * - Permite agregar mascotas nuevas y reflejar la selección inmediata
+ *
+ * Se apoya en el hook personalizado `usePets` para manejar:
+ * - Lista de mascotas
+ * - Ubicación del usuario
+ * - Selección de mascota
+ * - Métodos para editar o borrar mascotas
+ *
+ * @requires useNavigate - navegacion de reactrouterdom
+ * @requires PetCards - Componente que renderiza cards de mascotas
+ * @requires DetailsInform - componente que muestra la ficha del usuario
+ * @requires usePets - Hook para gestionar el estado de mascotas y localización.
+ *
+ */
+
 
 export default function DetailsUser() {
   const navigate = useNavigate();
@@ -26,7 +49,7 @@ export default function DetailsUser() {
     if (!modalOpen) setCurrentPet(null);
   };
 
-  // Datos del usuario
+  // obtiene los datos del usuario autenticado y carga su información personal desde la tabla usuarios
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await import("../services/supabase").then(mod => mod.supabase.auth.getUser());

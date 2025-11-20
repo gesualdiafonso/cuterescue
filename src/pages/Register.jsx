@@ -4,6 +4,23 @@ import { useNavigate } from "react-router-dom";
 import { getCoordinatesFromAddress } from "../services/GeoAPI";
 import { provinciasArg } from "../constants/provincias";
 
+/**
+ *  registro de nuevos usuarios
+ *
+ * Este componente implementa un formulario completo para crear una cuenta:
+ * - Crea el usuario en Supabase Auth
+ * - Inserta los datos personales en la tabla `usuarios
+ * - Geocodifica la dirección proporcionada usando OpenStreetMap (Nominatim) para utilizarla como simulacion
+ * - Guarda la ubicación inicial del usuario en `localizacion_usuario`
+ * - Permite subir una foto de perfil al bucket de storage
+ *
+ * @requires supabase  para autenticación, base de datos y storage
+ * @requires useNavigate de react-router-dom.
+ * @requires getCoordinatesFromAddress - Servicio de geocodificación
+ * @requires provinciasArg - Lista de provincias argentinas
+ *
+ */
+
 export default function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -26,6 +43,11 @@ export default function Register() {
 
   const [foto, setFoto] = useState(null);
 
+/**
+ * Maneja cambios en los campos del formulario.
+ *
+ * @function handleChange
+ */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -150,7 +172,7 @@ export default function Register() {
       setLoading(false);
     }
   };
-
+const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el usuario nazca MAniANA 
   return (
     <div className="w-full h-[80vh] flex flex-col justify-center items-center relative overflow-hidden">
       <img
@@ -194,6 +216,7 @@ export default function Register() {
               name="fechaNacimiento"
               value={formData.fechaNacimiento}
               onChange={handleChange}
+              max={maxDate}
               className="bg-white text-black rounded-lg p-2 w-full"
               required
             />

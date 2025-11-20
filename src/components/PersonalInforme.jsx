@@ -8,6 +8,21 @@ import { useSavedData } from "../context/SavedDataContext";
 import AppH1 from "./ui/AppH1";
 import { capitalizeAll } from "../utils/text";
 
+/**
+ * @description
+ * componente encargado de mostrar la info principal del usuario
+ *  incluye accesos directos:
+ * - Modo viaje
+ * - Botón de emergencia
+ *
+ * También :
+ * - Modal de viaje (ModalViajeCard)
+ * - Modal de alerta global (ModalAlert) proveniente de SavedDataContext
+ *
+ * Este módulo se utiliza en páginas como Dashboard e InformePet
+ *
+ */
+
 export default function PersonalInform({ details, locations }) {
   const [showModal, setShowModal] = useState(false); 
   const { showAlert, alert, setAlert, closeAlert } = useSavedData();
@@ -32,7 +47,7 @@ export default function PersonalInform({ details, locations }) {
     provincia: provinciaLoc = "",
   } = locations || {};
 
-  //  Tomamos primero de localización_usuario, y si no hay, de usuarios
+  //  toma primero de localización_usuario y si no hay, de usuarios
   const direccionMostrar = direccionLoc || direccionUser || "";
   const codigoPostalMostrar = codigoPostalLoc || codigoPostalUser || "";
   const provinciaMostrar = provinciaLoc || provinciaUser || "";

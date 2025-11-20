@@ -2,12 +2,27 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSavedData } from "../context/SavedDataContext";
 import usePets from "../hooks/usePets";
-
 import PersonalInform from "../components/PersonalInforme";
 import Maps from "../components/maps/Maps";
 import MapsViewer from "../components/maps/MapsViewer";
 import PetCards from "../components/ui/PetsCard";
 import BtnPetMove from "../components/ui/BtnPetMove";
+
+/**
+ * vista principal del usuario (Dashboard)
+ *
+ * Esta pantalla combina:
+ * - Info del user
+ * - Info y cards de mascotas
+ * - Mapa con ubicacin
+ * - controles de movimiento (simulacion gps)
+ * - panel de selección de mascota + add nueva mascota
+ *
+ * El Dashboard obtiene información desde:
+ * - Supabase (usuarios, mascotas, localización)
+ * - SavedDataContext (mascota seleccionada y su ubicación realtime)
+ * - usePets() (hook que administra mascotas , selecccionadas etc)
+ */
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -16,7 +31,7 @@ export default function Dashboard() {
   const {
     mascotas,
     ubicacionUsuario,
-    refreshPets,      // 👈 NUEVO
+    refreshPets,   
   } = usePets();
 
   const [userData, setUserData] = useState(null);
@@ -55,7 +70,11 @@ export default function Dashboard() {
     fetchUser();
   }, [navigate]);
 
-  // 👉 cuando AddPets crea una nueva
+   /**
+   * Cuando se crea una mascota desde el modal AddPets:
+   * - Se recarga la lista de mascotas desde Supabase
+   * - Se selecciona automáticamente la nueva mascota
+   */
   const handlePetAdded = (newPet) => {
     // recargamos lista desde Supabase
     refreshPets();

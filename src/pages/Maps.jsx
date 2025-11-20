@@ -10,6 +10,27 @@ import BtnScreenshot from "../components/ui/BtnScreenshot";
 import emailjs from "@emailjs/browser";
 import ModalMailCaptura from "../components/modals/ModalMailCaptura";
 
+/**
+ * @description
+ * componente encargado de renderizar el mapa en tiempo real de la mascota seleccionada
+ *
+ * - Obtiene ubicación en tiempo real desde SavedDataContext
+ * - Renderiza un mapa interactivo con Leaflet
+ * - muestra info contextual: nombre, direc y chip , chip aun no implementado
+ * -Envia la ubicación actual por correo (EmailJS)  mediante un link de googlemaps con la misma ubic que nuestro mapa
+ * -confirmar "Encontré a mi mascota", deteniendo la simulación  
+ * - Ver alerta de emergencia mediante ModalAlert  
+ * - Mostrar modal de confirmación de envío de mail  
+ *
+ *tmabien:
+ * - mantiene el centro del mapa actualizado con ChangeView como en mapsviewer y maps (A FUTURO GLOBALIZAR ESTA FUNCION)
+ * - Realiza geocodificación inversa (mostrar dirección aproximada)
+ * - Controla toda la UI del panel lateral del mapa
+ *
+ * @module Maps
+ */
+
+
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconSize: [25, 41],
@@ -33,8 +54,11 @@ export default function Maps() {
   const [found, setFound] = useState(false);
   const [showMailModal, setShowMailModal] = useState(false);
 
-
-  // updatea posición que recibe del GPS simulado
+ /**
+ * actualiza posición del marcador según la ubicación recibida por GPS simulado
+ * @effect
+ * Cuando : `location` cambia, actualiza `petPosition`
+ */
   useEffect(() => {
     if (location?.lat && location?.lng) {
       setPetPosition({ lat: location.lat, lng: location.lng });

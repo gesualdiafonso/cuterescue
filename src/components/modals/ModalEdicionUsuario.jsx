@@ -23,12 +23,15 @@ export default function ModalEdicionUsuario({
     provincia: "",
     foto_url: "",
   });
+  
+const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el usuario nazca ma;ana
 
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
 
 useEffect(() => {
   if (currentUser) {
+
     setForm({
       nombre: currentUser.nombre || "",
       apellido: currentUser.apellido || "",
@@ -156,7 +159,7 @@ useEffect(() => {
 
           <div>
             <label className="label-edit">Fecha de nacimiento</label>
-            <input type="date" name="fechaNacimiento" value={form.fechaNacimiento} onChange={handleChange} className="input-edit" />
+            <input type="date" max={maxDate} name="fechaNacimiento" value={form.fechaNacimiento} onChange={handleChange} className="input-edit" />
           </div>
 
           <div>

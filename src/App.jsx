@@ -16,8 +16,6 @@ import ModalAlert from "./components/modals/ModalAlert";
 import { useSavedData } from "./context/SavedDataContext";
 import { useEffect } from "react";
 import logo from "./assets/logo.png";
-
-// PRIVATE ROUTE
 import PrivateRoute from "./router/PrivateRoute";
 
 function App() {
@@ -37,10 +35,10 @@ function App() {
     <>
       <Navbar />
 
-      {/* Modal Emergency */}
+      {/* modal de emergencia */}
       <ModalAlert show={showAlert} alert={alert} onClose={closeAlert} />
 
-      {/* Modal global si hay alerta ON */}
+      {/* modal global si hay alerta ON */}
       {alertOn && showModalOnRoute && (
         <ModalAlert
           show={true}

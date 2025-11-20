@@ -7,18 +7,28 @@ import {
 } from "../services/SelectedPet";
 
 const SavedDataContext = createContext();
+/**
+ * proveedor global de datos relacionados a:
+ * - mascota seleccionada
+ * - Ubicación en tiempo real (realtime de supabase)
+ * - Manejo de alertas y modales
+ * - Manejo de simulación GPS (intervalos + realtime)
+ * @component
+ * @param  props.children - componentes hijos envueltos por el provider
+ */
 
 export function SavedDataProvider({ children }) {
-  const [location, setLocation] = useState(null);
-  const [selectedPet, setSelectedPetState] = useState(null);
+  const [location, setLocation] = useState(null); /** @state guarda la ultim ubicación conocida de la mascota */
+  const [selectedPet, setSelectedPetState] = useState(null);  /** @state mascota seleccionada  */
 
   const [alert, setAlert] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertOn, setAlertOn] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);  /** @state controla si el modal de alerta debe mostrarse */
+  const [alertOn, setAlertOn] = useState(false);  /** @state indica si el modo alerta (UI naranja) está activo */
 
   //  referencia a stopSimulation()
   const simStopRef = useRef(null);
 
+ /** @state indica si la simulación GPS esta corriendo */
   const [simulationRunning, setSimulationRunning] = useState(false);
 
   const realtimeChannelRef = useRef(null);

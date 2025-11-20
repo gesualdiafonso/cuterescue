@@ -1,5 +1,26 @@
+
+/**
+ *  gestionar la mascota seleccionada por el usuario
+ * 
+ * Este servicio:
+ * - Guarda la mascota seleccionada en memoria 
+ * - selección en localstorage
+ * - notifica a múltiples suscriptores cuando la mascota cambia
+ *
+ * se usa en toda la app para sincronizar qué mascota está activa
+ * incluso entre componentes que no comparten jerarquías
+ */
+
 let currentPet = null;
 let subscribers = [];
+
+/**
+ * lista de campos válidos permitidos para persistir la mascota
+ * evita almacenar información innecesaria o insegura
+ *
+ * @constant
+ * @type {string[]}
+ */
 
 const VALID_PET_FIELDS = [
   "id",
@@ -15,7 +36,14 @@ const VALID_PET_FIELDS = [
   "foto_url" 
 ];
 
-// 🔹 Filtra la mascota y deja solo campos que existen en Supabase
+
+/**
+ * filtra un objeto mascota para que solo incluya los campos válidos
+ * definidos en VALID_PET_FIELDS
+ *
+ * @param  pet objeto de mascota completo recibido desde supabase
+ * @returns objeto mascota filtrado y seguro para almacenar
+ */
 function cleanPetForStorage(pet) {
   const cleaned = {};
   VALID_PET_FIELDS.forEach((key) => {
@@ -24,7 +52,14 @@ function cleanPetForStorage(pet) {
   return cleaned;
 }
 
-// guarda selectedPet y notifica suscriptores
+
+/**
+ * guarda la mascota seleccionada
+ * - filtra los datos
+ * - actualiza la variable global
+ * - persiste en localstorage
+ * @param  pet - mascota seleccionada
+ */
 export function setSelectedPet(pet) {
   if (!pet) return;
 
@@ -56,7 +91,10 @@ export function subscribeSelectedPet(callback) {
   };
 }
 
-//  reset si eliminamos mascota
+/**
+ * reinicia la mascota seleccionada
+ *  limpia la variable en memoria y localstorage
+ */
 export function clearSelectedPet() {
   currentPet = null;
   localStorage.removeItem("selectedPet");

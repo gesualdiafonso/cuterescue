@@ -2,6 +2,25 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase";
 import { capitalizeAll } from "../../utils/text";
 
+/**
+ * @description
+ * Componente encargado de registrar nuevas mascotas en el sistema
+ *
+ * - abrir un modal con un formulario detallado para agregar una mascota
+ * - Obtener automáticamente la ubicación inicial del usuario desde la tabla localizacion_usuario
+ * - subir la foto de la mascota al bucket de Supabase Storage(mascotas)
+ * - crear el registro de la mascota en la tabla mascotas
+ * - Crear tmbn la ubicacion inicial de esa mascota en la tabla localizacio
+ * - Notif al componente padre que se agregó una nueva mascota mediante onPetAdded
+ *
+ * @requires supabase 
+ * @requires capitalizeAll
+ *
+ * @param {Object} props
+ * @param {Function} props.onPetAdded / callback que se ejecuta cuando una mascota es agregada sin errores
+ *
+ */
+
 export default function AddPets({ onPetAdded }) {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({

@@ -4,6 +4,22 @@
 
  */
 
+/**
+ * obtiene coordenadas (latitud y longitud) a partir de una dirección textual,
+ * utilizando el servicio de nominatim (openstreetmap).
+ *
+ * La función realiza dos intentos: cn codigo postal incluido, si no hay resultados, intenta sin el codigo postal
+ *
+ * En caso de error o falta de resultados, devuelve coordenadas nulas
+ *
+ * @async
+ * @param {Object} params -datos de la dirección a buscar
+ * @param {string} params.direccion calle + numeración
+ * @param {string} params.codigoPostal cod postal
+ * @param {string} params.provincia provincia
+ *
+ * @returns {Promise<{lat: number|null, lng: number|null, source: string}>} 
+ */
 export async function getCoordinatesFromAddress({
   direccion,
   codigoPostal,
@@ -62,7 +78,9 @@ export async function getCoordinatesFromAddress({
 
 /**
  * obtenemos direccion textual a partir de coordenadas para mostrar direccion aprox en simulador
-
+ * @async
+ * @param {number} lat  latitud a consultar
+ * @param {number} lng longitud a consultar
  */
 export async function getAddressFromCoordinates(lat, lng) {
   try {

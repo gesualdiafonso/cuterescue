@@ -1,6 +1,18 @@
 import { getAddressFromCoordinates } from "./GeoAPI";
 import { supabase } from "./supabase";
 
+
+
+/**
+ * Genera coordenadas aleatorias cercanas a una ubicación base
+ * simulando un movimiento dentro de un radio determinado
+ *
+ * @param {number} lat - latitud actual, punto de partida
+ * @param {number} lng - longitud actual, punto de partida
+ * @param {number} radiusKm - radio max de movimiento en km
+ * @returns {{lat: number, lng: number}} nuevas coordenadas generadas
+ */
+
 //  genera coordenadas cerca de la anterior, movimiento suave
 function generateRandomCoords(lat, lng, radiusKm) {
   // 1 km ≈ 0.009 grados (aprox)
@@ -17,7 +29,17 @@ function generateRandomCoords(lat, lng, radiusKm) {
   };
 }
 
-// Actualiza ubicación en Supabase
+/**
+ * Actualiza la ubicación de una mascota en la tabla "localizacion" 
+ *
+ * @async
+ * @param {string|number} petId - ID de la mascota en la db
+ * @param {{lat: number, lng: number, direccion?: string, codigoPostal?: string, provincia?: string}} newLocation
+ * Objeto con los nuevos datos de ubicacion
+ * @throws {Error} Si ocurre un error al actualizar en supabase
+ * @returns {Promise<void>}
+ */
+
 async function updatePetLocation(petId, newLocation) {
   const { lat, lng, direccion, codigoPostal, provincia } = newLocation;
 
@@ -35,7 +57,17 @@ async function updatePetLocation(petId, newLocation) {
 
   if (error) throw new Error("Error actualizando ubicación: " + error.message);
 }
-
+/**
+ * obtenemos info de la direccion a partir de coordenadas y
+ * kla formatea en partes  (dirección, codigo postal, provincia etc)
+ *
+ * @async
+ * @param {number} lat 
+ * @param {number} lng 
+ * @returns {Promise<{direccion: string, codigoPostal: string | undefined, provincia: string | undefined}>}
+ * Objeto con dirección formateada, código postal y provincia.
+ * @throws {error} : si no se puede obtener la direcc
+ */
 // Obtiene dirección completa
 async function locationData(lat, lng) {
   const fullAddress = await getAddressFromCoordinates(lat, lng);
@@ -52,7 +84,34 @@ async function locationData(lat, lng) {
   };
 }
 
+
+/**
+ * inicia una simulación en tiempo real del movimiento de una mascota
+ *
+ * - Genera coordenadas aleatorias alrededor de la ubicación del usuario
+ * - Actualiza la ubicación en supabase
+ * - Dispara una callback de alerta opcional con datos descriptivos
+ *
+ * @param {Object} pet - Mascota a simular
+ * @param {number} pet.id - ID de la mascota
+ * @param {string} pet.nombre - Nombre de la mascota
+ * @param {{lat: number, lng: number, direccion?: string, codigoPostal?: string, provincia?: string}} userLocation
+ * Ubicación base del usuario (o punto de referencia).
+ * @param {"normal"|"paseo"|"emergency"} [type="normal"] - Tipo de simulación a ejecutar, puede ser paseo, emergencia, etc
+ * @param {(alert: {
+ *   type: string,
+ *   color: string,
+ *   title: string,
+ *   message: string,
+ *   button: string,
+ *   redirect: string
+ * }) => void} [onAlert] - funcion callback opcional para notificar
+ * al frontend cada vez que se actualiza la posición simulada.
+ *
+ * @returns {() => void} funcion para detener la simulación (limpia el setInterval).
+ */
 // Simulación en tiempo real con control de stop
+
 export function startRealTimeSimulation(pet, userLocation, type = "normal", onAlert) {
   let interval;
 
@@ -106,8 +165,14 @@ export function startRealTimeSimulation(pet, userLocation, type = "normal", onAl
       console.error("Error en simulación:", err);
     }
   }, 4000); // actualiza cada 4 segundos
+  
 
-  // Función para detener la simulación desde el frontend
+  /**
+   * Función para detener la simulación desde el frontend
+   *
+   * @returns {void}
+   */
+
   const stopSimulation = () => clearInterval(interval);
 
   return stopSimulation;

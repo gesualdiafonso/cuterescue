@@ -2,6 +2,26 @@ import React from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 
+/**
+ * muestra un mapa en miniatura con la ubicación actual de la mascota seleccionada
+ * 
+ *  se usa en el dashboard e informe de mascota
+ *   - muestra un mapa centrado en la mascota seleccionada
+ *   - Indica su última ubicación
+ *   - Seguir en tiempo real la posición mediante flyTo()
+ 
+ * utilizando:
+ *   - react Leaflet para map rendering
+ *   - leaflet para markers e iconos
+ *
+ * @param {Object} selectedPet  mascota seleccionada 
+ * @param {Object} location  ubicacion realtime proveniente del context saveddatacontext
+ * @param {number} location.lat  coords Lat de la mascota
+ * @param {number} location.lng  coords Long ''
+ * @param {string} [location.direccion] - texto de la direc
+ *
+ */
+
 // Icono default del gps
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
