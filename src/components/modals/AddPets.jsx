@@ -1,5 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase";
+import { capitalizeAll } from "../../utils/text";
+
+/**
+ * @description
+ * Componente encargado de registrar nuevas mascotas en el sistema
+ *
+ * - abrir un modal con un formulario detallado para agregar una mascota
+ * - Obtener automáticamente la ubicación inicial del usuario desde la tabla localizacion_usuario
+ * - subir la foto de la mascota al bucket de Supabase Storage(mascotas)
+ * - crear el registro de la mascota en la tabla mascotas
+ * - Crear tmbn la ubicacion inicial de esa mascota en la tabla localizacio
+ * - Notif al componente padre que se agregó una nueva mascota mediante onPetAdded
+ *
+ * @requires supabase 
+ * @requires capitalizeAll
+ *
+ * @param {Object} props
+ * @param {Function} props.onPetAdded / callback que se ejecuta cuando una mascota es agregada sin errores
+ *
+ */
 
 export default function AddPets({ onPetAdded }) {
   const [showModal, setShowModal] = useState(false);
@@ -19,6 +39,7 @@ export default function AddPets({ onPetAdded }) {
   const [preview, setPreview] = useState(null);
   const [message, setMessage] = useState("");
 
+  //  Obtener ubicación del usuario
   useEffect(() => {
     const fetchUbicacion = async () => {
       const {
@@ -32,23 +53,35 @@ export default function AddPets({ onPetAdded }) {
         .eq("owner_id", user.id)
         .single();
 
-      if (error) console.error("Error al obtener ubicación: ", error.message);
+      if (error) console.error("Error al obtener ubicación:", error.message);
       setUbicacion(data);
     };
 
     if (showModal) fetchUbicacion();
   }, [showModal]);
 
+  //  Manejo de inputs
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === "foto_url" && files[0]) {
+
+    if (name === "foto_url" && files?.[0]) {
       setForm({ ...form, foto_url: files[0] });
       setPreview(URL.createObjectURL(files[0]));
-    } else {
-      setForm({ ...form, [name]: value });
+      return;
     }
+
+    // validacion de peso kg numeros positivos 
+    if (name === "peso") {
+      if (value === "" || Number(value) >= 0) {
+        setForm({ ...form, [name]: value });
+      }
+      return;
+    }
+
+    setForm({ ...form, [name]: value });
   };
 
+  // guarda mascota
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -74,7 +107,9 @@ export default function AddPets({ onPetAdded }) {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuario no autenticado.");
 
+      // Subir foto si corresponde
       let fotoUrl = null;
+
       if (form.foto_url instanceof File) {
         const fileName = `${user.id}_${Date.now()}_${form.foto_url.name}`;
         const { error: uploadError } = await supabase.storage
@@ -90,6 +125,7 @@ export default function AddPets({ onPetAdded }) {
         fotoUrl = publicUrl.publicUrl;
       }
 
+      // Insertar mascota
       const { data: pet, error: insertError } = await supabase
         .from("mascotas")
         .insert([
@@ -112,8 +148,10 @@ export default function AddPets({ onPetAdded }) {
 
       if (insertError) throw insertError;
 
+      // Insertar ubicación inicial real
       if (ubicacion) {
         const { direccion, codigoPostal, provincia, lat, lng, source } = ubicacion;
+
         const { error: locError } = await supabase.from("localizacion").insert([
           {
             owner_id: user.id,
@@ -147,23 +185,24 @@ export default function AddPets({ onPetAdded }) {
     }
   };
 
+  const maxDate = new Date().toISOString().split("T")[0]; // Para bloquear fechas futuras
+
   return (
     <>
       {/* Card que abre el modal */}
-<article
-  className="mx-auto bg-[#f5f5dc]/50 w-[256px] flex-shrink-0 rounded-3xl h-[250px] p-5 flex justify-center items-center flex-col cursor-pointer
-             shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
-  onClick={() => setShowModal(true)}
->
-  <span className="text-3xl font-bold text-[#22687b]">+</span>
-  <p className="text-[#22687b] mt-2">Agregar mascota</p>
-</article>
-
+      <article
+        className="mx-auto bg-[#f5f5dc]/50 w-[256px] flex-shrink-0 rounded-3xl h-[250px] p-5 flex justify-center items-center flex-col cursor-pointer
+             shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 "
+        onClick={() => setShowModal(true)}
+      >
+        <span className="text-3xl font-bold text-[#22687b]">+</span>
+        <p className="text-[#22687b] mt-2">Agregar mascota</p>
+      </article>
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center w-full z-50">
-          <div className="bg-[#22687b] rounded-2xl p-6 w-[90%] max-w-lg relative shadow-xl">
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center w-full z-[1000]">
+          <div className="modalGlobal relative ">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-3 right-4 text-white hover:text-blue-300"
@@ -172,42 +211,113 @@ export default function AddPets({ onPetAdded }) {
             </button>
 
             <h2 className="text-xl font-semibold text-white mb-4 text-center">
-              Agregar nuevo Pet
+              Agregar mascota
             </h2>
 
             <form
               onSubmit={handleSubmit}
               className="grid grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto"
             >
-              {/* Campos */}
-              {[
-                { label: "Nombre", name: "nombre", type: "text" },
-                { label: "Especie", name: "especie", type: "text" },
-                { label: "Raza", name: "raza", type: "text" },
-                { label: "Fecha de nacimiento", name: "fecha_nacimiento", type: "date" },
-                { label: "Peso (kg)", name: "peso", type: "number" },
-                { label: "Color", name: "color", type: "text" },
-              ].map(({ label, name, type }) => (
-                <div key={name}>
-                  <label className="block text-sm font-medium text-white mb-1">{label}</label>
-                  <input
-                    type={type}
-                    name={name}
-                    value={form[name] || ""}
-                    onChange={handleChange}
-                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#22687B]"
-                  />
-                </div>
-              ))}
+              {/* Campo Nombre */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  name="nombre"
+                  value={form.nombre || ""}
+                  onChange={handleChange}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* Especie → SELECT */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Especie
+                </label>
+                <select
+                  name="especie"
+                  value={form.especie}
+                  onChange={handleChange}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2"
+                >
+                  <option value="">Seleccionar</option>
+                  <option value="Canino">Canino</option>
+                  <option value="Felino">Felino</option>
+                </select>
+              </div>
+
+              {/* Raza */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Raza
+                </label>
+                <input
+                  type="text"
+                  name="raza"
+                  value={form.raza || ""}
+                  onChange={handleChange}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* Fecha → No futura */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Fecha de nacimiento
+                </label>
+                <input
+                  type="date"
+                  name="fecha_nacimiento"
+                  value={form.fecha_nacimiento || ""}
+                  max={maxDate}
+                  onChange={handleChange}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* Peso */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Peso (kg)
+                </label>
+                <input
+                  type="number"
+                  name="peso"
+                  min="0"
+                  step="0.1"
+                  value={form.peso || ""}
+                  onChange={handleChange}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* Color */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Color
+                </label>
+                <input
+                  type="text"
+                  name="color"
+                  value={form.color || ""}
+                  onChange={handleChange}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2"
+                />
+              </div>
 
               {/* Sexo */}
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Sexo</label>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Sexo
+                </label>
                 <select
                   name="sexo"
-                  value={form.sexo}
+                  value={form.sexo || ""}
                   onChange={handleChange}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#22687B]"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2"
                 >
                   <option value="">Seleccionar</option>
                   <option value="Macho">Macho</option>
@@ -217,19 +327,23 @@ export default function AddPets({ onPetAdded }) {
 
               {/* Estado de salud */}
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Estado de salud</label>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Estado de salud
+                </label>
                 <input
                   type="text"
                   name="estado_salud"
-                  value={form.estado_salud}
+                  value={form.estado_salud || ""}
                   onChange={handleChange}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#22687B]"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2"
                 />
               </div>
 
               {/* Foto */}
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-white mb-1">Foto</label>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Foto
+                </label>
                 <input
                   type="file"
                   name="foto_url"
@@ -246,11 +360,11 @@ export default function AddPets({ onPetAdded }) {
                 )}
               </div>
 
-              {/* Localización */}
+              {/* Ubicación */}
               {ubicacion && (
                 <div className="col-span-2 bg-gray-100 p-3 rounded-lg text-sm text-gray-700 border">
                   <p>
-                    <strong>Dirección:</strong> {ubicacion.direccion}
+                    <strong>Dirección:</strong> {capitalizeAll(ubicacion.direccion)}
                   </p>
                   <p>
                     <strong>Código Postal:</strong> {ubicacion.codigoPostal}
@@ -280,9 +394,9 @@ export default function AddPets({ onPetAdded }) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-[#fd9b08] text-white px-6 py-2 rounded-lg hover:bg-[#f7a82a] transition"
+                  className="btnNaranja px-8"
                 >
-                  {loading ? "Guardando..." : "Guardar Pet"}
+                  {loading ? "Guardando..." : "Guardar mascota"}
                 </button>
               </div>
             </form>

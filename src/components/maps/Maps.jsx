@@ -3,6 +3,31 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import { useSavedData } from "../../context/SavedDataContext";
 import PetStatus from "../ui/PetStatus";
+import { capitalizeAll } from "../../utils/text";
+
+
+/**
+ * muestra un mapa enfocado en la mascota seleccionada
+ *
+ * funcionalidades:
+ *  - Renderiza un mapa con Leaflet basado en las coordenadas en tiempo real
+ *  - Actualiza la vista con flyTo() cuando la mascota se mueve
+ *  - Inhabilita interacciones con el mapa cuando un modal está abierto
+ *  - Muestra datos clave como nombre, última dirección y estado (activo/inactivo) falta agregar HORA
+ *
+ * usando: 
+ *  - React Leaflet, Leaflet
+ *  -  context (SavedDataContext)
+ *   capitalizeAll universal dentro de  /utils
+ *
+ * Props:
+ * @param {boolean} modalOpen - Indica si un modal está abierto (bloquea interacciones del mapa)
+ *
+ * Context (useSavedData):
+ * @property {Object} selectedPet Mascota actualmente seleccionada
+ * @property {Object} location  ult ubicación recibida (lat, lng, direc..)
+ *
+ */
 
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -32,7 +57,7 @@ export default function Maps({ modalOpen }) {
   if (!selectedPet)
     return (
       <div className="w-full h-80 flex items-center justify-center text-white text-3xl font-bold bg-amber-400 rounded-2xl">
-        Todavía no hay una mascota seleccionada
+        Seleccione una mascota
       </div>
     );
 
@@ -45,22 +70,21 @@ export default function Maps({ modalOpen }) {
 
   const direccion = location?.direccion || "Ubicación no disponible";
   const status = selectedPet.activo ? "Activo" : "Inactivo";
-
+ 
   return (
-    <div className={`w-full rounded-2xl overflow-hidden shadow ${modalOpen ? "pointer-events-none z-0" : "z-10"}`}>
+    <div className={` rounded-2xl overflow-hidden shadow ${modalOpen ? "pointer-events-none z-0" : "z-10"}`}>
      
      <div className="flex justify-between bg-[#f5dcb3] h-20 py-3 px-3">
   <div>
-    <h3 className="font-semibold text-lg text-[#22687b]">{selectedPet.nombre}</h3>
+    <h2 className="font-semibold text-lg text-[#22687b]">{capitalizeAll(selectedPet.nombre)}</h2>
     <p className="text-sm text-gray-700">
-      Última Localización: <span className="font-medium">{direccion}</span>
+      Última Localización: <span className="font-medium">{capitalizeAll(direccion)}</span>
     </p>
   </div>
-  <PetStatus activo={selectedPet.activo} /> {/* status reutilizable */}
+  <PetStatus activo={selectedPet.activo} /> 
 </div>
 
-      {/* Mapa */}
-      <div className=" h-[270px]">
+      <div className=" h-[270px] w-[450px]">
         <MapContainer
           center={[petPosition.lat, petPosition.lng]}
           zoom={14}

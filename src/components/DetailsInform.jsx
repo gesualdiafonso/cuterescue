@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ModalEdicionUsuario from "./modals/ModalEdicionUsuario";
 import { supabase } from "../services/supabase";
+import { capitalizeAll } from "../utils/text";
 
 export default function DetailsInform({ details, ubicacion }) {
   if (!details) return <div>Loading...</div>;
@@ -15,11 +16,25 @@ export default function DetailsInform({ details, ubicacion }) {
     apellido,
     tipoDocumento,
     foto_url,
+    direccion: direccionUser,
+    codigoPostal: codigoPostalUser,
+    provincia: provinciaUser,
+    genero,
   } = details;
 
-  const { direccion, codigoPostal, provincia, direccion_segura } = ubicacion || {};
+  const {
+    direccion: direccionLoc,
+    codigoPostal: codigoPostalLoc,
+    provincia: provinciaLoc,
+    direccion_segura,
+  } = ubicacion || {};
 
-  // Estado de dirección segura (verde o rojo)
+  // tablsa localizacion_usuario → fallback usuarios
+  const direccionMostrar = direccionLoc || direccionUser || "";
+  const codigoPostalMostrar = codigoPostalLoc || codigoPostalUser || "";
+  const provinciaMostrar = provinciaLoc || provinciaUser || "";
+
+  // estado de seguridad para implementacion futura con iot
   const esSegura = direccion_segura === true || direccion_segura === "true";
   const estadoSeguridad = esSegura ? "Sí" : "No";
   const colorSeguridad = esSegura ? "bg-green-500" : "bg-red-500";
@@ -39,7 +54,8 @@ export default function DetailsInform({ details, ubicacion }) {
 
   return (
     <div className="flex flex-col md:flex-row gap-10 justify-center items-center w-full">
-      {/* 📸 Foto */}
+      
+      {/*  Foto */}
       <div className="bg-gray-200 w-72 h-80 rounded-2xl overflow-hidden shadow-md">
         <img
           src={userData.foto_url || "/default-avatar.png"}
@@ -48,29 +64,36 @@ export default function DetailsInform({ details, ubicacion }) {
         />
       </div>
 
-      {/* 📋 Información del usuario */}
+      {/* info del usuario */}
       <div className="flex flex-col gap-4 max-w-2xl">
         <h2 className="font-bold text-4xl text-[#22687b]">
           {nombre} {apellido}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-gray-800">
+          
           <p><strong>Fecha de nacimiento:</strong> {fechaNacimiento}</p>
+          <p><strong>Género:</strong> {genero || "No especificado"}</p>
+
           <p>
             <strong>Dirección:</strong>{" "}
-            {direccion
-              ? `${direccion}, ${codigoPostal || ""}, ${provincia || ""}`
+            {direccionMostrar
+              ? `${capitalizeAll(direccionMostrar)}, ${codigoPostalMostrar}, ${provinciaMostrar}`
               : "No especificada"}
             <span className={`${colorSeguridad} py-1 px-5 ml-2 rounded-2xl text-white`}>
               {estadoSeguridad}
             </span>
           </p>
+
           <p><strong>Email:</strong> {email}</p>
           <p><strong>Teléfono:</strong> {telefono}</p>
+
           <p>
             <strong>Documento:</strong> {tipoDocumento || "DNI"} {documento}
           </p>
-          <p><strong>Plan:</strong> Premium{" "}
+
+          <p>
+            <strong>Plan:</strong> Premium{" "}
             <Link
               to="/planes"
               className="ml-3 px-4 py-1 bg-[#FF8C09] text-white font-medium rounded-md hover:bg-[#e07e07] transition"
@@ -78,9 +101,11 @@ export default function DetailsInform({ details, ubicacion }) {
               Cambiar
             </Link>
           </p>
-          <p><strong>GPS Activo:</strong> Sí{" "}
+
+          <p>
+            <strong>GPS Activo:</strong> Sí{" "}
             <Link
-              to="/gps-pets"
+              to="/#"
               className="ml-3 px-4 py-1 bg-[#22687B] text-white font-medium rounded-md hover:bg-[#1b5056] transition"
             >
               Acceder
@@ -88,7 +113,6 @@ export default function DetailsInform({ details, ubicacion }) {
           </p>
         </div>
 
-        {/* Botón Editar perfil */}
         <div className="mt-6">
           <button
             onClick={() => setOpenModal(true)}
@@ -99,7 +123,6 @@ export default function DetailsInform({ details, ubicacion }) {
         </div>
       </div>
 
-      {/* Modal de edición */}
       <ModalEdicionUsuario
         isOpen={openModal}
         onClose={() => setOpenModal(false)}

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import MapaVeterinaria from "../components/maps/MapaVeterinarias";
+import AppH1 from "../components/ui/AppH1";
 
 const veterinarias = [
   {
@@ -74,6 +75,8 @@ const veterinarias = [
   },
 ];
 
+
+
 export default function Veterinaria() {
     const [selectedVet, setSelectedVet] = useState(veterinarias[0]);
 
@@ -91,7 +94,7 @@ export default function Veterinaria() {
   return (
     <div className="min-h-screen bg-[#F7F9F9] py-10 px-6">
         <div className="flex justify-center" ref={mapRef}>
-            <div className="max-w-7xl w-full">
+            <div className="max-w-7xl w-full z-10">
                 <MapaVeterinaria 
                     lat={selectedVet.lat}
                     lng={selectedVet.lng}
@@ -99,16 +102,19 @@ export default function Veterinaria() {
                 />
             </div>
         </div>
-      <h1 className="text-3xl font-bold text-center text-[#3D8E88] mb-10">
-        Veterinarias 24 hrs
-      </h1>
+   
+
+      <AppH1 className="estilosH1 text-center">
+  Veterinarias 24 hrs
+</AppH1>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
         {veterinarias.map((vet) => (
           <div
             key={vet.id}
             onClick={() => handleSelectVet(vet)}
-            className={`bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-shadow duration-300 ${selectedVet.id === vet.id ? "ring-2 ring-[#3D8E88]" : ""}`}
+            className={`bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-shadow duration-300 ${selectedVet.id === vet.id ? "ring-2 ring-[#22687b]" : ""}`}
           >
             <img
               src={vet.imagen}
@@ -116,7 +122,7 @@ export default function Veterinaria() {
               className="w-full h-64 object-cover"
             />
             <div className="p-5">
-              <h2 className="text-xl font-semibold text-[#3D8E88] mb-2">
+              <h2 className="text-xl font-semibold text-[#22687b] mb-2">
                 {vet.nombre}
               </h2>
               <p className="text-gray-700 mb-1">
@@ -129,7 +135,7 @@ export default function Veterinaria() {
                 href={vet.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block mt-2 px-4 py-2 text-[#3D8E88] border border-[#3D8E88] rounded hover:bg-[#32726b] hover:text-white transition-all duration-200"
+                className="inline-block mt-2 px-4 py-2 text-[#22687b] border border-[#22687b] rounded hover:bg-[#22687b] hover:text-white transition-all duration-200"
               >
                 Ver más
               </a>

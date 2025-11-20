@@ -2,7 +2,27 @@ import React from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 
-// Icono default
+/**
+ * muestra un mapa en miniatura con la ubicación actual de la mascota seleccionada
+ * 
+ *  se usa en el dashboard e informe de mascota
+ *   - muestra un mapa centrado en la mascota seleccionada
+ *   - Indica su última ubicación
+ *   - Seguir en tiempo real la posición mediante flyTo()
+ 
+ * utilizando:
+ *   - react Leaflet para map rendering
+ *   - leaflet para markers e iconos
+ *
+ * @param {Object} selectedPet  mascota seleccionada 
+ * @param {Object} location  ubicacion realtime proveniente del context saveddatacontext
+ * @param {number} location.lat  coords Lat de la mascota
+ * @param {number} location.lng  coords Long ''
+ * @param {string} [location.direccion] - texto de la direc
+ *
+ */
+
+// Icono default del gps
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconSize: [25, 41],
@@ -10,7 +30,7 @@ const DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Componente para mover el mapa cuando la ubicación cambia
+//  para mover el mapa cuando la ubicacion cambia
 function ChangeView({ center }) {
   const map = useMap();
   React.useEffect(() => {
@@ -23,7 +43,7 @@ export default function MapsViewer({ selectedPet, location }) {
   if (!selectedPet)
     return (
       <div className="w-full bg-amber-400 h-96 mb-5 rounded-2xl flex items-center justify-center text-white text-5xl font-black">
-        Todavía no hay un Pet
+        Seleccione una mascota
       </div>
     );
 
@@ -37,12 +57,12 @@ export default function MapsViewer({ selectedPet, location }) {
   const position = [location.lat, location.lng];
 
   return (
-    <div className="w-full bg-gray-100 h-96 mb-5 rounded-2xl overflow-hidden shadow  z-0">
-      <MapContainer
+    <div className="w-full bg-gray-100 h-96 mb-5 rounded-2xl overflow-hidden shadow ">
+      <MapContainer 
         center={position}
         zoom={15}
         scrollWheelZoom={true}
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", width: "100%", }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

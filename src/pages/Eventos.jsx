@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import eventosData from "../utils/data/eventosba.json"; // arquivo privado dentro de src/
+import eventosData from "../utils/data/eventosba.json"; 
+import AppH1 from "../components/ui/AppH1";
 
 export default function Eventos() {
   const [events, setEvents] = useState([]);
@@ -8,7 +9,6 @@ export default function Eventos() {
 
   useEffect(() => {
     try {
-      // se o JSON for { "events": [...] }
       const data = eventosData.events || eventosData || [];
       setEvents(data);
     } catch (err) {
@@ -24,6 +24,9 @@ export default function Eventos() {
 
   return (
     <div className="max-w-6xl w-full mx-auto py-10">
+          <AppH1 className="estilosH1 text-center">
+        Eventos mascoteros
+      </AppH1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
         {events.map((ev) => (
             <article key={ev.id} className="p-8 rounded-2xl bg-[#22687B] shadow-sm">

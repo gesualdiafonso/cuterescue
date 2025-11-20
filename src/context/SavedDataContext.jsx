@@ -7,18 +7,30 @@ import {
 } from "../services/SelectedPet";
 
 const SavedDataContext = createContext();
+/**
+ * proveedor global de datos relacionados a:
+ * - mascota seleccionada
+ * - Ubicación en tiempo real (realtime de supabase)
+ * - Manejo de alertas y modales
+ * - Manejo de simulación GPS (intervalos + realtime)
+ * @component
+ * @param  props.children - componentes hijos envueltos por el provider
+ */
 
 export function SavedDataProvider({ children }) {
-  const [location, setLocation] = useState(null);
-  const [selectedPet, setSelectedPetState] = useState(null);
+  const [location, setLocation] = useState(null); /** @state guarda la ultim ubicación conocida de la mascota */
+  const [selectedPet, setSelectedPetState] = useState(null);  /** @state mascota seleccionada  */
 
   const [alert, setAlert] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertOn, setAlertOn] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);  /** @state controla si el modal de alerta debe mostrarse */
+  const [alertOn, setAlertOn] = useState(false);  /** @state indica si el modo alerta (UI naranja) está activo */
 
+  //  referencia a stopSimulation()
+  const simStopRef = useRef(null);
+
+ /** @state indica si la simulación GPS esta corriendo */
   const [simulationRunning, setSimulationRunning] = useState(false);
 
-  // 🆕 Guardamos el canal realtime
   const realtimeChannelRef = useRef(null);
 
   // Cargar mascota seleccionada
@@ -27,7 +39,6 @@ export function SavedDataProvider({ children }) {
     if (saved) setSelectedPetState(saved);
   }, []);
 
-  // Escuchar cambios del pet
   useEffect(() => {
     const unsubscribe = subscribeSelectedPet(setSelectedPetState);
     return unsubscribe;
@@ -51,11 +62,10 @@ export function SavedDataProvider({ children }) {
     loadLocation();
   }, [MASCOTA_ID]);
 
-  // Suscripción realtime
+  //  Realtime
   useEffect(() => {
     if (!selectedPet) return;
 
-    // Si ya había un canal, lo eliminamos
     if (realtimeChannelRef.current) {
       supabase.removeChannel(realtimeChannelRef.current);
     }
@@ -72,6 +82,7 @@ export function SavedDataProvider({ children }) {
         },
         (payload) => {
           console.log("🔄 Realtime → Nueva ubicación:", payload.new);
+
           if (simulationRunning) {
             setLocation(payload.new);
           }
@@ -84,32 +95,36 @@ export function SavedDataProvider({ children }) {
     return () => supabase.removeChannel(channel);
   }, [selectedPet, simulationRunning]);
 
-  // Guardar selected pet en storage
   const setSelectedPet = (pet) => {
     setSelectedPetState(pet);
     setSelectedPetService(pet);
   };
 
-  // Mostrar alerta → activa simulación
+  // Cuando entra una alerta → iniciar UI
   useEffect(() => {
     if (alert) {
       setShowAlert(true);
-      setSimulationRunning(true);
       setAlertOn(true);
     }
   }, [alert]);
 
   const closeAlert = () => setShowAlert(false);
 
-  // 🛑 Detener simulación REAL
+  //  *STOP simulacion !! *
   const stopSimulation = () => {
-    console.log("🛑 Simulación detenida correctamente");
+    console.log("simulacion en stop");
 
     setSimulationRunning(false);
     setAlertOn(false);
     setShowAlert(false);
 
-    // Cortamos el canal realtime DEFINITIVAMENTE
+    //  detener intervalo real
+    if (simStopRef.current) {
+      simStopRef.current();
+      simStopRef.current = null;
+    }
+
+    //  cortar realtime
     if (realtimeChannelRef.current) {
       supabase.removeChannel(realtimeChannelRef.current);
       realtimeChannelRef.current = null;
@@ -126,9 +141,17 @@ export function SavedDataProvider({ children }) {
         closeAlert,
         setAlert,
         alertOn,
-        setAlertOn,
+        setAlertOn, 
         alert,
+
+        // estado simulación
         simulationRunning,
+        setSimulationRunning,
+
+        // manejar intervalos
+        simStopRef,
+
+        // detener simulación completa
         stopSimulation,
       }}
     >

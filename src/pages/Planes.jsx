@@ -1,5 +1,5 @@
-// src/components/Planes.jsx
 import React from "react";
+import AppH1 from "../components/ui/AppH1";
 
 const plans = [
   {
@@ -39,7 +39,7 @@ const plans = [
     features: [
       "Todo lo del plan Premium",
       "Hasta 5 mascotas",
-      "COMPLETAR ---",
+      "Sin publicidad",
       "Rastreo de hasta 20 Km",
       "Documentación infinita",
     ],
@@ -53,7 +53,10 @@ const plans = [
 const Planes = () => {
   return (
     <section className="py-16 px-4 md:px-12 text-center">
-      <h2 className="text-3xl font-bold mb-12">Planes y Precios</h2>
+         <AppH1 className="estilosH1 text-center">
+        Planes y Precios
+      </AppH1>
+      
       <div className="flex flex-col md:flex-row justify-center gap-8">
         {plans.map((plan, index) => (
           <div
@@ -65,9 +68,9 @@ const Planes = () => {
             {plan.highlight && (
               <div className="text-[#F7A82A] mb-2 text-xl">★</div>
             )}
-            <h3 className={`text-xl font-semibold mb-2 ${plan.textColor}`}>
+            <h2 className={`text-xl font-semibold mb-2 ${plan.textColor}`}>
               {plan.title}
-            </h3>
+            </h2>
             <p className="text-3xl font-bold mb-6">{plan.price}</p>
             <ul className="text-left mb-6 space-y-2">
               {plan.features.map((feature, idx) => (
@@ -78,7 +81,7 @@ const Planes = () => {
             </ul>
             <button
               className={`w-full py-2 rounded-md text-white font-semibold transition-colors hover:brightness-90 ${
-                plan.highlight ? "bg-[#F7A82A] text-white" : "bg-[#3D8E88]"
+                plan.highlight ? "bg-[#F7A82A] text-white" : "bg-[#22687b]"
               }`}
             >
               {plan.buttonText}

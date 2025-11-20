@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import ModalDocumentacion from "../components/ModalDocumentacion";
+import AppH1 from "../components/ui/AppH1";
+
+/**
+ * pág principal para gestionar la documentación veterinaria de cada mascota
+ *
+ * Este módulo permite:
+ * - Seleccionar una mascota para ver su ficha de datos vets
+ * - Cargar, editar o eliminar documentación veterinaria: vacunas, pipetas y antiparasitrios
+ * - Mostrar alertas según fecha de vencimiento (1 día o 7 días antes).
+ * - Generar automáticamente notif en supabase para recordar vencimientos y no repetir las notificaciones cada vez que el usuario hace f5
+ * - Modal dinámico para agregar o editar documentación
+ *
+ * @requires ModalDocumentacion - Modal para CRUD de documentación veterinaria
+ */
 
 export default function Documentacion() {
   const [user, setUser] = useState(null);
@@ -17,17 +31,25 @@ export default function Documentacion() {
   const [tipoModal, setTipoModal] = useState("");
   const [editData, setEditData] = useState(null);
 
+  // ------------------ INIT: usuario + mascotas ------------------
   useEffect(() => {
     async function init() {
       const { data, error } = await supabase.auth.getSession();
-      if (error || !data.session) return;
+      if (error || !data.session) {
+        setCheckingUser(false);
+        return;
+      }
 
       setUser(data.session.user);
 
-      const { data: mascotasData } = await supabase
+      const { data: mascotasData, error: petsError } = await supabase
         .from("mascotas")
         .select("*")
         .eq("owner_id", data.session.user.id);
+
+      if (petsError) {
+        console.error("Error cargando mascotas:", petsError);
+      }
 
       setMascotas(mascotasData || []);
       setSelectedMascota(null);
@@ -36,15 +58,106 @@ export default function Documentacion() {
     init();
   }, []);
 
-  const fetchDocumentacion = async (userId, mascotaId) => {
-    if (!user || !mascotaId) return;
+  /**
+   * genera notificaciones en Supabase cuando un elemento de documentación
+ está por vencer (7 días antes, 1 dia antes o el mismo dia
+   *
+   * Evita duplicados buscando notificaciones previas
+   *
+   * @async
+   * @function generarNotificaciones
+   * @param {Array<Object>} items -lista de registros de documentación
+   * @param {Object} mascota  a la que pertenecen los registros
+   * @param {string} userId id del usuario autenticado.
+   */
+  const generarNotificaciones = async (items, mascota, userId) => {
+    if (!userId || !mascota) return;
 
-    const { data } = await supabase
+    const today = new Date();
+    // normalizamos a medianoche para evitar problemas de hora
+    today.setHours(0, 0, 0, 0);
+
+    for (const item of items) {
+      if (!item.fecha_vencimiento) continue;
+
+      const fechaVenc = new Date(item.fecha_vencimiento);
+      fechaVenc.setHours(0, 0, 0, 0);
+
+      const diffTime = fechaVenc - today;
+      const diffDays = diffTime / (1000 * 60 * 60 * 24); // ya es entero si normalizamos
+
+      // Notificamos si faltan 7 días, 1 día o si vence hoy
+      const diasPrevios = [7, 1, 0];
+      if (!diasPrevios.includes(diffDays)) continue;
+
+      const tratamiento =
+        item.tipo === "vacuna"
+          ? item.tipo_vacuna
+          : item.tipo === "pipeta"
+          ? item.producto
+          : item.antiparasitario;
+
+      const nombreMascota = mascota.nombre || "tu mascota";
+
+      const mensaje =
+        diffDays === 0
+          ? `¡Hoy vence ${tratamiento} de ${nombreMascota}!`
+          : `Falta ${diffDays} día para que venza ${tratamiento} de ${nombreMascota}`;
+
+      // Evitar duplicados
+      const { data: existing, error: existingError } = await supabase
+        .from("notificaciones")
+        .select("*")
+        .eq("documentacion_id", item.id)
+        .eq("user_id", userId)
+        .eq("mensaje", mensaje);
+
+      if (existingError) {
+        console.error("Error buscando notificaciones existentes:", existingError);
+        continue;
+      }
+
+      if (!existing || existing.length === 0) {
+        const { error: insertError } = await supabase.from("notificaciones").insert([
+          {
+            user_id: userId,
+            documentacion_id: item.id,
+            mensaje,
+            fecha_alerta: today,
+            vista: false,
+          },
+        ]);
+
+        if (insertError) {
+          console.error("Error insertando notificación:", insertError);
+        }
+      }
+    }
+  };
+
+  /**
+   * obtenemos toda la doc relacionada a una mascota:
+   * vacunas, pipetas y desparasitaciones
+   * y genera notificaciones en función de fechas de vencimiento
+   *
+   * @function fetchDocumentacion
+   * @param {string} userId - ID del usuario autenticado
+   * @param {Object} mascota - Mascota seleccionada
+   */
+  const fetchDocumentacion = async (userId, mascota) => {
+    if (!userId || !mascota?.id) return;
+
+    const { data, error } = await supabase
       .from("documentacion")
       .select("*")
       .eq("user_id", userId)
-      .eq("mascota_id", mascotaId)
+      .eq("mascota_id", mascota.id)
       .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error cargando documentación:", error);
+      return;
+    }
 
     const vacunasData = data.filter((d) => d.tipo === "vacuna");
     const pipetasData = data.filter((d) => d.tipo === "pipeta");
@@ -54,53 +167,24 @@ export default function Documentacion() {
     setPipetas(pipetasData);
     setDesparasitaciones(desparasitacionesData);
 
-    // Crear notificaciones según fecha de vencimiento
-    await generarNotificaciones(vacunasData.concat(pipetasData, desparasitacionesData));
+    // notificaciones según fechas
+    await generarNotificaciones(
+      vacunasData.concat(pipetasData, desparasitacionesData),
+      mascota,
+      userId
+    );
   };
 
-  const generarNotificaciones = async (items) => {
-    if (!user) return;
-    const today = new Date();
-
-    for (const item of items) {
-      if (!item.fecha_vencimiento) continue;
-
-      const fechaVenc = new Date(item.fecha_vencimiento);
-      const diffTime = fechaVenc - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      let diasPrevios = [7, 1]; // Notificaciones 7 días y 1 día antes
-      if (!diasPrevios.includes(diffDays)) continue;
-
-      const mensaje =
-        diffDays === 0
-          ? `¡Hoy vence ${item.tipo === "vacuna" ? item.tipo_vacuna : item.tipo === "pipeta" ? item.producto : item.antiparasitario} de ${selectedMascota.nombre}!`
-          : `Falta ${diffDays} día para que venza ${item.tipo === "vacuna" ? item.tipo_vacuna : item.tipo === "pipeta" ? item.producto : item.antiparasitario} de ${selectedMascota.nombre}`;
-
-      // Evitar duplicados
-      const { data: existing } = await supabase
-        .from("notificaciones")
-        .select("*")
-        .eq("documentacion_id", item.id)
-        .eq("user_id", user.id)
-        .eq("mensaje", mensaje);
-
-      if (!existing || existing.length === 0) {
-        await supabase.from("notificaciones").insert([
-          {
-            user_id: user.id,
-            documentacion_id: item.id,
-            mensaje,
-            fecha_alerta: today,
-            vista: false,
-          },
-        ]);
-      }
-    }
-  };
-
+  /**
+   * Maneja el cambio de la mascota seleccionada en el desplegable
+   * Vacía los arrays si no hay mascota y recarga la documentación si existe una seleccionada
+   *
+   * @function handleSelectMascota
+   * @param {Event} e evento del select
+   */
   const handleSelectMascota = async (e) => {
     const mascotaId = e.target.value;
+
     if (!mascotaId) {
       setSelectedMascota(null);
       setVacunas([]);
@@ -113,10 +197,17 @@ export default function Documentacion() {
     setSelectedMascota(mascota);
 
     if (user && mascota) {
-      await fetchDocumentacion(user.id, mascota.id);
+      await fetchDocumentacion(user.id, mascota);
     }
   };
 
+  /**
+   * Abre el modal de documentación para agregar o editar un registro
+   *
+   * @function openModal
+   * @param {"vacuna" | "pipeta" | "desparasitacion"} tipo - Tipo de documentación a gestionar
+   * @param {Object|null} data - Datos a editar (o null para agregar nuevo).
+   */
   const openModal = (tipo, data = null) => {
     if (!selectedMascota) {
       alert("Selecciona una mascota primero");
@@ -127,6 +218,7 @@ export default function Documentacion() {
     setIsModalOpen(true);
   };
 
+  // inserta o actualiza un registro de doc veterinaria
   const handleAddOrUpdate = async (data) => {
     if (!selectedMascota) {
       alert("Selecciona una mascota primero");
@@ -153,16 +245,23 @@ export default function Documentacion() {
       await supabase.from("documentacion").update(registro).eq("id", editData.id);
     }
 
-    await fetchDocumentacion(user.id, selectedMascota.id);
+    if (user && selectedMascota) {
+      await fetchDocumentacion(user.id, selectedMascota);
+    }
+
     setIsModalOpen(false);
     setEditData(null);
   };
 
-  const handleDelete = async (tipo, id) => {
+  // elimina un registro de doc vet segun su id
+  const handleDelete = async (_tipo, id) => {
     await supabase.from("documentacion").delete().eq("id", id);
-    if (selectedMascota) await fetchDocumentacion(user.id, selectedMascota.id);
+    if (user && selectedMascota) {
+      await fetchDocumentacion(user.id, selectedMascota);
+    }
   };
 
+  // renderiza indicador visual del estado de alerta, activa/inactivo
   const renderAlerta = (alerta) => (
     <span
       className={`px-2 py-1 rounded-full text-white text-xs font-semibold ${
@@ -178,7 +277,7 @@ export default function Documentacion() {
   return (
     <div className="documentacion-container px-4 md:px-16 lg:px-32 py-8">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Ficha médica de tus mascotas</h1>
+        <AppH1 className="estilosH1">Ficha médica de tus mascotas</AppH1>
         <p className="text-gray-600 max-w-4xl mx-auto">
           Mantén toda la información de salud de tus mascotas organizada y accesible.
         </p>
@@ -216,11 +315,14 @@ export default function Documentacion() {
               items = desparasitaciones;
               titulo = "Desparasitaciones";
               break;
+            default:
+              break;
           }
 
           return (
             <section key={categoria} className="section-container mb-10">
               <h2 className="section-title text-xl font-semibold mb-4">{titulo}</h2>
+
               <div className="cards-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
                 {items.map((item) => (
                   <div

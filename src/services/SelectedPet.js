@@ -1,7 +1,27 @@
+
+/**
+ *  gestionar la mascota seleccionada por el usuario
+ * 
+ * Este servicio:
+ * - Guarda la mascota seleccionada en memoria 
+ * - selección en localstorage
+ * - notifica a múltiples suscriptores cuando la mascota cambia
+ *
+ * se usa en toda la app para sincronizar qué mascota está activa
+ * incluso entre componentes que no comparten jerarquías
+ */
+
 let currentPet = null;
 let subscribers = [];
 
-// Lista de columnas reales de la tabla "mascotas"
+/**
+ * lista de campos válidos permitidos para persistir la mascota
+ * evita almacenar información innecesaria o insegura
+ *
+ * @constant
+ * @type {string[]}
+ */
+
 const VALID_PET_FIELDS = [
   "id",
   "owner_id",
@@ -13,10 +33,17 @@ const VALID_PET_FIELDS = [
   "estado_salud",
   "peso",
   "fecha_nacimiento",
-  "foto_url" // si existe
+  "foto_url" 
 ];
 
-// 🔹 Filtra la mascota y deja solo campos que existen en Supabase
+
+/**
+ * filtra un objeto mascota para que solo incluya los campos válidos
+ * definidos en VALID_PET_FIELDS
+ *
+ * @param  pet objeto de mascota completo recibido desde supabase
+ * @returns objeto mascota filtrado y seguro para almacenar
+ */
 function cleanPetForStorage(pet) {
   const cleaned = {};
   VALID_PET_FIELDS.forEach((key) => {
@@ -25,11 +52,18 @@ function cleanPetForStorage(pet) {
   return cleaned;
 }
 
-// 🔹 Guarda selectedPet y notifica suscriptores
+
+/**
+ * guarda la mascota seleccionada
+ * - filtra los datos
+ * - actualiza la variable global
+ * - persiste en localstorage
+ * @param  pet - mascota seleccionada
+ */
 export function setSelectedPet(pet) {
   if (!pet) return;
 
-  // Filtrar antes de guardar
+  // filtrar antes de guardar
   const cleanedPet = cleanPetForStorage(pet);
 
   currentPet = cleanedPet;
@@ -39,7 +73,7 @@ export function setSelectedPet(pet) {
   subscribers.forEach((cb) => cb(cleanedPet));
 }
 
-// 🔹 Obtiene la mascota seleccionada
+// obtiene la mascota seleccionada
 export function getSelectedPetService() {
   if (currentPet) return currentPet;
 
@@ -47,7 +81,7 @@ export function getSelectedPetService() {
   return saved ? JSON.parse(saved) : null;
 }
 
-// 🔹 Subscripción a cambios
+// subscripcion a cambios
 export function subscribeSelectedPet(callback) {
   if (typeof callback !== "function") return () => {};
   subscribers.push(callback);
@@ -57,7 +91,10 @@ export function subscribeSelectedPet(callback) {
   };
 }
 
-// 🔹 Reset
+/**
+ * reinicia la mascota seleccionada
+ *  limpia la variable en memoria y localstorage
+ */
 export function clearSelectedPet() {
   currentPet = null;
   localStorage.removeItem("selectedPet");

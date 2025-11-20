@@ -13,6 +13,7 @@ export default function EditPetModal({ pet, onClose, onSave }) {
     estado_salud: "",
     foto_url: "",
   });
+
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [message, setMessage] = useState("");
@@ -41,17 +42,23 @@ export default function EditPetModal({ pet, onClose, onSave }) {
     try {
       let newFotoUrl = form.foto_url;
 
+      // si el usuario subió foto nueva
       if (file) {
         const filePath = `pets/${pet.id}_${file.name}`;
         const { error: uploadError } = await supabase.storage
           .from("avatars")
           .upload(filePath, file, { upsert: true });
+
         if (uploadError) throw uploadError;
 
-        const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+        const { data } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(filePath);
+
         newFotoUrl = data.publicUrl;
       }
 
+      //  actualiza mascota
       const { error } = await supabase
         .from("mascotas")
         .update({ ...form, foto_url: newFotoUrl, updated_at: new Date() })
@@ -59,11 +66,21 @@ export default function EditPetModal({ pet, onClose, onSave }) {
 
       if (error) throw error;
 
+      const { data: updatedPet } = await supabase
+        .from("mascotas")
+        .select("*")
+        .eq("id", pet.id)
+        .single();
+
+      // envia la mascota actualizada
+      onSave?.(updatedPet);
+
       setMessage("✅ Mascota actualizada correctamente");
+
       setTimeout(() => {
-        onSave?.();
         onClose();
-      }, 1200);
+      }, 1000);
+
     } catch (err) {
       console.error(err);
       setMessage("❌ Error al actualizar la mascota");
@@ -72,9 +89,11 @@ export default function EditPetModal({ pet, onClose, onSave }) {
 
   if (!pet) return null;
 
+  const maxDate = new Date().toISOString().split("T")[0];
+
   return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex justify-center items-center p-4">
-      <div className="bg-[#22687B] rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/90 z-[2000] flex justify-center items-center p-4">
+      <div className="modalGlobal max-w-3xl">
         <h2 className="text-2xl font-bold mb-6 text-center text-white">
           Editar Mascota
         </h2>
@@ -99,6 +118,7 @@ export default function EditPetModal({ pet, onClose, onSave }) {
                 name={field}
                 value={form[field] || ""}
                 onChange={handleChange}
+                max={maxDate}
                 className="border border-white p-2 rounded-lg bg-white text-black"
               />
             </div>
@@ -127,16 +147,16 @@ export default function EditPetModal({ pet, onClose, onSave }) {
           </p>
         )}
 
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-center gap-6 mt-6">
           <button
             onClick={onClose}
-               className="btn-modal"
+            className="btnTransparente px-8"
           >
             Cancelar
           </button>
           <button
             onClick={handleSubmit}
-            className="btn-modal"
+            className="btnNaranja px-8"
           >
             Guardar
           </button>

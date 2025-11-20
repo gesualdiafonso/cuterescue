@@ -80,16 +80,16 @@ export default function Navbar() {
   };
 
   return (
-    <nav className={`${alertOn ? "bg-[#FBC68F]" : "bg-white"} relative z-[1000] shadow`}>
+    <nav className={`${alertOn ? "bg-[#FBC68F]" : "bg-white"} relative z-[100] shadow`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between p-4 relative">
 
-        {/* Logo */}
+        {/* logo */}
         <Link to="/" className="flex items-center gap-2">
           <img className="h-30 w-auto" src={Logo} alt="Logo" />
           <img className="h-30 w-auto" src={LogoNombre} alt="Logo" />
         </Link>
 
-        {/* Menú centrado (desktop) */}
+        {/* menu centrado en desktop */}
         <div className="hidden lg:flex flex-1 justify-center">
           <ul className="flex flex-nowrap bg-[#22687B]/20 rounded-lg overflow-hidden text-lg p-2 gap-2">
             {menuItems.map((item) => (
@@ -112,7 +112,12 @@ export default function Navbar() {
         </div>
 
         {/* DERECHA: usuario logueado o no */}
-        <div className="flex items-center gap-2 z-[1002]">
+        <div
+  className={`flex items-center gap-2 z-[101] transition-all duration-300 ${
+    isOpen ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"
+  }`}
+>
+
 
           {/* BOTONES LOGIN / REGISTRAR SI NO HAY USER (DESKTOP) */}
           {!user && (
@@ -133,13 +138,13 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* PetLink */}
+          {/* PetLink mascota selccionada renderizada en navbar*/}
           {user && <PetLink pet={selectedPet} />}
 
-          {/* Notificaciones */}
+          {/* notificaciones */}
           {user && (
             <div className="relative">
-              <button onClick={handleNotificationsClick} className="relative text-[#22687B]">
+              <button onClick={handleNotificationsClick} className="relative text-[#22687B] cursor-pointer">
                 <FiBell size={24} />
                 {alerts.length > 0 && (
                   <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5">
@@ -149,10 +154,10 @@ export default function Navbar() {
               </button>
 
               {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-[10000] p-2 border border-gray-200">
-                  <h3 className="text-sm font-semibold text-[#22687B] border-b pb-1 mb-2">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-[150] p-2 border border-gray-200">
+                  <span className="text-sm font-semibold text-[#22687B] border-b">
                     Notificaciones
-                  </h3>
+                  </span>
                   {alerts.length === 0 ? (
                     <p className="text-gray-500 text-sm px-2">No hay alertas por ahora 🐾</p>
                   ) : (
@@ -180,13 +185,13 @@ export default function Navbar() {
                   setProfileOpen(!profileOpen);
                   setNotificationsOpen(false);
                 }}
-                className="px-4 py-2 bg-white text-[#22687B] font-semibold rounded-md shadow hover:bg-[#f0fafa] transition"
+                className="w-25 not-[]:px-4 py-2 bg-white text-[#22687B] font-semibold rounded-md shadow hover:bg-[#f0fafa] transition cursor-pointer"
               >
                 Mi Perfil
               </button>
 
               {profileOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-[10000] border border-gray-200">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-[150] border border-gray-200">
                   <ul className="flex flex-col">
                     <li>
                       <button
@@ -217,11 +222,16 @@ export default function Navbar() {
             </div>
           )}
 
+          {isOpen && (
+  <div className="fixed inset-0 bg-black/20 z-[140] backdrop-blur-sm"></div>
+)}
+
+
           {/* Hamburguesa mobile */}
-          <div className="relative z-[1001] max-[976px]:block hidden">
+          <div className="relative z-[150] max-[976px]:block hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-[#22687B] focus:outline-none relative z-[1001]"
+              className="text-[#22687B] focus:outline-none relative z-[150]"
             >
               <svg
                 className="h-6 w-6"
@@ -241,9 +251,10 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Menú responsive mobile */}
+      {/* menu responsive en mobile  */}
       {isOpen && (
-        <div className="fixed top-0 left-0 w-full h-1/2 bg-[#f5f5dc] z-[999] max-[976px]:block hidden shadow-lg">
+  <div className="fixed top-0 left-0 w-full h-1/2 bg-[#f5f5dc] z-[130] max-[976px]:block hidden shadow-lg">
+
           <ul className="flex flex-col items-center justify-center h-full space-y-4 text-lg">
             {menuItems.map((item) => (
               <li key={item.name}>

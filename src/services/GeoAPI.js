@@ -1,25 +1,36 @@
 /**
- * 🌎 Servicios para geocodificación y reversa de geocodificación
- * usando OpenStreetMap (Nominatim API).
- * 
- * Mejora:
- * - Normaliza "CABA" a "Ciudad Autónoma de Buenos Aires"
- * - Reintenta búsqueda sin código postal si la primera falla
- * - Devuelve fuente y control de errores más claros
+ *   geocodificación
+ * usando open street map 
+
  */
 
+/**
+ * obtiene coordenadas (latitud y longitud) a partir de una dirección textual,
+ * utilizando el servicio de nominatim (openstreetmap).
+ *
+ * La función realiza dos intentos: cn codigo postal incluido, si no hay resultados, intenta sin el codigo postal
+ *
+ * En caso de error o falta de resultados, devuelve coordenadas nulas
+ *
+ * @async
+ * @param {Object} params -datos de la dirección a buscar
+ * @param {string} params.direccion calle + numeración
+ * @param {string} params.codigoPostal cod postal
+ * @param {string} params.provincia provincia
+ *
+ * @returns {Promise<{lat: number|null, lng: number|null, source: string}>} 
+ */
 export async function getCoordinatesFromAddress({
   direccion,
-  codigo_postal,
+  codigoPostal,
   provincia,
 }) {
   try {
-    // 🧩 Normalización de provincia para que OSM entienda correctamente
     const provinciaNormalizada =
       provincia === "CABA" ? "Ciudad Autónoma de Buenos Aires" : provincia;
 
-    // 1️⃣ Intento principal: con código postal
-    let query = `${direccion}, ${codigo_postal}, ${provinciaNormalizada}, Argentina`;
+    //  Intento principal con codigo postal
+    let query = `${direccion}, ${codigoPostal}, ${provinciaNormalizada}, Argentina`;
     let encodedQuery = encodeURIComponent(query);
 
     let response = await fetch(
@@ -32,7 +43,7 @@ export async function getCoordinatesFromAddress({
 
     let data = await response.json();
 
-    // 2️⃣ Si no se encuentra resultado, reintenta sin código postal
+    //  Si falla, reintento sin código postal ,,, ARREGLAR
     if (!data || data.length === 0) {
       console.warn("No se encontró con código postal. Reintentando sin él...");
       query = `${direccion}, ${provinciaNormalizada}, Argentina`;
@@ -45,13 +56,12 @@ export async function getCoordinatesFromAddress({
       data = await response.json();
     }
 
-    // 3️⃣ Si sigue sin resultados, devolvemos nulos
+    //  Si sigue fallando devuelve null pero NO cancela el flujo
     if (!data || data.length === 0) {
       console.warn("Sin resultados para la dirección proporcionada.");
       return { lat: null, lng: null, source: "OSM:no_result" };
     }
 
-    // 4️⃣ Tomamos el resultado más relevante (primero)
     const { lat, lon } = data[0];
 
     return {
@@ -65,9 +75,12 @@ export async function getCoordinatesFromAddress({
   }
 }
 
+
 /**
- * 📍 Reverse Geocoding: obtiene dirección textual a partir de coordenadas.
- * Útil para mostrar la dirección estimada del chip o simulador.
+ * obtenemos direccion textual a partir de coordenadas para mostrar direccion aprox en simulador
+ * @async
+ * @param {number} lat  latitud a consultar
+ * @param {number} lng longitud a consultar
  */
 export async function getAddressFromCoordinates(lat, lng) {
   try {

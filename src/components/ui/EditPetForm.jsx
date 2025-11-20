@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import EditPetModal from "../modals/EditPetModal";
 import { supabase } from "../../services/supabase";
+import AppH1 from "./AppH1";
+import { capitalizeAll } from "../../utils/text";
 
 export default function EditPetForm({
   selectedPet,
   location,
   ubicacion,
   refreshPets,
+  onPetDeleted,
+  onPetUpdated,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState("");
@@ -52,7 +56,10 @@ export default function EditPetForm({
       if (error) throw error;
 
       setDeleteMessage("✅ Mascota borrada correctamente");
-      refreshPets?.();
+
+      await refreshPets?.();
+      onPetDeleted?.(); // notifica al padre
+
     } catch (err) {
       console.error(err);
       setDeleteMessage("❌ Error al borrar la mascota");
@@ -63,7 +70,8 @@ export default function EditPetForm({
 
   return (
     <div className="flex flex-col md:flex-row gap-10 justify-center items-center w-full mb-10 bg-[#f5f5f5]/60 rounded-3xl p-10 shadow-sm">
-      {/* 📸 Imagen de mascota */}
+
+      {/* FOTO */}
       <div className="bg-gray-200 w-72 h-80 rounded-2xl overflow-hidden shadow-md">
         <img
           src={foto_url || "/default-pet.png"}
@@ -72,9 +80,12 @@ export default function EditPetForm({
         />
       </div>
 
-      {/* 🐾 Información de la mascota */}
+      {/* INFO */}
       <div className="flex flex-col gap-4 max-w-2xl w-full">
-        <h2 className="font-bold text-4xl text-[#22687b] mb-3">{nombre}</h2>
+
+        <AppH1 className="estilosH1">
+          {capitalizeAll(nombre)}
+        </AppH1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-gray-800">
           <Info label="Especie" value={especie} />
@@ -86,40 +97,44 @@ export default function EditPetForm({
           <Info label="Peso" value={`${peso} kg`} />
           <Info
             label="Ubicación dueño"
-            value={`${userDireccion}, ${userCodigoPostal}, ${userProvincia}`}
+            value={`${capitalizeAll(userDireccion)}, ${userCodigoPostal}, ${userProvincia}`}
           />
           <Info
             label="Última ubicación"
-            value={`${direccion}, ${codigoPostal}, ${provincia}`}
+            value={`${capitalizeAll(direccion)}, ${codigoPostal}, ${provincia}`}
           />
         </div>
 
-        {/* Botones de acción */}
+        {/* BOTONES */}
         <div className="mt-6 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row gap-4">
+
+            {/* EDITAR */}
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="w-full bg-white border border-[#22687b] text-[#22687b] font-bold py-2 rounded-xl hover:bg-[#22687b] hover:text-white transition"
+              className="btnTransparente w-full"
             >
               Editar informes
             </button>
 
+            {/* BORRAR */}
             <button
               type="button"
               onClick={handleDelete}
               className={`w-full font-bold py-2 rounded-xl transition ${
                 confirmDelete
                   ? "bg-red-600 text-white"
-                  : "bg-[#22687b] text-white hover:bg-[#1a5361]"
+                  : "bg-[#22687b] text-white hover:bg-[#1a5361] cursor-pointer"
               }`}
             >
-              {confirmDelete ? "Confirmar Borrar" : "Borrar Pet"}
+              {confirmDelete ? "Confirmar Borrar" : "Borrar Mascota"}
             </button>
 
+            {/* CHIP */}
             <button
               type="button"
-              className="w-full bg-[#f7a82a] text-white font-bold py-2 rounded-xl hover:bg-[#e6931f] transition"
+              className="btnNaranja w-full"
             >
               Informe Chip
             </button>
@@ -137,18 +152,20 @@ export default function EditPetForm({
         </div>
       </div>
 
-      {/* Modal de edición */}
+      {/* MODAL EDITAR */}
       {isModalOpen && (
         <EditPetModal
           pet={selectedPet}
           onClose={() => setIsModalOpen(false)}
-          onSave={refreshPets}
+          onSave={async (updatedPet) => {
+            await refreshPets();
+            onPetUpdated(updatedPet);
+          }}
         />
       )}
     </div>
   );
 }
-
 
 function Info({ label, value }) {
   return (
