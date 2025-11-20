@@ -3,6 +3,8 @@ import { supabase } from "../services/supabase";
 import { useNavigate } from "react-router-dom";
 import { getCoordinatesFromAddress } from "../services/GeoAPI";
 import { provinciasArg } from "../constants/provincias";
+import Tramas from '../assets/vetorpatas_trama.png'
+
 
 /**
  *  registro de nuevos usuarios
@@ -176,8 +178,8 @@ const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el us
   return (
     <div className="w-full h-[80vh] flex flex-col justify-center items-center relative overflow-hidden">
       <img
-        src="src/assets/vetorpatas_trama.png"
-        alt=""
+        src={Tramas}
+        alt="Tramas de la Marca Cute Rescue"
         className="absolute w-full h-full object-cover -z-10 opacity-30"
       />
 

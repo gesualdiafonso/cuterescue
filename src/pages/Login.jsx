@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
 import LogoNombre from "../assets/logo-2.png";
+import Tramas from '../assets/vetorpatas_trama.png'
 
 export default function LogIn() {
   const navigate = useNavigate();
@@ -39,8 +40,8 @@ export default function LogIn() {
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center relative overflow-hidden">
       <img
-        src="src/assets/vetorpatas_trama.png"
-        alt=""
+        src={Tramas}
+        alt="Tramas de la Marca Cute Rescue"
         className="absolute w-full h-full object-cover -z-10 opacity-30"
       />
       <form
