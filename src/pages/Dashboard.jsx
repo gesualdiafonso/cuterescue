@@ -93,7 +93,7 @@ export default function Dashboard() {
         <section className="flex flex-col lg:flex-row gap-10 lg:gap-20 justify-between mb-10 w-full">
           <PersonalInform details={userData} locations={ubicacionUsuario} />
 
-          <div className="flex flex-col gap-2 w-full lg:w-1/2">
+          <div className="flex flex-col gap-2 w-full lg:w-1/2 z-0">
             <MapsViewer selectedPet={selectedPet} location={location} />
             <BtnPetMove pet={selectedPet} userLocation={location} />
           </div>
