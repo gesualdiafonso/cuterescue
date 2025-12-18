@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useEffect } from "react";
 
-// funcion auxiliar para mover  mapa dinamicamente
+// funcion  para mover  mapa dinamicamente
 function ChangeView({ lat, lng, nombre }) {
   const map = useMap();
 
@@ -14,7 +14,7 @@ function ChangeView({ lat, lng, nombre }) {
   return null;
 }
 
-export default function MapaVeterinaria({ lat, lng, nombre }) {
+export default function MapaVet({ lat, lng, nombre }) {
   if (!lat || !lng) return null;
 
   return (
@@ -33,7 +33,7 @@ export default function MapaVeterinaria({ lat, lng, nombre }) {
           <Popup autoOpen>{nombre}</Popup>
         </Marker>
 
-        {/* Componente que atualiza posicion y zoom */}
+        {/* componente que atualiza posicion y zoom */}
         <ChangeView lat={lat} lng={lng} nombre={nombre} />
       </MapContainer>
     </div>

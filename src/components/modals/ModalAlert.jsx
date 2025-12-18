@@ -5,16 +5,12 @@ import { useSavedData } from "../../context/SavedDataContext";
 /**
  * @description
  * componente modal utilizado para mostrar alertas de emergencia
- *
- * Este modal aparece cuando:
- * El usuario click en btn de emergencia
- * La mascota ya está en un estado de emergencia activo y debe ser guiado al mapa
- *
- * @param {boolean} show  si el modal debe mostrarse
- * @param {Object} alert  contiene información de la alerta
- * @param {string} [alert.variant="activate"] tipo de alerta para determinar mensajes
- * @param {string} [alert.color] color de fondo opcional del modal
- * @param {Function} onClose  callback para cerrar el modal
+ Este modal aparece cuando:
+El usuario click en btn de emergencia
+La mascota ya está en un estado de emergencia activo y debe ser guiado al mapa
+
+ * @param  show  si el modal debe mostrarse
+ * @param  alert  contiene información de la alerta
  */
 
 export default function ModalAlert({ show, alert, onClose }) {
@@ -31,15 +27,15 @@ export default function ModalAlert({ show, alert, onClose }) {
       message:
         "La activación de la ubicación en tiempo real ha sido activada, active sus notificaciones para que podamos ubicar a su mascota.",
       button: "Rastrear",
-      redirect: "/maps"
+      redirect: "/maps",
     },
     ongoing: {
       title: "Tu mascota está actualmente en modo emergencia",
       message: "Puedes ver su ubicación en tiempo real en el mapa.",
       sub: "",
       button: "Ir al mapa",
-      redirect: "/maps"
-    }
+      redirect: "/maps",
+    },
   };
 
   const v = baseTexts[variant];
@@ -50,7 +46,7 @@ export default function ModalAlert({ show, alert, onClose }) {
     sub: v.sub,
     button: v.button,
     redirect: v.redirect,
-    color: alert.color || "#FBC68F"
+    color: alert.color || "#F7612A",
   };
 
   return (
@@ -59,12 +55,16 @@ export default function ModalAlert({ show, alert, onClose }) {
         className="rounded-2xl p-6 max-w-md text-center text-[#22687C]  shadow-lg"
         style={{ backgroundColor: finalText.color }}
       >
-        <h2 className="text-2xl font-bold mb-4">{finalText.title}</h2>
+        <h2 className=" text-white text-2xl font-bold mb-4">
+          {finalText.title}
+        </h2>
 
-        <p className="text-[#22687C]  font-bold mb-4">{finalText.message}</p>
+        <p className="text-white   mb-4">{finalText.message}</p>
 
         {finalText.sub && (
-          <p className="text-[#22687C] mb-6 font-bold text-lg">{finalText.sub}</p>
+          <p className="text-[#22687C] mb-6 font-bold text-lg">
+            {finalText.sub}
+          </p>
         )}
 
         <button
@@ -73,7 +73,7 @@ export default function ModalAlert({ show, alert, onClose }) {
             onClose();
             navigate(finalText.redirect);
           }}
-          className="bg-[#F7612A] text-white px-4 py-2 rounded-lg hover:bg-[#e6931f] transition"
+          className="bg-[#FFFF] text-black px-4 py-2 rounded-lg hover:bg-[#e6931f] transition"
         >
           {finalText.button}
         </button>

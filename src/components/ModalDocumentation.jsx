@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddOrUpdate, onDelete }) {
+export default function ModalDocumentacion({
+  isOpen,
+  tipo,
+  data,
+  onClose,
+  onAddOrUpdate,
+  onDelete,
+}) {
   const [formData, setFormData] = useState({ alerta: "Activo" });
   const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
@@ -13,8 +20,12 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
         producto: data.producto || "",
         antiparasitario: data.antiparasitario || "",
         presentacion: data.presentacion || "",
-        fecha_aplicacion: data.fecha_aplicacion ? data.fecha_aplicacion.split("T")[0] : "",
-        fecha_vencimiento: data.fecha_vencimiento ? data.fecha_vencimiento.split("T")[0] : "",
+        fecha_aplicacion: data.fecha_aplicacion
+          ? data.fecha_aplicacion.split("T")[0]
+          : "",
+        fecha_vencimiento: data.fecha_vencimiento
+          ? data.fecha_vencimiento.split("T")[0]
+          : "",
         foto_url: data.foto_url || "",
       });
     } else {
@@ -44,25 +55,29 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
     if (!formData.fecha_aplicacion) newErrors.fecha_aplicacion = true;
     if (!formData.fecha_vencimiento) newErrors.fecha_vencimiento = true;
 
-    // Validación por tipo
+    // Validación por tipo de..
     if (tipo === "vacuna" && !formData.tipo_vacuna) {
       newErrors.tipo_vacuna = true;
     }
     if (tipo === "pipeta" && !formData.producto) {
       newErrors.producto = true;
     }
-    if (tipo === "desparasitacion" && (!formData.antiparasitario || !formData.presentacion)) {
+    if (
+      tipo === "desparasitacion" &&
+      (!formData.antiparasitario || !formData.presentacion)
+    ) {
       if (!formData.antiparasitario) newErrors.antiparasitario = true;
       if (!formData.presentacion) newErrors.presentacion = true;
     }
 
-    // Si hay algún error, mostrar mensaje y no enviar
+    //  mensaje de error si hay y no enviar
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      setErrorMessage("Por favor completá todos los campos obligatorios antes de continuar.");
+      setErrorMessage(
+        "Por favor completá todos los campos obligatorios antes de continuar."
+      );
       return;
     }
-
     // Si todo está correcto
     setErrorMessage("");
     onAddOrUpdate(formData);
@@ -88,7 +103,9 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="tipo_vacuna"
                   value={formData.tipo_vacuna || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.tipo_vacuna ? "border-red-500" : ""}`}
+                  className={`input-field ${
+                    errors.tipo_vacuna ? "border-red-500" : ""
+                  }`}
                 >
                   <option value="">Seleccionar</option>
                   <option>Triple Felina</option>
@@ -108,7 +125,9 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="fecha_aplicacion"
                   value={formData.fecha_aplicacion || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.fecha_aplicacion ? "border-red-500" : ""}`}
+                  className={`input-field ${
+                    errors.fecha_aplicacion ? "border-red-500" : ""
+                  }`}
                 />
               </div>
               <div className="form-group">
@@ -118,7 +137,9 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="fecha_vencimiento"
                   value={formData.fecha_vencimiento || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.fecha_vencimiento ? "border-red-500" : ""}`}
+                  className={`input-field ${
+                    errors.fecha_vencimiento ? "border-red-500" : ""
+                  }`}
                 />
               </div>
             </div>
@@ -126,7 +147,12 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
             <div className="form-row">
               <div className="form-group w-full">
                 <label>Subir foto (opcional)</label>
-                <input type="file" name="foto_url" onChange={handleChange} className="input-field" />
+                <input
+                  type="file"
+                  name="foto_url"
+                  onChange={handleChange}
+                  className="input-field"
+                />
                 {formData.foto_url && (
                   <p className="file-name mt-1 text-sm text-gray-600">
                     Archivo cargado correctamente
@@ -151,7 +177,9 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name={fieldName}
                   value={formData[fieldName] || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors[fieldName] ? "border-red-500" : ""}`}
+                  className={`input-field ${
+                    errors[fieldName] ? "border-red-500" : ""
+                  }`}
                 />
               </div>
               <div className="form-group">
@@ -160,7 +188,9 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="presentacion"
                   value={formData.presentacion || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.presentacion ? "border-red-500" : ""}`}
+                  className={`input-field ${
+                    errors.presentacion ? "border-red-500" : ""
+                  }`}
                 >
                   <option value="">Seleccionar</option>
                   <option>Pipeta (aceite en la nuca)</option>
@@ -179,7 +209,9 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="fecha_aplicacion"
                   value={formData.fecha_aplicacion || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.fecha_aplicacion ? "border-red-500" : ""}`}
+                  className={`input-field ${
+                    errors.fecha_aplicacion ? "border-red-500" : ""
+                  }`}
                 />
               </div>
               <div className="form-group">
@@ -189,7 +221,9 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
                   name="fecha_vencimiento"
                   value={formData.fecha_vencimiento || ""}
                   onChange={handleChange}
-                  className={`input-field ${errors.fecha_vencimiento ? "border-red-500" : ""}`}
+                  className={`input-field ${
+                    errors.fecha_vencimiento ? "border-red-500" : ""
+                  }`}
                 />
               </div>
             </div>
@@ -204,7 +238,9 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
   return (
     <div className="modal-overlay">
       <div className="modal-container">
-        <h2 className="modal-title">{data ? `Detalles de ${tipo}` : `Agregar ${tipo}`}</h2>
+        <h2 className="modal-title">
+          {data ? `Detalles de ${tipo}` : `Agregar ${tipo}`}
+        </h2>
 
         <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
           {renderFields()}
@@ -227,11 +263,19 @@ export default function ModalDocumentacion({ isOpen, tipo, data, onClose, onAddO
               <button type="button" className="btnAzul w-32 " onClick={onClose}>
                 Volver
               </button>
-              <button type="button" className="btnNaranja w-32" onClick={handleSubmit}>
+              <button
+                type="button"
+                className="btnNaranja w-32"
+                onClick={handleSubmit}
+              >
                 {data ? "Editar" : "Agregar"}
               </button>
               {data && (
-                <button  type="button" className="btnTransparente delete w-32" onClick={handleDelete}>
+                <button
+                  type="button"
+                  className="btnTransparente delete w-32"
+                  onClick={handleDelete}
+                >
                   Borrar
                 </button>
               )}

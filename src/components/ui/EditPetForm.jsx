@@ -55,14 +55,13 @@ export default function EditPetForm({
       const { error } = await supabase.from("mascotas").delete().eq("id", id);
       if (error) throw error;
 
-      setDeleteMessage("✅ Mascota borrada correctamente");
+      setDeleteMessage("Mascota borrada correctamente");
 
       await refreshPets?.();
       onPetDeleted?.(); // notifica al padre
-
     } catch (err) {
       console.error(err);
-      setDeleteMessage("❌ Error al borrar la mascota");
+      setDeleteMessage("error al borrar la mascota");
     } finally {
       setConfirmDelete(false);
     }
@@ -70,8 +69,7 @@ export default function EditPetForm({
 
   return (
     <div className="flex flex-col md:flex-row gap-10 justify-center items-center w-full mb-10 bg-[#f5f5f5]/60 rounded-3xl p-10 shadow-sm">
-
-      {/* FOTO */}
+      {/* foto */}
       <div className="bg-gray-200 w-72 h-80 rounded-2xl overflow-hidden shadow-md">
         <img
           src={foto_url || "/default-pet.png"}
@@ -82,10 +80,7 @@ export default function EditPetForm({
 
       {/* INFO */}
       <div className="flex flex-col gap-4 max-w-2xl w-full">
-
-        <AppH1 className="estilosH1">
-          {capitalizeAll(nombre)}
-        </AppH1>
+        <AppH1 className="estilosH1">{capitalizeAll(nombre)}</AppH1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-gray-800">
           <Info label="Especie" value={especie} />
@@ -97,7 +92,9 @@ export default function EditPetForm({
           <Info label="Peso" value={`${peso} kg`} />
           <Info
             label="Ubicación dueño"
-            value={`${capitalizeAll(userDireccion)}, ${userCodigoPostal}, ${userProvincia}`}
+            value={`${capitalizeAll(
+              userDireccion
+            )}, ${userCodigoPostal}, ${userProvincia}`}
           />
           <Info
             label="Última ubicación"
@@ -105,11 +102,10 @@ export default function EditPetForm({
           />
         </div>
 
-        {/* BOTONES */}
+        {/* buttons */}
         <div className="mt-6 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row gap-4">
-
-            {/* EDITAR */}
+            {/* edit */}
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
@@ -118,7 +114,7 @@ export default function EditPetForm({
               Editar informes
             </button>
 
-            {/* BORRAR */}
+            {/* borrar */}
             <button
               type="button"
               onClick={handleDelete}
@@ -132,10 +128,7 @@ export default function EditPetForm({
             </button>
 
             {/* CHIP */}
-            <button
-              type="button"
-              className="btnNaranja w-full"
-            >
+            <button type="button" className="btnNaranja w-full">
               Informe Chip
             </button>
           </div>

@@ -1,27 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase";
 import { capitalizeAll } from "../../utils/text";
+import { useAuth } from "../../context/AuthContext";
 
 /**
- * @description
- * Componente encargado de registrar nuevas mascotas en el sistema
- *
- * - abrir un modal con un formulario detallado para agregar una mascota
- * - Obtener automáticamente la ubicación inicial del usuario desde la tabla localizacion_usuario
- * - subir la foto de la mascota al bucket de Supabase Storage(mascotas)
- * - crear el registro de la mascota en la tabla mascotas
- * - Crear tmbn la ubicacion inicial de esa mascota en la tabla localizacio
- * - Notif al componente padre que se agregó una nueva mascota mediante onPetAdded
- *
- * @requires supabase 
- * @requires capitalizeAll
- *
+componente encargado de registrar nuevas mascotas en el sistema
+-  modal con un formulario para agregar una mascota
+- obtener automáticamente la ubicación inicial del usuario desde la tabla localizacion_usuario
+- subir la foto de la mascota al bucket de supabase storage mascotas
+- crea el registro de la mascota en la tabla mascotas
+- Crea tmbn la ubicacion inicial de esa mascota en la tabla localizacion
+- Notifica al componente padre que se agregó una nueva mascota mediante onPetAdded
+ 
+ * @requires capitalizeAll  funcion para mayusculas
  * @param {Object} props
  * @param {Function} props.onPetAdded / callback que se ejecuta cuando una mascota es agregada sin errores
- *
  */
 
 export default function AddPets({ onPetAdded }) {
+  const { user } = useAuth();
+
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({
     nombre: "",
@@ -39,12 +37,9 @@ export default function AddPets({ onPetAdded }) {
   const [preview, setPreview] = useState(null);
   const [message, setMessage] = useState("");
 
-  //  Obtener ubicación del usuario
+  //  obtiene la ubicación del usuario
   useEffect(() => {
     const fetchUbicacion = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -53,12 +48,16 @@ export default function AddPets({ onPetAdded }) {
         .eq("owner_id", user.id)
         .single();
 
-      if (error) console.error("Error al obtener ubicación:", error.message);
+      if (error) {
+        console.error("Error al obtener ubicación:", error.message);
+        return;
+      }
+
       setUbicacion(data);
     };
 
     if (showModal) fetchUbicacion();
-  }, [showModal]);
+  }, [showModal, user]);
 
   //  Manejo de inputs
   const handleChange = (e) => {
@@ -70,7 +69,7 @@ export default function AddPets({ onPetAdded }) {
       return;
     }
 
-    // validacion de peso kg numeros positivos 
+    // validacion de peso kg numeros positivos
     if (name === "peso") {
       if (value === "" || Number(value) >= 0) {
         setForm({ ...form, [name]: value });
@@ -96,22 +95,24 @@ export default function AddPets({ onPetAdded }) {
       !form.color ||
       !form.sexo
     ) {
-      setMessage("⚠️ Todos los campos son obligatorios.");
+      setMessage("Todos los campos son obligatorios.");
+      setLoading(false);
+      return;
+    }
+
+    if (!user) {
+      alert("Usuario no autenticado.");
       setLoading(false);
       return;
     }
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuario no autenticado.");
-
-      // Subir foto si corresponde
+      // Subir foto si esta bien/corresponde
       let fotoUrl = null;
 
       if (form.foto_url instanceof File) {
         const fileName = `${user.id}_${Date.now()}_${form.foto_url.name}`;
+
         const { error: uploadError } = await supabase.storage
           .from("mascotas")
           .upload(fileName, form.foto_url);
@@ -150,7 +151,8 @@ export default function AddPets({ onPetAdded }) {
 
       // Insertar ubicación inicial real
       if (ubicacion) {
-        const { direccion, codigoPostal, provincia, lat, lng, source } = ubicacion;
+        const { direccion, codigoPostal, provincia, lat, lng, source } =
+          ubicacion;
 
         const { error: locError } = await supabase.from("localizacion").insert([
           {
@@ -232,7 +234,7 @@ export default function AddPets({ onPetAdded }) {
                 />
               </div>
 
-              {/* Especie → SELECT */}
+              {/* Especie */}
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
                   Especie
@@ -263,7 +265,7 @@ export default function AddPets({ onPetAdded }) {
                 />
               </div>
 
-              {/* Fecha → No futura */}
+              {/* Fecha */}
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
                   Fecha de nacimiento
@@ -364,7 +366,8 @@ export default function AddPets({ onPetAdded }) {
               {ubicacion && (
                 <div className="col-span-2 bg-gray-100 p-3 rounded-lg text-sm text-gray-700 border">
                   <p>
-                    <strong>Dirección:</strong> {capitalizeAll(ubicacion.direccion)}
+                    <strong>Dirección:</strong>{" "}
+                    {capitalizeAll(ubicacion.direccion)}
                   </p>
                   <p>
                     <strong>Código Postal:</strong> {ubicacion.codigoPostal}

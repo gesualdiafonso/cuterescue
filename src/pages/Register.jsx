@@ -5,20 +5,18 @@ import { getCoordinatesFromAddress } from "../services/GeoAPI";
 import { provinciasArg } from "../constants/provincias";
 
 /**
- *  registro de nuevos usuarios
- *
- * Este componente implementa un formulario completo para crear una cuenta:
- * - Crea el usuario en Supabase Auth
- * - Inserta los datos personales en la tabla `usuarios
- * - Geocodifica la dirección proporcionada usando OpenStreetMap (Nominatim) para utilizarla como simulacion
- * - Guarda la ubicación inicial del usuario en `localizacion_usuario`
- * - Permite subir una foto de perfil al bucket de storage
- *
+
+- crea el usuario en supabase auth
+- inserta los datos en la tabla usuarios
+- geocodifica la direcc del usuario usando openstreetmap para utilizarla como simulacion
+- guarda la ubicación inicial del usuario en localizacion_usuario para luego utilizarlo en la simulaciond emascota
+- permite subir una foto de perfil al bucket de storage
+ 
  * @requires supabase  para autenticación, base de datos y storage
  * @requires useNavigate de react-router-dom.
- * @requires getCoordinatesFromAddress - Servicio de geocodificación
- * @requires provinciasArg - Lista de provincias argentinas
- *
+ * @requires getCoordinatesFromAddress  de geocodificación
+ * @requires provinciasArg - lista de provincias argentinas
+ 
  */
 
 export default function Register() {
@@ -38,16 +36,12 @@ export default function Register() {
     provincia: "",
     codigoPostal: "",
     password: "",
-    genero: "", // 🆕
+    genero: "",
   });
 
   const [foto, setFoto] = useState(null);
 
-/**
- * Maneja cambios en los campos del formulario.
- *
- * @function handleChange
- */
+  // maneja cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -77,11 +71,10 @@ export default function Register() {
         provincia: userData.provincia,
       });
 
-      // Si geocodificación falla, NO se corta el registro
       const latFinal = lat ?? -34.6037; // fallback CABA centro
       const lngFinal = lng ?? -58.3816;
 
-      //  Insertar usuario en la tabla usuarios
+      //  se insertan los datos del usuario en la tabla usuarios
       const { data: insertedUser, error: userInsertError } = await supabase
         .from("usuarios")
         .insert([
@@ -104,9 +97,9 @@ export default function Register() {
         .select()
         .single();
 
-      console.log("✅ Usuario insertado en tabla usuarios:", insertedUser);
+      console.log("usuario insertado en tabla usuarios:", insertedUser);
       if (userInsertError) {
-        console.error("❌ Error insertando en usuarios:", userInsertError);
+        console.error("error insertando en usuarios:", userInsertError);
         throw userInsertError;
       }
 
@@ -125,7 +118,10 @@ export default function Register() {
         });
 
       if (locInsertError) {
-        console.error("❌ Error insertando en localizacion_usuario:", locInsertError);
+        console.error(
+          "error insertando en la tabla localizacion_usuario:",
+          locInsertError
+        );
         throw locInsertError;
       }
 
@@ -141,7 +137,7 @@ export default function Register() {
           .upload(filePath, foto, { upsert: true });
 
         if (uploadError) {
-          console.error("❌ Error subiendo foto:", uploadError);
+          console.error("error al subir foto:", uploadError);
           throw uploadError;
         }
 
@@ -158,21 +154,22 @@ export default function Register() {
           .eq("id", userId);
 
         if (updateError) {
-          console.error("❌ Error actualizando foto_url:", updateError);
+          console.error("error actualizando foto_url:", updateError);
           throw updateError;
         }
       }
 
-      //  redirigir al dashboard 
+      //  redirigir al dashboard
       navigate("/dashboard");
     } catch (err) {
-      console.error("🔥 Error en el registro:", err);
+      console.error("error en el registro:", err);
       setError(err.message || "Ocurrió un error inesperado.");
     } finally {
       setLoading(false);
     }
   };
-const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el usuario nazca MAniANA 
+  const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el usuario nazca ma;ana
+
   return (
     <div className="w-full h-[80vh] flex flex-col justify-center items-center relative overflow-hidden">
       <img
@@ -210,7 +207,9 @@ const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el us
 
           {/* Fecha de nacimiento */}
           <div className="md:col-span-2 flex flex-col">
-            <label className="text-sm text-white mb-1">Fecha de nacimiento</label>
+            <label className="text-sm text-white mb-1">
+              Fecha de nacimiento
+            </label>
             <input
               type="date"
               name="fechaNacimiento"
@@ -245,7 +244,7 @@ const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el us
             required
           />
 
-          {/* Teléfono y Email */}
+          {/* tel y mail */}
           <input
             name="telefono"
             placeholder="Teléfono"
@@ -265,7 +264,7 @@ const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el us
             required
           />
 
-          {/* Dirección */}
+          {/* dirección */}
           <input
             name="direccion"
             placeholder="Dirección"
@@ -275,7 +274,7 @@ const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el us
             required
           />
 
-          {/* Provincia */}
+          {/* provincia */}
           <select
             name="provincia"
             value={formData.provincia}
@@ -300,7 +299,7 @@ const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el us
             required
           />
 
-          {/* Género */}
+          {/* genero */}
           <div className="md:col-span-2 flex flex-col">
             <label className="text-sm text-white mb-1">Género</label>
             <select
@@ -318,7 +317,7 @@ const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el us
             </select>
           </div>
 
-          {/* Foto */}
+          {/* foto */}
           <div className="md:col-span-2 flex flex-col">
             <label className="text-sm text-white mb-1">Foto de perfil</label>
             <input
@@ -329,7 +328,7 @@ const maxDate = new Date().toISOString().split("T")[0]; // no queremos que el us
             />
           </div>
 
-          {/* Contraseña */}
+          {/* password */}
           <input
             type="password"
             name="password"

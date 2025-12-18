@@ -1,30 +1,24 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom"; 
-import BtnViaje from "./ui/BtnViaje";
+import { Link } from "react-router-dom";
+import BtnViaje from "./ui/BtnTrip";
 import BtnEmergency from "./ui/BtnEmergency";
-import ModalViajeCard from "./modals/ModalViajeCard"; 
-import ModalAlert from "./modals/ModalAlert";   
-import { useSavedData } from "../context/SavedDataContext"; 
+import ModalViajeCard from "./modals/ModalTripCard";
+import ModalAlert from "./modals/ModalAlert";
+import { useSavedData } from "../context/SavedDataContext";
 import AppH1 from "./ui/AppH1";
 import { capitalizeAll } from "../utils/text";
 
 /**
- * @description
  * componente encargado de mostrar la info principal del usuario
- *  incluye accesos directos:
- * - Modo viaje
- * - Botón de emergencia
- *
- * También :
- * - Modal de viaje (ModalViajeCard)
- * - Modal de alerta global (ModalAlert) proveniente de SavedDataContext
- *
- * Este módulo se utiliza en páginas como Dashboard e InformePet
- *
+incluye accesos directos:
+ - Modo viaje
+ - Botón de emergencia
+ - Modal de viaje
+ - Modal de alerta global de savedDatacontext
  */
 
 export default function PersonalInform({ details, locations }) {
-  const [showModal, setShowModal] = useState(false); 
+  const [showModal, setShowModal] = useState(false);
   const { showAlert, alert, setAlert, closeAlert } = useSavedData();
 
   //  bloquea si todavía no tenemos al usuario
@@ -47,38 +41,37 @@ export default function PersonalInform({ details, locations }) {
     provincia: provinciaLoc = "",
   } = locations || {};
 
-  //  toma primero de localización_usuario y si no hay, de usuarios
+  //  tomo primero de localización_usuario y si no hay, de usuarios
   const direccionMostrar = direccionLoc || direccionUser || "";
   const codigoPostalMostrar = codigoPostalLoc || codigoPostalUser || "";
   const provinciaMostrar = provinciaLoc || provinciaUser || "";
 
-  
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-0">
-
-      {/* Dirección */}
+      {/* dirección */}
       {(direccionMostrar || codigoPostalMostrar || provinciaMostrar) && (
         <div className="flex flex-wrap gap-3 text-gray-700 text-sm sm:text-base">
-          <span>{`${capitalizeAll(direccionMostrar)}, ${codigoPostalMostrar}`}</span>
-          
+          <span>{`${capitalizeAll(
+            direccionMostrar
+          )}, ${codigoPostalMostrar}`}</span>
+
           <span>|</span>
           <span>{provinciaMostrar}</span>
         </div>
       )}
 
       {/* Nombre */}
-     <AppH1 className="mt-4 sm:text-5xl">
-  {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
-</AppH1>
+      <AppH1 className="mt-4 sm:text-5xl">
+        {`${capitalizeAll(nombre)} ${capitalizeAll(apellido)}`}
+      </AppH1>
 
-
-      {/* Botones */}
+      {/* botones */}
       <div className="flex flex-col lg:flex-row gap-2 lg:gap-3 mt-4">
         <BtnViaje onClick={() => setShowModal(true)} />
-        <BtnEmergency  />
+        <BtnEmergency />
       </div>
 
-      {/* Avatar + Visualizar perfil */}
+      {/* Avatar + visualizar el perfil */}
       <div className="flex flex-row justify-end items-center gap-5 mt-4">
         <div className="bg-gray-300 rounded-full w-16 h-16 overflow-hidden">
           <img
@@ -95,15 +88,11 @@ export default function PersonalInform({ details, locations }) {
         </Link>
       </div>
 
-      {/* Modal Viaje */}
+      {/* Modal viaje */}
       {showModal && <ModalViajeCard onClose={() => setShowModal(false)} />}
 
-      {/* Modal Emergencia */}
-      <ModalAlert 
-        show={showAlert}
-        alert={alert}
-        onClose={closeAlert}
-      />
+      {/* Modal emergencia */}
+      <ModalAlert show={showAlert} alert={alert} onClose={closeAlert} />
     </div>
   );
 }

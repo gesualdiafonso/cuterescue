@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import Logo from "../assets/logo.png";
 import LogoNombre from "../assets/logo-2.png";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { supabase } from "../services/supabase";
 import { FiBell } from "react-icons/fi";
 import PetLink from "./ui/PetLink";
 import { useSavedData } from "../context/SavedDataContext";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../services/supabase";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const { user, loading, signOut } = useAuth();
+
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [alerts, setAlerts] = useState([]);
@@ -25,29 +27,22 @@ export default function Navbar() {
     { name: "Eventos", path: "/eventos" },
   ];
 
+  //  cargar alertas cuando hay user
   useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        setUser(data.session.user);
-        fetchAlerts(data.session.user.id);
-      }
-    };
-    getUser();
+    if (!user) {
+      setAlerts([]);
+      return;
+    }
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-      if (session?.user) fetchAlerts(session.user.id);
-      else setAlerts([]);
-    });
-
-    return () => listener.subscription.unsubscribe();
-  }, []);
+    fetchAlerts(user.id);
+  }, [user]);
 
   const fetchAlerts = async (userId) => {
     const { data, error } = await supabase
       .from("notificaciones")
-      .select(`id, mensaje, fecha_alerta, vista, documentacion:documentacion_id (alerta)`)
+      .select(
+        `id, mensaje, fecha_alerta, vista, documentacion:documentacion_id (alerta)`
+      )
       .eq("user_id", userId)
       .order("fecha_alerta", { ascending: true });
 
@@ -60,12 +55,12 @@ export default function Navbar() {
         n.documentacion?.alerta === "Activo" &&
         n.vista === false
     );
+
     setAlerts(filtered);
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+    await signOut();
     navigate("/login");
   };
 
@@ -74,15 +69,24 @@ export default function Navbar() {
 
     if (notificationsOpen && alerts.length > 0) {
       const ids = alerts.map((a) => a.id);
-      await supabase.from("notificaciones").update({ vista: true }).in("id", ids);
+      await supabase
+        .from("notificaciones")
+        .update({ vista: true })
+        .in("id", ids);
+
       setAlerts([]);
     }
   };
 
-  return (
-    <nav className={`${alertOn ? "bg-[#FBC68F]" : "bg-white"} relative z-[100] shadow`}>
-      <div className="max-w-7xl mx-auto flex items-center justify-between p-4 relative">
+  if (loading) return null; // agregar spinner a futuro !!! modificar
 
+  return (
+    <nav
+      className={`${
+        alertOn ? "bg-[#FBC68F]" : "bg-white"
+      } relative z-[100] shadow`}
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between p-4 relative">
         {/* logo */}
         <Link to="/" className="flex items-center gap-2">
           <img className="h-30 w-auto" src={Logo} alt="Logo" />
@@ -113,12 +117,12 @@ export default function Navbar() {
 
         {/* DERECHA: usuario logueado o no */}
         <div
-  className={`flex items-center gap-2 z-[101] transition-all duration-300 ${
-    isOpen ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"
-  }`}
->
-
-
+          className={`flex items-center gap-2 z-[101] transition-all duration-300 ${
+            isOpen
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100 pointer-events-auto"
+          }`}
+        >
           {/* BOTONES LOGIN / REGISTRAR SI NO HAY USER (DESKTOP) */}
           {!user && (
             <div className="hidden lg:flex gap-2">
@@ -144,7 +148,10 @@ export default function Navbar() {
           {/* notificaciones */}
           {user && (
             <div className="relative">
-              <button onClick={handleNotificationsClick} className="relative text-[#22687B] cursor-pointer">
+              <button
+                onClick={handleNotificationsClick}
+                className="relative text-[#22687B] cursor-pointer"
+              >
                 <FiBell size={24} />
                 {alerts.length > 0 && (
                   <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5">
@@ -159,7 +166,9 @@ export default function Navbar() {
                     Notificaciones
                   </span>
                   {alerts.length === 0 ? (
-                    <p className="text-gray-500 text-sm px-2">No hay alertas por ahora 🐾</p>
+                    <p className="text-gray-500 text-sm px-2">
+                      No hay alertas por ahora 🐾
+                    </p>
                   ) : (
                     <ul className="max-h-60 overflow-y-auto text-sm">
                       {alerts.map((alert) => (
@@ -223,9 +232,8 @@ export default function Navbar() {
           )}
 
           {isOpen && (
-  <div className="fixed inset-0 bg-black/20 z-[140] backdrop-blur-sm"></div>
-)}
-
+            <div className="fixed inset-0 bg-black/20 z-[140] backdrop-blur-sm"></div>
+          )}
 
           {/* Hamburguesa mobile */}
           <div className="relative z-[150] max-[976px]:block hidden">
@@ -241,9 +249,19 @@ export default function Navbar() {
                 stroke="currentColor"
               >
                 {isOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
@@ -253,8 +271,7 @@ export default function Navbar() {
 
       {/* menu responsive en mobile  */}
       {isOpen && (
-  <div className="fixed top-0 left-0 w-full h-1/2 bg-[#f5f5dc] z-[130] max-[976px]:block hidden shadow-lg">
-
+        <div className="fixed top-0 left-0 w-full h-1/2 bg-[#f5f5dc] z-[130] max-[976px]:block hidden shadow-lg">
           <ul className="flex flex-col items-center justify-center h-full space-y-4 text-lg">
             {menuItems.map((item) => (
               <li key={item.name}>

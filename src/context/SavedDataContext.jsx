@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import { supabase } from "../services/supabase";
 import {
   getSelectedPetService,
@@ -8,32 +14,35 @@ import {
 
 const SavedDataContext = createContext();
 /**
- * proveedor global de datos relacionados a:
- * - mascota seleccionada
- * - Ubicación en tiempo real (realtime de supabase)
- * - Manejo de alertas y modales
- * - Manejo de simulación GPS (intervalos + realtime)
- * @component
- * @param  props.children - componentes hijos envueltos por el provider
+ * un contexto global de datos con relacion a:
+-mascota seleccionada / selectedpet
+-ubicación en tiempo real 
+-manejo de alertas y modales
+-manejo de simulacion GPS
  */
 
 export function SavedDataProvider({ children }) {
-  const [location, setLocation] = useState(null); /** @state guarda la ultim ubicación conocida de la mascota */
-  const [selectedPet, setSelectedPetState] = useState(null);  /** @state mascota seleccionada  */
+  const [location, setLocation] =
+    useState(null); /** @state guarda la ultim ubic de la mascota */
+  const [selectedPet, setSelectedPetState] =
+    useState(null); /** @state mascota seleccionada  */
 
   const [alert, setAlert] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);  /** @state controla si el modal de alerta debe mostrarse */
-  const [alertOn, setAlertOn] = useState(false);  /** @state indica si el modo alerta (UI naranja) está activo */
+  const [showAlert, setShowAlert] =
+    useState(false); /** @state controla si el modal de alerta se muestra */
+  const [alertOn, setAlertOn] =
+    useState(
+      false
+    ); /** @state indica si el modo alerta (la ui en naranjha) esta activa */
 
-  //  referencia a stopSimulation()
   const simStopRef = useRef(null);
 
- /** @state indica si la simulación GPS esta corriendo */
+  /**  si la simulacion esta corriendo */
   const [simulationRunning, setSimulationRunning] = useState(false);
 
   const realtimeChannelRef = useRef(null);
 
-  // Cargar mascota seleccionada
+  // cargar mascota seleccionada
   useEffect(() => {
     const saved = getSelectedPetService();
     if (saved) setSelectedPetState(saved);
@@ -46,7 +55,7 @@ export function SavedDataProvider({ children }) {
 
   const MASCOTA_ID = selectedPet?.id ?? null;
 
-  // Obtener ubicación inicial
+  // obtener ubicacion inicial
   useEffect(() => {
     if (!MASCOTA_ID) return;
 
@@ -62,7 +71,7 @@ export function SavedDataProvider({ children }) {
     loadLocation();
   }, [MASCOTA_ID]);
 
-  //  Realtime
+  //  realtime
   useEffect(() => {
     if (!selectedPet) return;
 
@@ -81,7 +90,7 @@ export function SavedDataProvider({ children }) {
           filter: `mascota_id=eq.${selectedPet.id}`,
         },
         (payload) => {
-          console.log("🔄 Realtime → Nueva ubicación:", payload.new);
+          console.log("Nueva ubicación:", payload.new);
 
           if (simulationRunning) {
             setLocation(payload.new);
@@ -100,7 +109,7 @@ export function SavedDataProvider({ children }) {
     setSelectedPetService(pet);
   };
 
-  // Cuando entra una alerta → iniciar UI
+  // Cuando entra una alerta se inicia UI
   useEffect(() => {
     if (alert) {
       setShowAlert(true);
@@ -110,7 +119,7 @@ export function SavedDataProvider({ children }) {
 
   const closeAlert = () => setShowAlert(false);
 
-  //  *STOP simulacion !! *
+  //  detiene la simulacion
   const stopSimulation = () => {
     console.log("simulacion en stop");
 
@@ -141,7 +150,7 @@ export function SavedDataProvider({ children }) {
         closeAlert,
         setAlert,
         alertOn,
-        setAlertOn, 
+        setAlertOn,
         alert,
 
         // estado simulación

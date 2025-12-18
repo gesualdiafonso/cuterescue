@@ -1,12 +1,9 @@
 import { getAddressFromCoordinates } from "./GeoAPI";
 import { supabase } from "./supabase";
 
-
-
 /**
- * Genera coordenadas aleatorias cercanas a una ubicación base
- * simulando un movimiento dentro de un radio determinado
- *
+Genera coordenadas aleatorias cercanas a una ubicación base simulando un movimiento dentro de un radio determinado
+
  * @param {number} lat - latitud actual, punto de partida
  * @param {number} lng - longitud actual, punto de partida
  * @param {number} radiusKm - radio max de movimiento en km
@@ -15,13 +12,14 @@ import { supabase } from "./supabase";
 
 //  genera coordenadas cerca de la anterior, movimiento suave
 function generateRandomCoords(lat, lng, radiusKm) {
-  // 1 km ≈ 0.009 grados (aprox)
-  const r = radiusKm / 111; 
+  // 1 km = 0.009 grados (aprox)
+  const r = radiusKm / 111;
   const angle = Math.random() * 2 * Math.PI;
   const distance = Math.random() * r;
 
   const latOffset = distance * Math.cos(angle);
-  const lngOffset = distance * Math.sin(angle) / Math.cos(lat * (Math.PI / 180));
+  const lngOffset =
+    (distance * Math.sin(angle)) / Math.cos(lat * (Math.PI / 180));
 
   return {
     lat: lat + latOffset,
@@ -30,14 +28,12 @@ function generateRandomCoords(lat, lng, radiusKm) {
 }
 
 /**
- * Actualiza la ubicación de una mascota en la tabla "localizacion" 
- *
- * @async
- * @param {string|number} petId - ID de la mascota en la db
- * @param {{lat: number, lng: number, direccion?: string, codigoPostal?: string, provincia?: string}} newLocation
- * Objeto con los nuevos datos de ubicacion
- * @throws {Error} Si ocurre un error al actualizar en supabase
- * @returns {Promise<void>}
+  Actualiza la ubicación de una mascota en la tabla "localizacion" 
+  @async
+  @param {string|number} petId - ID de la mascota en la db
+  @param {{lat: number, lng: number, direccion?: string, codigoPostal?: string, provincia?: string}} newLocation
+  objeto con los nuevos datos de ubicacion
+ * @throws {error} Si ocurre un error al actualizar en supabase
  */
 
 async function updatePetLocation(petId, newLocation) {
@@ -57,25 +53,15 @@ async function updatePetLocation(petId, newLocation) {
 
   if (error) throw new Error("Error actualizando ubicación: " + error.message);
 }
-/**
- * obtenemos info de la direccion a partir de coordenadas y
- * kla formatea en partes  (dirección, codigo postal, provincia etc)
- *
- * @async
- * @param {number} lat 
- * @param {number} lng 
- * @returns {Promise<{direccion: string, codigoPostal: string | undefined, provincia: string | undefined}>}
- * Objeto con dirección formateada, código postal y provincia.
- * @throws {error} : si no se puede obtener la direcc
- */
+
 // Obtiene dirección completa
 async function locationData(lat, lng) {
   const fullAddress = await getAddressFromCoordinates(lat, lng);
   if (!fullAddress) throw new Error("Error obteniendo dirección");
 
-  const parts = fullAddress.split(", ").map(p => p.trim());
+  const parts = fullAddress.split(", ").map((p) => p.trim());
   const provincia = parts[parts.length - 3];
-  const codigoPostal = parts.find(p => /\d{4,5}/.test(p));
+  const codigoPostal = parts.find((p) => /\d{4,5}/.test(p));
 
   return {
     direccion: parts.slice(0, parts.length - 3).join(", "),
@@ -84,40 +70,28 @@ async function locationData(lat, lng) {
   };
 }
 
-
 /**
  * inicia una simulación en tiempo real del movimiento de una mascota
- *
- * - Genera coordenadas aleatorias alrededor de la ubicación del usuario
- * - Actualiza la ubicación en supabase
- * - Dispara una callback de alerta opcional con datos descriptivos
+ - Genera coordenadas aleatorias alrededor de la ubicación del usuario
+ - Actualiza la ubicación en supabase
+ - Dispara una callback de alerta opcional con datos descriptivos
  *
  * @param {Object} pet - Mascota a simular
  * @param {number} pet.id - ID de la mascota
  * @param {string} pet.nombre - Nombre de la mascota
- * @param {{lat: number, lng: number, direccion?: string, codigoPostal?: string, provincia?: string}} userLocation
- * Ubicación base del usuario (o punto de referencia).
- * @param {"normal"|"paseo"|"emergency"} [type="normal"] - Tipo de simulación a ejecutar, puede ser paseo, emergencia, etc
- * @param {(alert: {
- *   type: string,
- *   color: string,
- *   title: string,
- *   message: string,
- *   button: string,
- *   redirect: string
- * }) => void} [onAlert] - funcion callback opcional para notificar
- * al frontend cada vez que se actualiza la posición simulada.
- *
- * @returns {() => void} funcion para detener la simulación (limpia el setInterval).
  */
-// Simulación en tiempo real con control de stop
-
-export function startRealTimeSimulation(pet, userLocation, type = "normal", onAlert) {
+// simulación  con control de stop
+export function startRealTimeSimulation(
+  pet,
+  userLocation,
+  type = "normal",
+  onAlert
+) {
   let interval;
 
   const radiusMap = {
-    normal: 0.05, // 50m para movimiento realista
-    paseo: 0.08,  // 80m
+    normal: 0.05, // 50m  movimiento realista
+    paseo: 0.08, // 80m
     emergency: 0.2, // 200m
   };
 
@@ -139,7 +113,11 @@ export function startRealTimeSimulation(pet, userLocation, type = "normal", onAl
 
   interval = setInterval(async () => {
     try {
-      const { lat, lng } = generateRandomCoords(userLocation.lat, userLocation.lng, radius);
+      const { lat, lng } = generateRandomCoords(
+        userLocation.lat,
+        userLocation.lng,
+        radius
+      );
       const addressData = await locationData(lat, lng);
 
       const simulated = {
@@ -165,14 +143,11 @@ export function startRealTimeSimulation(pet, userLocation, type = "normal", onAl
       console.error("Error en simulación:", err);
     }
   }, 4000); // actualiza cada 4 segundos
-  
 
   /**
    * Función para detener la simulación desde el frontend
    *
-   * @returns {void}
    */
-
   const stopSimulation = () => clearInterval(interval);
 
   return stopSimulation;

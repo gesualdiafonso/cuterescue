@@ -7,7 +7,7 @@ export default function LogIn() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -46,9 +46,9 @@ export default function LogIn() {
         onSubmit={handleLogin}
         className="bg-gray-500/50 backdrop-blur-md w-[450px] h-auto rounded-2xl flex flex-col justify-center items-center gap-10 px-10 py-12 shadow-xl"
       >
-       <div className="m-0">
-          <img src="src/assets/logo-2.png" alt="" className="h-40 w-full m-0"/>
-       </div>
+        <div className="m-0">
+          <img src="src/assets/logo-2.png" alt="" className="h-40 w-full m-0" />
+        </div>
         <p className="text-white text-xl text-center mb-2">
           Ingresa tu correo y contraseña
         </p>

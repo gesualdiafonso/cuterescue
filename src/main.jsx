@@ -6,10 +6,12 @@ import './fonts.css'
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from "@material-tailwind/react";
 import { SavedDataProvider } from "./context/SavedDataContext.jsx";
+import { AuthProvider } from './context/AuthContext.jsx'
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode> 
+    <AuthProvider>
     <SavedDataProvider>
       <BrowserRouter>
         <ThemeProvider>
@@ -17,5 +19,6 @@ createRoot(document.getElementById('root')).render(
         </ThemeProvider>
       </BrowserRouter>
     </SavedDataProvider>
+    </AuthProvider>
   </StrictMode>,
 )

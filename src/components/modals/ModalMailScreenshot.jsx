@@ -8,11 +8,8 @@ export default function ModalMailCaptura({ onClose }) {
         <p className="text-white mb-4">
           Te enviamos un mail con la ubicación exacta desde Google Maps.
         </p>
-        
-        <button
-          onClick={onClose}
-          className="btnNaranja px-8"
-        >
+
+        <button onClick={onClose} className="btnNaranja px-8">
           Ok
         </button>
       </div>

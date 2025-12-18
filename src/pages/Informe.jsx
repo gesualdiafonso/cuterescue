@@ -48,7 +48,7 @@ export default function Informe() {
               <small>
                 Última actualización:{" "}
                 {new Date(
-                  new Date(updated_at).getTime() - 3 * 60 * 60 * 1000 // resto 3 hrs para horario arg, CORREGIR!!! 💥💥
+                  new Date(updated_at).getTime() - 3 * 60 * 60 * 1000 // resto 3 hrs para horario arg, CORREGIR!!!
                 ).toLocaleTimeString("es-AR", {
                   hour: "2-digit",
                   minute: "2-digit",

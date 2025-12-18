@@ -1,17 +1,17 @@
 import "./fonts.css";
 import Navbar from "./components/Navbar";
 import { Routes, Route, useLocation } from "react-router-dom";
-import Veterinarias from "./pages/Veterinarias";
+import Vets from "./pages/Vets";
 import Footer from "./components/Footer";
-import Documentacion from "./pages/Documentacion";
+import Documentation from "./pages/Documentation";
 import UserProfile from "./pages/UserProfile";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Eventos from "./pages/Eventos";
-import InformePet from "./pages/InformePet";
+import Events from "./pages/Events";
+import DataPet from "./pages/DataPet";
 import Maps from "./pages/Maps";
-import Planes from "./pages/Planes";
+import Planes from "./pages/Plans";
 import ModalAlert from "./components/modals/ModalAlert";
 import { useSavedData } from "./context/SavedDataContext";
 import { useEffect } from "react";
@@ -38,7 +38,7 @@ function App() {
       {/* modal de emergencia */}
       <ModalAlert show={showAlert} alert={alert} onClose={closeAlert} />
 
-      {/* modal global si hay alerta ON */}
+      {/* modal global si hay alerta on/activado*/}
       {alertOn && showModalOnRoute && (
         <ModalAlert
           show={true}
@@ -54,12 +54,12 @@ function App() {
       )}
 
       <Routes>
-        {/* ------------- RUTAS PÚBLICAS ------------- */}
+        {/* -----------rutas publicas ------------- */}
         <Route path="/login" element={<Login />} />
         <Route path="/registrar" element={<Register />} />
-        <Route path="/eventos" element={<Eventos />} />
+        <Route path="/eventos" element={<Events />} />
         
-        {/* ------------- RUTAS PROTEGIDAS ------------- */}
+        {/* -------------rutas protegidas----------- */}
         <Route
           path="/"
           element={
@@ -73,7 +73,7 @@ function App() {
           path="/veterinarias-24-hrs"
           element={
             <PrivateRoute>
-              <Veterinarias />
+              <Vets />
             </PrivateRoute>
           }
         />
@@ -82,7 +82,7 @@ function App() {
           path="/documentacion"
           element={
             <PrivateRoute>
-              <Documentacion />
+              <Documentation />
             </PrivateRoute>
           }
         />
@@ -118,7 +118,7 @@ function App() {
           path="/informe"
           element={
             <PrivateRoute>
-              <InformePet />
+              <DataPet />
             </PrivateRoute>
           }
         />

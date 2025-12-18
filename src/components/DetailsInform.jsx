@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import ModalEdicionUsuario from "./modals/ModalEdicionUsuario";
+import ModalEdicionUsuario from "./modals/ModalEditUser";
 import { supabase } from "../services/supabase";
 import { capitalizeAll } from "../utils/text";
 
@@ -29,12 +29,12 @@ export default function DetailsInform({ details, ubicacion }) {
     direccion_segura,
   } = ubicacion || {};
 
-  // tablsa localizacion_usuario → fallback usuarios
+  // tabla localizacion_usuario  fallback usuarios
   const direccionMostrar = direccionLoc || direccionUser || "";
   const codigoPostalMostrar = codigoPostalLoc || codigoPostalUser || "";
   const provinciaMostrar = provinciaLoc || provinciaUser || "";
 
-  // estado de seguridad para implementacion futura con iot
+  // estado de seguridad para implementacion futura con iot,aun sinfuncionalidad
   const esSegura = direccion_segura === true || direccion_segura === "true";
   const estadoSeguridad = esSegura ? "Sí" : "No";
   const colorSeguridad = esSegura ? "bg-green-500" : "bg-red-500";
@@ -54,7 +54,6 @@ export default function DetailsInform({ details, ubicacion }) {
 
   return (
     <div className="flex flex-col md:flex-row gap-10 justify-center items-center w-full">
-      
       {/*  Foto */}
       <div className="bg-gray-200 w-72 h-80 rounded-2xl overflow-hidden shadow-md">
         <img
@@ -71,22 +70,33 @@ export default function DetailsInform({ details, ubicacion }) {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-gray-800">
-          
-          <p><strong>Fecha de nacimiento:</strong> {fechaNacimiento}</p>
-          <p><strong>Género:</strong> {genero || "No especificado"}</p>
+          <p>
+            <strong>Fecha de nacimiento:</strong> {fechaNacimiento}
+          </p>
+          <p>
+            <strong>Género:</strong> {genero || "No especificado"}
+          </p>
 
           <p>
             <strong>Dirección:</strong>{" "}
             {direccionMostrar
-              ? `${capitalizeAll(direccionMostrar)}, ${codigoPostalMostrar}, ${provinciaMostrar}`
+              ? `${capitalizeAll(
+                  direccionMostrar
+                )}, ${codigoPostalMostrar}, ${provinciaMostrar}`
               : "No especificada"}
-            <span className={`${colorSeguridad} py-1 px-5 ml-2 rounded-2xl text-white`}>
+            <span
+              className={`${colorSeguridad} py-1 px-5 ml-2 rounded-2xl text-white`}
+            >
               {estadoSeguridad}
             </span>
           </p>
 
-          <p><strong>Email:</strong> {email}</p>
-          <p><strong>Teléfono:</strong> {telefono}</p>
+          <p>
+            <strong>Email:</strong> {email}
+          </p>
+          <p>
+            <strong>Teléfono:</strong> {telefono}
+          </p>
 
           <p>
             <strong>Documento:</strong> {tipoDocumento || "DNI"} {documento}
