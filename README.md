@@ -72,23 +72,29 @@ Realtime (actualización GPS)
 ⭐Instalar dependencias
 npm install
 
-⭐Instalar Tailwind CSS
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
+⭐ React Router DOM
+npm install react-router-dom
+
+⭐ Instalar React Icons
+npm install react-icons
+
+⭐Instalar Tailwind CSS (version 4)
+npm install tailwindcss @tailwindcss/vite
 
 ⭐Instalar React Leaflet + Leaflet
 npm install react-leaflet leaflet
 
 ⭐Instalar EmailJS
-npm install emailjs-com
+npm install --save @emailjs/browser
 
-⭐Configurar variables de entorno (enviado en un txt)
+⭐ Material Tailwind
+npm install @material-tailwind/react
 
 ⭐Ejecutar el proyecto
 npm run dev
 
-▶️ Uso del Proyecto
 
+▶️ Uso del Proyecto
 Registrarse o iniciar sesión.
 Agregar una mascota.
 Modificar cualquier dato de usuario o mascota.

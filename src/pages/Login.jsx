@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
-import LogoNombre from "../assets/logo-2.png";
-import Tramas from '../assets/vetorpatas_trama.png'
 
 export default function LogIn() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -40,17 +38,17 @@ export default function LogIn() {
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center relative overflow-hidden">
       <img
-        src={Tramas}
-        alt="Tramas de la Marca Cute Rescue"
+        src="src/assets/vetorpatas_trama.png"
+        alt=""
         className="absolute w-full h-full object-cover -z-10 opacity-30"
       />
       <form
         onSubmit={handleLogin}
         className="bg-gray-500/50 backdrop-blur-md w-[450px] h-auto rounded-2xl flex flex-col justify-center items-center gap-10 px-10 py-12 shadow-xl"
       >
-       <div className="m-0">
-          <img src={LogoNombre} alt="Logo" className="h-40 w-full m-0"/>
-       </div>
+        <div className="m-0">
+          <img src="src/assets/logo-2.png" alt="" className="h-40 w-full m-0" />
+        </div>
         <p className="text-white text-xl text-center mb-2">
           Ingresa tu correo y contraseña
         </p>

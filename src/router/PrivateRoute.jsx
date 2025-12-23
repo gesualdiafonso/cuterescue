@@ -1,21 +1,20 @@
 import { Navigate } from "react-router-dom";
-import { supabase } from "../services/supabase";
-import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function PrivateRoute({ children }) {
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState(null);
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-      setLoading(false);
-    };
-    checkSession();
-  }, []);
+  // mientras el contexto resuelve el usuario
+  if (loading) {
+    return <p className="text-center mt-10">Cargando...</p>;
+    // o null / spinner si querés
+  }
 
-  if (loading) return null; //  reemplazar con un spinner luego 
+  // si no hay usuario → login
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-  return session ? children : <Navigate to="/login" replace />;
+  // usuario autenticado
+  return children;
 }

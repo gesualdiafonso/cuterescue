@@ -1,5 +1,3 @@
-
-
 const BtnScreenshot = ({ onClick }) => {
   return (
     <button

@@ -3,12 +3,10 @@
  *  gestionar la mascota seleccionada por el usuario
  * 
  * Este servicio:
- * - Guarda la mascota seleccionada en memoria 
- * - selección en localstorage
- * - notifica a múltiples suscriptores cuando la mascota cambia
+ * - guarda la mascota seleccionada en memoria 
+ * - guarda la seleccion en el localstorage
  *
- * se usa en toda la app para sincronizar qué mascota está activa
- * incluso entre componentes que no comparten jerarquías
+ * se usa en toda la app para sincronizar que mascota está activa
  */
 
 let currentPet = null;

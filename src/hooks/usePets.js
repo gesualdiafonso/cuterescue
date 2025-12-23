@@ -1,28 +1,29 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../services/supabase";
 import { useSavedData } from "../context/SavedDataContext";
+import { useAuth } from "../context/AuthContext";
+
+// modificacion: nombre de variables de m y l por pet y loc
 
 export default function usePets() {
+  const { user } = useAuth();
   const { selectedPet, setSelectedPet } = useSavedData();
 
   const [mascotas, setMascotas] = useState([]);
   const [location, setLocation] = useState(null);
   const [ubicacionUsuario, setUbicacionUsuario] = useState(null);
 
-  //  Carga inicial de mascotas + ubicacion usuario
+  //  carga inicial de mascotas y la ubicacion del usuario
   const refreshPets = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
     if (!user) {
       setMascotas([]);
       setLocation(null);
       setUbicacionUsuario(null);
+      setSelectedPet(null);
       return;
     }
 
-    //  Mascotas del usuario
+    //  Mascotas 
     const { data: mascotasData, error: petsError } = await supabase
       .from("mascotas")
       .select("*")
@@ -31,32 +32,40 @@ export default function usePets() {
     if (petsError) {
       console.error("Error cargando mascotas:", petsError);
       setMascotas([]);
+      return;
     }
 
-    // Localizaciones de esas mascotas
     let mascotasConUbicacion = [];
+
+    // localizaciones de mascotas
     if (mascotasData && mascotasData.length > 0) {
       const { data: localizacionesData, error: locError } = await supabase
         .from("localizacion")
         .select("*")
         .in(
           "mascota_id",
-          mascotasData.map((m) => m.id)
+          mascotasData.map((pet) => pet.id)
         );
 
       if (locError) {
         console.error("Error cargando localizaciones:", locError);
       }
 
-      mascotasConUbicacion = mascotasData.map((m) => {
-        const loc = localizacionesData?.find((l) => l.mascota_id === m.id);
-        return { ...m, localizacion: loc || null };
+      mascotasConUbicacion = mascotasData.map((pet) => {
+        const locationRow = localizacionesData?.find(
+          (loc) => loc.mascota_id === pet.id
+        );
+
+        return {
+          ...pet,
+          localizacion: locationRow || null,
+        };
       });
     }
 
     setMascotas(mascotasConUbicacion);
 
-    // Ubicación del usuario
+    // ubic del usuario
     const { data: ubicacionData, error: ubicError } = await supabase
       .from("localizacion_usuario")
       .select("*")
@@ -66,17 +75,17 @@ export default function usePets() {
     if (ubicError) {
       console.error("Error cargando localizacion_usuario:", ubicError);
     }
+
     setUbicacionUsuario(ubicacionData || null);
 
-    // Manejo de selectedPet y location
+    // manejo de mascota seleccionada + mapa
     if (mascotasConUbicacion.length === 0) {
-      // No hay mascotas
       setLocation(null);
       setSelectedPet(null);
       return;
     }
 
-    // si no hay selectedpet seleccionamos la primera
+    // si no hay mascota seleccionada selecciona la primera
     if (!selectedPet) {
       const firstPet = mascotasConUbicacion[0];
       setSelectedPet(firstPet);
@@ -84,15 +93,15 @@ export default function usePets() {
       return;
     }
 
-    // si habia selectedpet trata de mantenerla
-    const stillExists = mascotasConUbicacion.find(
-      (m) => m.id === selectedPet.id
+    // si había mascota seleccionada se mantiene seleccionada
+    const selectedPetStillExists = mascotasConUbicacion.find(
+      (pet) => pet.id === selectedPet.id
     );
 
-    if (stillExists) {
-      setLocation(stillExists.localizacion || null);
+    if (selectedPetStillExists) {
+      setLocation(selectedPetStillExists.localizacion || null);
     } else {
-      // La mascota seleccionada ya no existe (por ejemplo, se borró)
+      // la mascota seleccionada ya no existe
       setSelectedPet(null);
       setLocation(null);
     }
@@ -100,12 +109,12 @@ export default function usePets() {
 
   useEffect(() => {
     refreshPets();
-  
-  }, []); // solo una vez al montar
+  }, [user]);
 
-  // 👉 seleccionar mascota desde UI
+  //  seleccionar mascota desde la UI
   const handleSelectPet = async (pet) => {
     if (!pet) return;
+
     setSelectedPet(pet);
 
     const { data, error } = await supabase
@@ -122,40 +131,48 @@ export default function usePets() {
   };
 
   //  eliminar mascota
-const handleDeletePet = async (pet) => {
-  const { error } = await supabase.from("mascotas").delete().eq("id", pet.id);
-  if (!error) {
-    setMascotas(prev => prev.filter(m => m.id !== pet.id));
-    setSelectedPet(null);
-  }
-};
+  const handleDeletePet = async (pet) => {
+    const { error } = await supabase
+      .from("mascotas")
+      .delete()
+      .eq("id", pet.id);
 
+    if (!error) {
+      setMascotas((prev) =>
+        prev.filter((existingPet) => existingPet.id !== pet.id)
+      );
+      setSelectedPet(null);
+      setLocation(null);
+    }
+  };
 
-  //  agregar / actualizar mascota desde un formulario que use este hook
+  //  agregar o actualizar mascota
   const handleSavePet = async (pet, file) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
     if (!user) return;
 
     let fotoUrl = pet.foto_url || "";
 
     if (file) {
       const fileName = `${user.id}_${Date.now()}_${file.name}`;
+
       const { error: uploadError } = await supabase.storage
         .from("mascotas")
         .upload(fileName, file);
 
-      if (uploadError) throw new Error(uploadError.message);
+      if (uploadError) {
+        console.error(uploadError);
+        return;
+      }
 
       const { data: publicUrl } = supabase.storage
         .from("mascotas")
         .getPublicUrl(fileName);
+
       fotoUrl = publicUrl.publicUrl;
     }
 
     if (pet.id) {
-      // 🔁 Actualizar
+      // actualizar
       const { error } = await supabase
         .from("mascotas")
         .update({ ...pet, foto_url: fotoUrl })
@@ -166,7 +183,7 @@ const handleDeletePet = async (pet) => {
         return;
       }
     } else {
-      // 🆕 Agregar
+      //  crear
       const { data: inserted, error } = await supabase
         .from("mascotas")
         .insert([{ ...pet, owner_id: user.id, foto_url: fotoUrl }])
@@ -178,7 +195,6 @@ const handleDeletePet = async (pet) => {
         return;
       }
 
-      // dejamos al hook decidir cómo manejar selectedPet
       setSelectedPet(inserted);
     }
 
@@ -193,6 +209,6 @@ const handleDeletePet = async (pet) => {
     setSelectedPet: handleSelectPet,
     handleDeletePet,
     handleSavePet,
-    refreshPets, 
+    refreshPets,
   };
 }

@@ -75,15 +75,14 @@ export default function EditPetModal({ pet, onClose, onSave }) {
       // envia la mascota actualizada
       onSave?.(updatedPet);
 
-      setMessage("✅ Mascota actualizada correctamente");
+      setMessage("Mascota actualizada correctamente");
 
       setTimeout(() => {
         onClose();
       }, 1000);
-
     } catch (err) {
       console.error(err);
-      setMessage("❌ Error al actualizar la mascota");
+      setMessage("Error al actualizar la mascota");
     }
   };
 
@@ -148,16 +147,10 @@ export default function EditPetModal({ pet, onClose, onSave }) {
         )}
 
         <div className="flex justify-center gap-6 mt-6">
-          <button
-            onClick={onClose}
-            className="btnTransparente px-8"
-          >
+          <button onClick={onClose} className="btnTransparente px-8">
             Cancelar
           </button>
-          <button
-            onClick={handleSubmit}
-            className="btnNaranja px-8"
-          >
+          <button onClick={handleSubmit} className="btnNaranja px-8">
             Guardar
           </button>
         </div>

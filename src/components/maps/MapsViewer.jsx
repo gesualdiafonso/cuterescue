@@ -7,18 +7,8 @@ import L from "leaflet";
  * 
  *  se usa en el dashboard e informe de mascota
  *   - muestra un mapa centrado en la mascota seleccionada
- *   - Indica su última ubicación
- *   - Seguir en tiempo real la posición mediante flyTo()
- 
- * utilizando:
- *   - react Leaflet para map rendering
- *   - leaflet para markers e iconos
- *
- * @param {Object} selectedPet  mascota seleccionada 
- * @param {Object} location  ubicacion realtime proveniente del context saveddatacontext
- * @param {number} location.lat  coords Lat de la mascota
- * @param {number} location.lng  coords Long ''
- * @param {string} [location.direccion] - texto de la direc
+ *   -indica su ult ubicación
+ *   - sigue en tiempo real la posición mediante flyTo()
  *
  */
 

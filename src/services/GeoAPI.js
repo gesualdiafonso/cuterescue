@@ -1,25 +1,18 @@
 /**
  *   geocodificación
- * usando open street map 
+usando open street map 
+obtiene coordenadas (lat y long) a partir de una dirección textual, utilizando el servicio de nominatim (openstreetmap)
+la función realiza dos intentos: con codigo postal incluido pero si no hay resultados intenta sin el codigo postal
+En caso de error o falta de resultados, devuelve coordenadas nulas
 
+@async
+@param params -datos de la dirección a buscar
+@param params.direccion calle + numeración
+@param params.codigoPostal cod postal
+@param params.provincia provincia
+ *
  */
 
-/**
- * obtiene coordenadas (latitud y longitud) a partir de una dirección textual,
- * utilizando el servicio de nominatim (openstreetmap).
- *
- * La función realiza dos intentos: cn codigo postal incluido, si no hay resultados, intenta sin el codigo postal
- *
- * En caso de error o falta de resultados, devuelve coordenadas nulas
- *
- * @async
- * @param {Object} params -datos de la dirección a buscar
- * @param {string} params.direccion calle + numeración
- * @param {string} params.codigoPostal cod postal
- * @param {string} params.provincia provincia
- *
- * @returns {Promise<{lat: number|null, lng: number|null, source: string}>} 
- */
 export async function getCoordinatesFromAddress({
   direccion,
   codigoPostal,
@@ -29,7 +22,7 @@ export async function getCoordinatesFromAddress({
     const provinciaNormalizada =
       provincia === "CABA" ? "Ciudad Autónoma de Buenos Aires" : provincia;
 
-    //  Intento principal con codigo postal
+    //  intento principal con codigo postal
     let query = `${direccion}, ${codigoPostal}, ${provinciaNormalizada}, Argentina`;
     let encodedQuery = encodeURIComponent(query);
 
@@ -43,7 +36,7 @@ export async function getCoordinatesFromAddress({
 
     let data = await response.json();
 
-    //  Si falla, reintento sin código postal ,,, ARREGLAR
+    //  Si falla, reintento sin códpostal ,,, ARREGLAR
     if (!data || data.length === 0) {
       console.warn("No se encontró con código postal. Reintentando sin él...");
       query = `${direccion}, ${provinciaNormalizada}, Argentina`;
@@ -56,7 +49,7 @@ export async function getCoordinatesFromAddress({
       data = await response.json();
     }
 
-    //  Si sigue fallando devuelve null pero NO cancela el flujo
+    //  si sigue fallando devuelve null pero no se cancela el flujo
     if (!data || data.length === 0) {
       console.warn("Sin resultados para la dirección proporcionada.");
       return { lat: null, lng: null, source: "OSM:no_result" };
@@ -77,7 +70,7 @@ export async function getCoordinatesFromAddress({
 
 
 /**
- * obtenemos direccion textual a partir de coordenadas para mostrar direccion aprox en simulador
+ * obtenemos direc textual a partir de coordenadas para mostrar direccion aprox en simulador
  * @async
  * @param {number} lat  latitud a consultar
  * @param {number} lng longitud a consultar

@@ -1,4 +1,4 @@
-import logo from "../assets/logo.png"; 
+import logo from "../assets/logo.png";
 
 const Footer = () => {
   return (
@@ -11,15 +11,28 @@ const Footer = () => {
         </div>
 
         <ul className="footer-links">
-          <li><a href="#" className="footer-link">Inicio</a></li>
-          <li><a href="#" className="footer-link">Sobre Nosotros</a></li>
-          <li><a href="#" className="footer-link">Contacto</a></li>
+          <li>
+            <a href="#" className="footer-link">
+              Inicio
+            </a>
+          </li>
+          <li>
+            <a href="#" className="footer-link">
+              Sobre Nosotros
+            </a>
+          </li>
+          <li>
+            <a href="#" className="footer-link">
+              Contacto
+            </a>
+          </li>
         </ul>
       </div>
 
       {/*    inferior */}
       <div className="footer-bottom">
-        © {new Date().getFullYear()} Cute Rescue — Todos los derechos reservados.
+        © {new Date().getFullYear()} Cute Rescue — Todos los derechos
+        reservados.
       </div>
     </footer>
   );
